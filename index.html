@@ -2,1702 +2,607 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ExC CANVAS - 診断</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ExC CANVAS</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Shippori+Mincho:wght@400;700&display=swap');
+        /* =========================================
+           1. 共通設定 & ベーススタイル
+           ========================================= */
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Josefin+Sans:wght@300;400;700&family=Abril+Fatface&family=Playfair+Display:wght@400;700;900&family=Cinzel:wght@400;700&family=Shippori+Mincho:wght@400;700&display=swap');
 
         :root {
-            --rose: #C85A7C;
+            --bg-canvas: #ffffff; 
+            --gold: #C85A7C; 
+            --gold-dark: #A04661; 
+            --gold-border: #7D344A; 
+            --text-main: #333333; 
+            --text-desc: #555555;
+            --btn-shadow: rgba(200, 90, 124, 0.4);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; }
 
         body {
-            font-family: 'Shippori Mincho', serif;
-            background: #ffffff;
-            color: #333;
-            overflow-x: hidden;
-            min-height: 100vh;
+            background-color: var(--bg-canvas);
+            font-family: 'Shippori Mincho', serif; margin: 0; color: var(--text-main);
+            overflow-x: hidden; overflow-y: auto; position: relative; min-height: 100vh;
         }
 
-        /* 背景キャンバス */
-        #canvas {
+        /* 水彩ペイント背景キャンバス */
+        #paintCanvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
+            z-index: -2;
+        }
+
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.55); pointer-events: none; z-index: -1;
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
 
         /* ヘッダー */
-        .header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 15px;
-            text-align: center;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.98);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        header { position: absolute; top: 0; width: 100%; padding: 30px 20px 40px; text-align: center; z-index: 100; }
+        .logo-main { 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 4.5rem; 
+            color: var(--gold); 
+            letter-spacing: 0.15em; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-bottom: 2px;
         }
-        
-        /* プログレスバー */
-        .progress-container {
-            max-width: 600px;
-            margin: 15px auto 5px;
-            position: relative;
+        .logo-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
+            font-weight: 400;
+            cursor: pointer;
+            margin-top: 5px;
         }
-        
-        .progress-bar-bg {
-            width: 100%;
-            height: 6px;
-            background: rgba(200, 90, 124, 0.15);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
+        .logo-subtitle .highlight {
+            color: var(--gold);
+            font-weight: 700;
         }
-        
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #E86B8F 0%, #C85A7C 100%);
-            width: 0%;
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 10px;
-        }
-        
-        .progress-text {
-            font-size: 0.85rem;
-            color: var(--rose);
-            margin-top: 8px;
-            font-weight: 600;
-            display: none; /* 問題数を非表示 */
+        .logo-subtitle .normal {
+            color: #333333;
         }
 
-        .logo {
-            font-family: 'Cormorant Garamond', serif;
+        /* 背景演出：ペイントダブ */
+        .paint-dabs-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .paint-dab {
+            position: absolute; border-radius: 50%; background: radial-gradient(circle, currentColor 0%, transparent 80%);
+            opacity: 0; transform: scale(0); filter: blur(5px); animation: bubbleFloat 10s infinite ease-in-out;
+        }
+        @keyframes bubbleFloat {
+            0% { opacity: 0; transform: scale(0.5); } 
+            15% { opacity: 0.7; transform: scale(1); }
+            35% { opacity: 0.5; transform: scale(1.1); } 
+            50% { opacity: 0; transform: scale(1.15); }
+            65% { opacity: 0.6; transform: scale(1.1); }
+            85% { opacity: 0.4; transform: scale(1.05); } 
+            100% { opacity: 0; transform: scale(1); }
+        }
+        .dab1 { top: 10%; left: 5%; width: 180px; height: 180px; color: #FFD1DC; animation-duration: 14s; }
+        .dab2 { top: 60%; right: 10%; width: 200px; height: 200px; color: #FFDAB9; animation-delay: 5s; animation-duration: 16s; }
+        .dab3 { bottom: 5%; left: 20%; width: 120px; height: 120px; color: #B0E0E6; animation-delay: 2s; animation-duration: 12s; }
+        .dab4 { top: 25%; right: 20%; width: 100px; height: 100px; color: #DDA0DD; animation-delay: 7s; animation-duration: 13s; }
+        .dab5 { top: 75%; left: 50%; width: 150px; height: 150px; color: #FFE4B5; animation-delay: 3s; animation-duration: 15s; }
+        .dab6 { bottom: 20%; right: 30%; width: 90px; height: 90px; color: #E0BBE4; animation-delay: 9s; animation-duration: 14s; }
+        .dab7 { top: 50%; right: 5%; width: 130px; height: 130px; color: #C7CEEA; animation-delay: 1s; animation-duration: 15s; filter: blur(3px); }
+        .dab8 { top: 35%; left: 15%; width: 110px; height: 110px; color: #FADADD; animation-delay: 6s; animation-duration: 17s; }
+
+        /* ヒーローセクション */
+        .hero-section {
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding-top: 160px; padding-bottom: 60px; z-index: 5; position: relative;
+        }
+        
+        /* カルーセル */
+        .scene {
+            position: relative; width: 160px; height: 240px; perspective: 1200px; transform-style: preserve-3d;
+            margin-bottom: 120px; margin-top: 40px; cursor: pointer; opacity: 0; animation: fadeIn 1.2s ease-out 0.3s forwards;
+        }
+        .carousel { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .carousel-item {
+            position: absolute; width: 140px; height: 210px; left: 10px; top: 15px; background: transparent;
+            display: flex; align-items: center; justify-content: center; backface-visibility: hidden; overflow: hidden;
+        }
+        .carousel-item img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3)); }
+
+        /* キャッチコピー */
+        .main-catch-wrapper { margin-bottom: 40px; text-align: center; position: relative; }
+        .paint-stroke {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 320px;
+            background: radial-gradient(circle, rgba(220, 20, 60, 0.15) 0%, transparent 70%); border-radius: 50%;
+            z-index: -1; filter: blur(20px); opacity: 0; animation: fadeIn 1.5s ease-out 0.5s forwards;
+        }
+        .main-catch {
+            font-size: 2.8rem; color: var(--gold); font-weight: 700; letter-spacing: 0.08em; line-height: 2.0;
+            text-shadow: 0 2px 2px rgba(255,255,255,1); margin: 0; opacity: 0; animation: fadeIn 1.0s ease-out 0.6s forwards;
+        }
+
+        /* ボタン */
+        .controls { position: relative; text-align: center; z-index: 20; margin-bottom: 80px; opacity: 0; animation: fadeIn 1.0s ease-out 0.9s forwards; }
+        .btn-start {
+            background: linear-gradient(135deg, #E86B8F 0%, #D05A7C 100%);
+            border: none;
+            color: #ffffff;
+            padding: 28px 80px;
+            font-family: 'Cinzel', serif;
             font-size: 1.6rem;
-            color: var(--rose);
-            font-weight: 600;
             letter-spacing: 0.15em;
-        }
-
-        /* 進行バー */
-        /* メイン */
-        .container {
-            position: relative;
-            z-index: 10;
-            min-height: 100vh;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 12px 30px rgba(232, 107, 143, 0.5);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 110px 20px 40px;
-        }
-
-        /* 質問カード */
-        .card {
-            background: rgba(255, 255, 255, 0.97);
-            backdrop-filter: blur(15px);
-            border-radius: 10px;
-            padding: 40px 35px;
-            max-width: 650px;
-            width: 100%;
-            box-shadow: 0 15px 50px rgba(200, 90, 124, 0.12);
-        }
-
-        .card.fade-out {
-            animation: fadeOut 0.25s ease forwards;
-        }
-
-        .card.fade-in {
-            animation: fadeIn 0.35s ease forwards;
-        }
-
-        @keyframes fadeOut {
-            to { opacity: 0; transform: translateY(-10px); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .q-num {
-            color: var(--rose);
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-bottom: 18px;
-            letter-spacing: 0.1em;
-        }
-
-        .q-text {
-            font-size: 1.25rem;
-            line-height: 1.85;
-            margin-bottom: 32px;
-            color: #333;
-            font-weight: 500;
-            transition: all 0.5s ease;
-        }
-
-        .q-text.awakening {
-            color: var(--rose);
-            font-size: 1.35rem;
-            text-shadow: 0 0 20px rgba(200, 90, 124, 0.3);
-        }
-
-        .awakening-message {
-            text-align: center;
-            color: var(--rose);
-            font-size: 0.9rem;
-            margin-top: 20px;
-            opacity: 0;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        /* 選択肢 */
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .option {
-            background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
-            border: 2px solid rgba(200, 90, 124, 0.15);
-            border-radius: 12px;
-            padding: 20px 25px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 1.05rem;
-            line-height: 1.7;
+            margin: 0 auto;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
             position: relative;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
         }
-
-        .option:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(200, 90, 124, 0.2);
-            border-color: rgba(200, 90, 124, 0.3);
-        }
-
-        .option:active {
-            transform: translateY(-1px);
-        }
-
-        .opt-label {
-            font-weight: 700;
-            color: var(--rose);
-            margin-right: 10px;
-            font-size: 1.1rem;
-        }
-
-        /* 属性質問用のスタイル */
-        .demographics-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .demographic-item {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .demographic-label {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--rose);
-            margin-bottom: 4px;
-        }
-
-        .demographic-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .demographic-option {
-            background: #fff;
-            border: 2px solid rgba(200, 90, 124, 0.15);
-            border-radius: 6px;
-            padding: 12px 20px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            font-size: 0.95rem;
-        }
-
-        .demographic-option:hover {
-            border-color: var(--rose);
-            background: rgba(200, 90, 124, 0.02);
-            transform: translateY(-2px);
-        }
-
-        .demographic-option.selected {
-            background: var(--rose);
-            color: #fff;
-            border-color: var(--rose);
-        }
-
-        .btn-submit {
-            margin-top: 20px;
-            padding: 14px 40px;
-            border: 2px solid var(--rose);
-            background: var(--rose);
-            color: #fff;
-            font-family: 'Shippori Mincho', serif;
-            font-size: 1.05rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .btn-submit.active {
-            opacity: 1;
-            cursor: pointer;
-        }
-
-        .btn-submit.active:hover {
-            background: var(--rose-dark);
-            transform: translateY(-2px);
-        }
-
-        /* 水彩飛沫 */
-        .splash {
-            position: fixed;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1000;
-            animation: splash 0.8s ease-out forwards;
-        }
-
-        @keyframes splash {
-            0% { transform: scale(0); opacity: 0.7; }
-            50% { transform: scale(1.3); opacity: 0.4; }
-            100% { transform: scale(2.5); opacity: 0; }
-        }
-
-        /* ナビゲーション */
-        .nav {
-            margin-top: 32px;
-        }
-
-        .btn-back {
-            padding: 10px 28px;
-            border: 2px solid var(--rose);
-            background: transparent;
-            color: var(--rose);
-            font-family: 'Shippori Mincho', serif;
-            font-size: 0.95rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-
-        .btn-back:hover:not(:disabled) {
-            background: var(--rose);
-            color: #fff;
-        }
-
-        .btn-back:disabled {
-            opacity: 0.25;
-            cursor: not-allowed;
-        }
-
-        @media (max-width: 600px) {
-            .card { padding: 30px 24px; }
-            .q-text { font-size: 1.1rem; }
-            .option { padding: 15px 18px; font-size: 0.93rem; }
-        }
-
-        /* キャラクター出現画面 */
-        .character-reveal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .character-reveal.active {
-            display: flex;
-        }
-
-        .character-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin-bottom: 40px;
-        }
-
-        .character-silhouette {
+        
+        .btn-start::before {
+            content: '';
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
             width: 0;
             height: 0;
-            background: radial-gradient(circle, rgba(200, 90, 124, 0.8) 0%, transparent 70%);
             border-radius: 50%;
-            animation: converge 2s ease-out forwards;
-        }
-
-        @keyframes converge {
-            0% {
-                width: 0;
-                height: 0;
-                opacity: 0;
-            }
-            50% {
-                width: 400px;
-                height: 400px;
-                opacity: 0.8;
-            }
-            100% {
-                width: 300px;
-                height: 300px;
-                opacity: 1;
-            }
-        }
-
-        .character-image {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            background: rgba(255, 255, 255, 0.2);
             transform: translate(-50%, -50%);
-            width: 250px;
-            height: 250px;
-            opacity: 0;
-            filter: brightness(0) blur(20px);
-            animation: reveal 3s ease-out 2s forwards;
+            transition: width 0.6s, height 0.6s;
         }
-
-        @keyframes reveal {
-            0% {
-                opacity: 0;
-                filter: brightness(0) blur(20px);
-                transform: translate(-50%, -50%) scale(0.8);
-            }
-            50% {
-                opacity: 0.5;
-                filter: brightness(0.5) blur(10px);
-            }
-            100% {
-                opacity: 1;
-                filter: brightness(1) blur(0);
-                transform: translate(-50%, -50%) scale(1);
-            }
+        
+        .btn-start:hover::before {
+            width: 300px;
+            height: 300px;
         }
-
-        .character-name {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2rem;
-            color: var(--rose);
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 5s forwards;
-        }
-
-        .character-subtitle {
-            font-size: 1rem;
-            color: #666;
-            margin-top: 10px;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 5.5s forwards;
-        }
-
-        .btn-result {
-            margin-top: 30px;
-            padding: 15px 40px;
-            background: var(--rose);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
+        
+        .btn-start span {
             font-family: 'Shippori Mincho', serif;
             font-size: 1.1rem;
-            cursor: pointer;
+            margin-top: 8px;
+            color: rgba(255, 255, 255, 0.95);
+            letter-spacing: 0.05em;
+            font-weight: normal;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-start:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 18px 45px var(--btn-shadow);
+        }
+        
+        .btn-start:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+        /* 紹介文 */
+        .intro-box {
+            text-align: left; max-width: 680px; padding: 0 24px; z-index: 5; margin: 0 auto;
+            border-top: 1px solid rgba(220, 20, 60, 0.4); padding-top: 60px; margin-bottom: 60px;
+            opacity: 0; animation: fadeIn 1.0s ease-out 1.2s forwards;
+        }
+        .intro-title { text-align: center; font-size: 2.2rem; color: var(--gold); font-weight: 700; margin-bottom: 30px; letter-spacing: 0.1em; }
+        .intro-desc { font-size: 1.3rem; color: var(--text-desc); line-height: 2.0; text-align: justify; font-feature-settings: "palt"; }
+        
+        .intro-chunk {
             opacity: 0;
-            animation: fadeIn 1s ease-out 6s forwards;
-            transition: all 0.3s ease;
+            transform: translateY(20px);
+            margin-bottom: 2em;
+        }
+        
+        .intro-chunk.visible {
+            animation: fadeInChunk 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeInChunk {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .btn-result:hover {
-            background: var(--rose-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(200, 90, 124, 0.3);
+        /* ステップ紹介 */
+        .mechanism-section { width: 100%; background: rgba(220, 20, 60, 0.05); padding: 80px 20px 120px; display: flex; flex-direction: column; align-items: center; }
+        .section-title-ja { font-family: 'Shippori Mincho', serif; color: var(--text-main); font-size: 1.4rem; font-weight: 700; margin-bottom: 60px; position: relative; letter-spacing: 0.1em; }
+        .section-title-ja::after { content: ""; display: block; width: 60px; height: 2px; background: var(--gold); margin: 20px auto 0; border-radius: 2px; }
+        .steps-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 80px; 
+            max-width: 900px; 
+            width: 100%;
+            position: relative;
+            padding: 60px 0;
         }
+        
+        /* ジャーニーの道 */
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 100px;
+            bottom: 100px;
+            width: 3px;
+            background: linear-gradient(to bottom, 
+                transparent 0%,
+                var(--gold) 10%, 
+                var(--gold) 90%,
+                transparent 100%);
+            transform: translateX(-1.5px);
+            opacity: 0.3;
+        }
+        
+        .step-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 245, 248, 0.95) 100%);
+            width: 100%; 
+            max-width: 650px; 
+            padding: 45px 50px;
+            border-radius: 20px; 
+            box-shadow: 0 10px 40px rgba(200, 90, 124, 0.15); 
+            text-align: left;
+            border: 2px solid rgba(200, 90, 124, 0.2);
+            position: relative; 
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        /* 旅路のマーカー */
+        .step-card::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: -40px;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            transform: translateX(-10px);
+            box-shadow: 0 0 0 5px rgba(200, 90, 124, 0.2);
+        }
+        
+        .step-card.visible {
+            animation: slideInUp 0.8s ease-out forwards;
+        }
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .step-card:hover { 
+            transform: translateY(-8px) scale(1.02); 
+            box-shadow: 0 15px 50px rgba(200, 90, 124, 0.25);
+            border-color: rgba(200, 90, 124, 0.4);
+        }
+        .step-num { 
+            font-family: 'Cinzel', serif; 
+            color: var(--gold); 
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            position: absolute; 
+            top: -15px; 
+            left: 30px; 
+            line-height: 1;
+            opacity: 0.9;
+            background: white;
+            padding: 0 10px;
+        }
+        .step-title { font-size: 1.8rem; font-weight: 700; color: var(--gold); margin: 10px 0 20px; letter-spacing: 0.05em; position: relative; z-index: 1; }
+        .step-desc { font-size: 1.3rem; color: var(--text-desc); line-height: 2.0; text-align: left; position: relative; z-index: 1; }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
+        @media (max-width: 600px) {
+            .hero-section { padding-top: 100px; }
+            .scene { transform: scale(0.9); margin-bottom: 50px; }
+            .intro-desc { font-size: 0.85rem; line-height: 2.0; text-align: left; }
+            .main-catch { font-size: 1.3rem; }
+            .step-card { min-width: 100%; margin-bottom: 10px; }
         }
     </style>
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
+<!-- 水彩ペイント背景 -->
+<canvas id="paintCanvas"></canvas>
 
-<div class="header">
-    <div class="logo">ExC CANVAS</div>
-    <div class="progress-container">
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="progress-bar"></div>
-        </div>
-        <div class="progress-text" id="progress-text">1 / 35</div>
-    </div>
-    <!-- デバッグ用ボタン -->
-    <!-- テストボタンは削除しました -->
+<div class="paint-dabs-container">
+    <div class="paint-dab dab1"></div><div class="paint-dab dab2"></div>
+    <div class="paint-dab dab3"></div><div class="paint-dab dab4"></div>
+    <div class="paint-dab dab5"></div><div class="paint-dab dab6"></div>
+    <div class="paint-dab dab7"></div><div class="paint-dab dab8"></div>
 </div>
 
-<div class="container">
-    <div class="card fade-in" id="card">
-        <div class="q-num" id="q-num">Question 01</div>
-        <div class="q-text" id="q-text"></div>
-        <div class="options" id="options"></div>
-        <div class="awakening-message" id="awakening-msg" style="display: none;">
-        </div>
-        <div class="nav">
-            <button class="btn-back" id="back-btn" onclick="goBack()" disabled>← 戻る</button>
-        </div>
+<header>
+    <div class="logo-main" onclick="location.reload()">ExC CANVAS</div>
+    <div class="logo-subtitle" onclick="location.reload()">
+        <span class="highlight">Ex</span><span class="normal">perience </span><span class="highlight">C</span><span class="normal">apital</span>
     </div>
-</div>
+</header>
 
-<div class="character-reveal" id="character-reveal">
-    <div class="character-container">
-        <div class="character-silhouette"></div>
-        <img class="character-image" id="character-img" src="" alt="Your Character">
-    </div>
-    <div class="character-name" id="character-name">The Sage</div>
-    <div class="character-subtitle">あなたの診断結果</div>
-    <button class="btn-result" id="btn-result" onclick="goToResult()">詳しい診断結果を見る</button>
+<div id="screen-top">
+    <section class="hero-section">
+        <div class="scene" id="carousel-scene">
+            <div class="carousel" id="carousel"></div>
+        </div>
+        
+        <div class="main-catch-wrapper">
+            <div class="paint-stroke"></div>
+            <h1 class="main-catch">あなたの「体験」を<br>「資本」として可視化します</h1>
+        </div>
+
+        <div class="controls">
+            <button class="btn-start" onclick="event.stopPropagation(); window.location.href='diagnosis.html'">
+                DRAW YOUR STORY <span>体験資本の可視化をはじめる</span>
+            </button>
+        </div>
+
+        <div class="intro-box">
+            <div class="intro-title">体験資本の可視化とは</div>
+            <div class="intro-desc">
+                <p class="intro-chunk">私たちは誰もが、人生を通じて無数の「体験」を積み重ねています。しかし、その価値は目に見えず、名前もなく、ただ記憶の中に埋もれていくだけでした。</p>
+                
+                <p class="intro-chunk">ExC CANVASは、世界で初めて、あなたの体験を「資本」として可視化するツールです。</p>
+                
+                <p class="intro-chunk">体験は、お金や学歴のように数値化できるものではありません。しかし、あなたの思考の癖、行動の傾向、価値観の源泉――それらすべては、過去の体験という「見えない資本」が形作っています。</p>
+                
+                <p class="intro-chunk">あなたの体験を12の軸で読み解き、一人の「キャラクター」として映し出します。まるで鏡の中の自分に名前がつくように、形のなかった過去が、物語を持つ存在になる。それは初めて、客観的に「自分」を見つめ直せる瞬間です。</p>
+                
+                <p class="intro-chunk">可視化された自分と向き合うことで見えてくるもの。それは、あなたがどんな体験によって形作られてきたのか。そして同時に、まだ経験していない「空白の領域」――足りない体験の存在です。過去を知り、不足を知ることで、これから何を経験すべきか、どんな未来を描くべきか。その答えへの道筋が、はっきりと見えてきます。</p>
+                
+                <p class="intro-chunk">真っ白なキャンバスに、あなた自身の色で人生を描いていく。ExC CANVASは、その最初の一筆となるツールです。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="mechanism-section">
+        <div class="section-title-ja">可視化のステップ</div>
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-title">記憶の探索</div>
+                <div class="step-desc">たった3分、記憶のキャンバスへ。あなたが無意識に積み重ねてきた思考や行動のクセを、いくつかの問いかけを通じて紐解きます。</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-title">物語の具現化</div>
+                <div class="step-desc">あなたの体験が、ひとつの「キャラクター」となって現れます。名前を持ち、物語を持つその姿は、まるでもう一人の自分。客観的な視点が、新しい気づきを運んでくれます。</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-title">未来を描く</div>
+                <div class="step-desc">自分に足りない「色」を知ることは、新しい可能性へのヒント。過去の体験を「資本」に変えて、人生をより豊かにする次の一歩を踏み出しましょう。</div>
+            </div>
+        </div>
+        
+        <div class="controls" style="margin-top: 60px;">
+            <button class="btn-start" onclick="event.stopPropagation(); window.location.href='diagnosis.html'">
+                DRAW YOUR STORY <span>体験資本の可視化をはじめる</span>
+            </button>
+        </div>
+    </section>
 </div>
 
 <script>
-// 元の25問（4軸判定用）+ 追加10問（体験資本測定用）
-// ExC CANVAS 体験資本診断 全32問（最終版）
-
-const questions = [];
-
-// ========================================
-// 1. 身体的体験資本（Q1-Q2）
-// ========================================
-
-questions.push({
-    q: "身体との向き合い方の傾向は？",
-    opts: [
-        "身体の快・不快に敏感で、喜びや充実感を重視してきた",
-        "成果やパフォーマンスを高めるため、身体を管理対象として扱ってきた",
-        "身体のことはあまり意識せず、思考や内面に関心が向いていた"
-    ],
-    axis: "physical"
-});
-
-questions.push({
-    q: "忘れられないほど体力の限界に挑んだ経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "physical"
-});
-
-// ========================================
-// 2. 知的体験資本（Q3-Q4）
-// ========================================
-
-questions.push({
-    q: "知的な刺激や学びに対するスタンスは？",
-    opts: [
-        "好奇心に突き動かされ、役に立つかを問わず学び続けてきた",
-        "必要な場面を見極め、目的達成のために学んできた",
-        "理屈より感覚や流れを信じ、深く考えすぎないようにしてきた"
-    ],
-    axis: "intellectual"
-});
-
-questions.push({
-    q: "難しい問題・概念について熟考した結果、深く理解できた時の喜びを経験したことはありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "intellectual"
-});
-
-// ========================================
-// 3. 創造的体験資本（Q5-Q6）
-// ========================================
-
-questions.push({
-    q: "自発的に何か新しいもの（企画、作品、アイデアなど）を形にした経験はありますか？",
-    opts: [
-        "具体的なものを複数思い出せる",
-        "印象的なものを1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "creative"
-});
-
-questions.push({
-    q: "優れた創造物（芸術作品、革新的なアイデア、美しいデザインなど）に触れて、強く心を動かされた経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "creative"
-});
-
-// ========================================
-// 4. 文化的体験資本（Q7-Q8）
-// ========================================
-
-questions.push({
-    q: "異なる文化や価値観との向き合い方は？",
-    opts: [
-        "積極的に異文化を求め、自分の世界を広げようとしてきた",
-        "機会があれば触れるが、自分から求めることは少ない",
-        "自分の文化圏で十分で、あえて異文化に触れる必要性を感じない"
-    ],
-    axis: "cultural"
-});
-
-questions.push({
-    q: "異なる文化や価値観に触れて、視野が広がったと感じた経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "cultural"
-});
-
-// ========================================
-// 5. 社会的体験資本（Q9-Q11）
-// ========================================
-
-questions.push({
-    q: "社会やコミュニティの中で、他者との一体感をどう感じていますか？",
-    opts: [
-        "強く感じる。所属やコミュニティに大きく影響を受ける",
-        "たまに心地よい一体感を感じる",
-        "あまり感じない。一人でいる方が自由で楽だ"
-    ],
-    axis: "social"
-});
-
-questions.push({
-    q: "チームで大きなことを成し遂げた経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "social"
-});
-
-questions.push({
-    q: "学校や職場以外で、自発的にコミュニティに参加した経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "social"
-});
-
-// ========================================
-// 6. 感情的体験資本（Q12-Q14）
-// ========================================
-
-questions.push({
-    q: "感情との距離の取り方は？",
-    opts: [
-        "感受性が豊かで、日常の些細なことにも心が揺れ動く",
-        "映画や本などの作品を通じ、意識的に感動する機会を作っている",
-        "感情に振り回されないよう、意識的に距離を取ってきた"
-    ],
-    axis: "emotional"
-});
-
-questions.push({
-    q: "人生のどん底のような絶望を経験したことはありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "emotional"
-});
-
-questions.push({
-    q: "人生観が変わるような深い感動を経験したことはありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "emotional"
-});
-
-// ========================================
-// 7. 精神的体験資本（Q15-Q16）
-// ========================================
-
-questions.push({
-    q: "人生や生きる意味についてどう向き合っていますか？",
-    opts: [
-        "日常的に深く考え、自分なりの答えを探し続けている",
-        "時々考えることはあるが、明確な答えは求めていない",
-        "あまり考えない。目の前のことに集中している"
-    ],
-    axis: "spiritual"
-});
-
-questions.push({
-    q: "価値観や人生観が大きく変わるような深い経験はありましたか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "spiritual"
-});
-
-// ========================================
-// 8. 時間的体験資本（Q17-Q18）
-// ========================================
-
-questions.push({
-    q: "時間との向き合い方は？",
-    opts: [
-        "今この瞬間を大切にし、没頭することを重視する",
-        "計画的に時間を使い、効率を意識する",
-        "時間に追われることが多く、ゆとりを持てない"
-    ],
-    axis: "temporal"
-});
-
-questions.push({
-    q: "長い年月をかけて何かを達成した経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "temporal"
-});
-
-// ========================================
-// 9. 空間的体験資本（Q19-Q20）
-// ========================================
-
-questions.push({
-    q: "新しい場所や環境との向き合い方は？",
-    opts: [
-        "積極的に新しい場所を探索し、刺激を求める",
-        "機会があれば訪れるが、自分から探すことは少ない",
-        "慣れた場所で過ごすことを好む"
-    ],
-    axis: "spatial"
-});
-
-questions.push({
-    q: "住む場所や環境が大きく変わった経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "spatial"
-});
-
-// ========================================
-// 10. 偶然的体験資本（Q21-Q22）
-// ========================================
-
-questions.push({
-    q: "予期せぬ出来事や偶然に対する姿勢は？",
-    opts: [
-        "予想外のことを楽しみ、積極的に受け入れる",
-        "状況によって受け入れたり、避けたりする",
-        "できるだけ計画通りに進めたい"
-    ],
-    axis: "serendipity"
-});
-
-questions.push({
-    q: "偶然の出来事や出会いが人生を変えた経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "serendipity"
-});
-
-// ========================================
-// 11. 自然的体験資本（Q23-Q24）
-// ========================================
-
-questions.push({
-    q: "自然との向き合い方は？",
-    opts: [
-        "日常的に自然と触れ合い、深いつながりを感じている",
-        "時々自然の中で過ごす時間を持っている",
-        "自然の中で過ごすことは少ない"
-    ],
-    axis: "natural"
-});
-
-questions.push({
-    q: "自然の中で心が癒されたり、大きな感動を受けた経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "natural"
-});
-
-// ========================================
-// 12. 経済的体験資本（Q25-Q26）
-// ========================================
-
-questions.push({
-    q: "お金について強く不安を感じたことはありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "economic"
-});
-
-questions.push({
-    q: "大きな経済的決断（投資、転職、起業、家の購入など）をした経験はありますか？",
-    opts: [
-        "具体的な場面を複数思い出せる",
-        "印象的な場面を1つは思い出せる",
-        "そういう経験はない、または思い出せない"
-    ],
-    axis: "economic"
-});
-
-// ========================================
-// 16タイプ判定（Q27-Q31）
-// ========================================
-
-questions.push({
-    q: "休日や自由な時間は、どちらかといえばどのように過ごすことが多いですか？",
-    opts: [
-        "読書、映画鑑賞、音楽を聴く、内省するなど",
-        "スポーツ、外出、旅行、買い物など"
-    ],
-    isTyping: true,
-    typeDimension: "spirit_material"
-});
-
-questions.push({
-    q: "振り返ってみて、どちらの方が充実感を感じることが多かったですか？",
-    opts: [
-        "何かを深く理解したり、発見したりした時",
-        "目標を達成したり、成果を手にしたりした時"
-    ],
-    isTyping: true,
-    typeDimension: "spirit_material"
-});
-
-questions.push({
-    q: "これまでより多く経験してきたのは？",
-    opts: [
-        "一人で決断し、自分の道を進んだ経験",
-        "誰かと協力し、共に何かを成し遂げた経験"
-    ],
-    isTyping: true,
-    typeDimension: "independent_relation"
-});
-
-questions.push({
-    q: "これまでより強くストレスを感じたのは？",
-    opts: [
-        "自由や選択が制限された時",
-        "孤独や疎外感を感じた時"
-    ],
-    isTyping: true,
-    typeDimension: "independent_relation"
-});
-
-questions.push({
-    q: "これまでの人生で、よりエネルギーを得てきたのは？",
-    opts: [
-        "一人で静かに過ごす時間",
-        "人と交流する時間"
-    ],
-    isTyping: true,
-    typeDimension: "introvert_extrovert"
-});
-
-questions.push({
-    q: "困難な問題に直面した時、これまでより多く選んできた方法は？",
-    opts: [
-        "一人で静かに考え、答えを出す",
-        "誰かに相談し、話しながら答えを見つける"
-    ],
-    isTyping: true,
-    typeDimension: "introvert_extrovert"
-});
-
-questions.push({
-    q: "これまでの人生で、より充実感を感じてきたのは？",
-    opts: [
-        "計画通りに物事を進められた時",
-        "臨機応変に対応できた時"
-    ],
-    isTyping: true,
-    typeDimension: "order_freedom"
-});
-
-questions.push({
-    q: "これまでより強くストレスを感じたのは？",
-    opts: [
-        "予定が崩れ、混乱した時",
-        "厳格なルールに縛られた時"
-    ],
-    isTyping: true,
-    typeDimension: "order_freedom"
-});
-
-// ========================================
-// 属性質問
-// ========================================
-
-questions.push({
-    q: "最後に、あなたについて教えてください",
-    isDemographics: true,
-    demographics: [
-        {
-            label: "年齢",
-            options: ["10代", "20代", "30代", "40代", "50代", "60代以上", "回答しない"]
-        },
-        {
-            label: "性別",
-            options: ["男性", "女性", "その他", "回答しない"]
-        }
-    ]
-});
-const colors = [
-    '#FFE4E9', // ライトローズ
-    '#E8F5E9', // ペールグリーン
-    '#E3F2FD', // ライトブルー
-    '#FFF9E6', // ライトイエロー
-    '#F3E5F5', // ライトラベンダー
-    '#E0F7FA', // ライトシアン
-    '#FFEBEE', // ライトピンク
-    '#F1F8E9', // ライトライム
-    '#FFF3E0', // ライトオレンジ
-    '#FCE4EC'  // ライトマゼンタ
-];
-
-let current = 0;
-let answers = [];
-let canvas, ctx;
-
-// スコアリングマッピング（Excelのマッピングテーブルを実装）
-const scoreMapping = {
-    'Q1-A': {axis1: 0, axis2: 0, axis3: 0, axis4: -5},
-    'Q1-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q1-C': {axis1: 0, axis2: 0, axis3: 0, axis4: 5},
-    'Q2-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q2-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q2-C': {axis1: 0, axis2: 0, axis3: 0, axis4: -3},
-    'Q3-A': {axis1: 0, axis2: 0, axis3: 10, axis4: 0},
-    'Q3-B': {axis1: 0, axis2: 0, axis3: 8, axis4: 0},
-    'Q3-C': {axis1: 0, axis2: 0, axis3: -10, axis4: 0},
-    'Q4-A': {axis1: 10, axis2: 0, axis3: 10, axis4: 0},
-    'Q4-B': {axis1: 3, axis2: 0, axis3: 5, axis4: 0},
-    'Q4-C': {axis1: 2, axis2: 0, axis3: -5, axis4: 0},
-    'Q4-D': {axis1: -10, axis2: 0, axis3: -10, axis4: 0},
-    'Q5-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q5-B': {axis1: 3, axis2: 0, axis3: 0, axis4: 0},
-    'Q5-C': {axis1: 10, axis2: 0, axis3: 0, axis4: 0},
-    'Q5-D': {axis1: 5, axis2: 0, axis3: 0, axis4: 0},
-    'Q6-A': {axis1: 10, axis2: 10, axis3: 0, axis4: 0},
-    'Q6-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q6-C': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q7-A': {axis1: 0, axis2: -10, axis3: 0, axis4: -10},
-    'Q7-B': {axis1: 0, axis2: -8, axis3: 0, axis4: -5},
-    'Q7-C': {axis1: 0, axis2: 5, axis3: 0, axis4: 10},
-    'Q7-D': {axis1: 0, axis2: 10, axis3: 0, axis4: 5},
-    'Q8-A': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q8-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q8-C': {axis1: 0, axis2: 0, axis3: 10, axis4: 0},
-    'Q8-D': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q9-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q9-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q9-C': {axis1: 0, axis2: 0, axis3: 10, axis4: 0},
-    'Q9-D': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q10-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q10-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q10-C': {axis1: 10, axis2: 0, axis3: 5, axis4: 0},
-    'Q10-D': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q11-A': {axis1: 10, axis2: 0, axis3: 0, axis4: 0},
-    'Q11-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q11-C': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q12-A': {axis1: 10, axis2: 0, axis3: 0, axis4: 0},
-    'Q12-B': {axis1: 0, axis2: 0, axis3: 7, axis4: 0},
-    'Q12-C': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q12-D': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q13-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q13-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 7},
-    'Q13-C': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q14-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q14-B': {axis1: 5, axis2: 0, axis3: 0, axis4: 0},
-    'Q14-C': {axis1: 10, axis2: 0, axis3: 0, axis4: 0},
-    'Q14-D': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q15-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q15-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q15-C': {axis1: 0, axis2: 0, axis3: 3, axis4: 0},
-    'Q15-D': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q16-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q16-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 5},
-    'Q16-C': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q17-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q17-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q17-C': {axis1: 0, axis2: 0, axis3: 10, axis4: 0},
-    'Q17-D': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q18-A': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q18-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q18-C': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q19-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q19-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q19-C': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q19-D': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q20-A': {axis1: 10, axis2: 0, axis3: 0, axis4: 0},
-    'Q20-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q20-C': {axis1: 0, axis2: 0, axis3: 10, axis4: 0},
-    'Q20-D': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q21-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q21-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q21-C': {axis1: 0, axis2: 0, axis3: 10, axis4: 0},
-    'Q21-D': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q22-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q22-B': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q22-C': {axis1: 0, axis2: 0, axis3: 10, axis4: 0},
-    'Q22-D': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q23-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q23-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q23-C': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q23-D': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q24-A': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q24-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 0},
-    'Q24-C': {axis1: 0, axis2: 0, axis3: 10, axis4: 0},
-    'Q24-D': {axis1: 0, axis2: 10, axis3: 0, axis4: 0},
-    'Q25-A': {axis1: 10, axis2: 0, axis3: 0, axis4: 0},
-    'Q25-B': {axis1: 0, axis2: 0, axis3: 0, axis4: 10},
-    'Q25-C': {axis1: 0, axis2: 0, axis3: 10, axis4: 0},
-    'Q25-D': {axis1: 0, axis2: 10, axis3: 0, axis4: 0}
-};
-
-// 16タイプマッピング（4軸 → キャラクター名）
-const typeMappingNew = {
-    "introvert_order_independent_spirit": "沈黙の賢者",
-    "introvert_order_independent_material": "石の設計士",
-    "extrovert_order_independent_spirit": "盲目の英雄",
-    "extrovert_order_independent_material": "黄金の女王",
-    "introvert_freedom_independent_spirit": "異端の錬金術師",
-    "introvert_freedom_independent_material": "地図を持たない旅人",
-    "extrovert_freedom_independent_spirit": "嵐の革命家",
-    "extrovert_freedom_independent_material": "暴食の王",
-    "introvert_order_relation_spirit": "誓いの守護者",
-    "introvert_order_relation_material": "森の番人",
-    "extrovert_order_relation_spirit": "鐘を鳴らす予言者",
-    "extrovert_order_relation_material": "施しの商人",
-    "introvert_freedom_relation_spirit": "涙の吟遊詩人",
-    "introvert_freedom_relation_material": "微笑みの酒場主",
-    "extrovert_freedom_relation_spirit": "夢追いの船長",
-    "extrovert_freedom_relation_material": "仮面の道化師"
-};
-
-// 旧形式の16タイプマッピング（画像情報用）
-const typeMapping = {
-    '内向|秩序|個人|精神': { name: '沈黙の賢者', nameEn: 'The Silent Sage', img: '1_sage.png' },
-    '内向|秩序|個人|物質': { name: '石の執政官', nameEn: 'The Stone Consul', img: '2_consul.png' },
-    '外向|秩序|個人|精神': { name: '盲目の英雄', nameEn: 'The Blind Hero', img: '3_commander.png' },
-    '外向|秩序|個人|物質': { name: '黄金の女王', nameEn: 'The Golden Queen', img: '4_queen.png' },
-    '内向|自由|個人|精神': { name: '異端の錬金術師', nameEn: 'The Heretic Alchemist', img: '5_alchemist.png' },
-    '内向|自由|個人|物質': { name: '地図を持たない旅人', nameEn: 'The Mapless Traveler', img: '6_traveler.png' },
-    '外向|自由|個人|精神': { name: '嵐の革命家', nameEn: 'The Storm Rebel', img: '7_rebel.png' },
-    '外向|自由|個人|物質': { name: '暴食の狂王', nameEn: 'The Gluttonous King', img: '8_king.png' },
-    '内向|秩序|共鳴|精神': { name: '誓いの守護者', nameEn: 'The Sworn Guardian', img: '9_guardian.png' },
-    '内向|秩序|共鳴|物質': { name: '森の番人', nameEn: 'The Forest Keeper', img: '10_keeper.png' },
-    '外向|秩序|共鳴|精神': { name: '鐘を鳴らす予言者', nameEn: 'The Bell Prophet', img: '11_prophet.png' },
-    '外向|秩序|共鳴|物質': { name: '施しの商人', nameEn: 'The Giving Merchant', img: '12_merchant.png' },
-    '内向|自由|共鳴|精神': { name: '涙の吟遊詩人', nameEn: 'The Weeping Bard', img: '13_bard.png' },
-    '内向|自由|共鳴|物質': { name: '微笑みの酒場主', nameEn: 'The Smiling Host', img: '14_host.png' },
-    '外向|自由|共鳴|精神': { name: '夢追いの船長', nameEn: 'The Dreaming Captain', img: '15_captain.png' },
-    '外向|自由|共鳴|物質': { name: '仮面の道化師', nameEn: 'The Masked Jester', img: '16_jester.png' }
-};
-
-// 診断結果を計算
-function calculateResult() {
-    console.log('=== 16タイプ診断計算開始 ===');
-    console.log('全回答:', answers);
-    
-    // Step 1: 12軸の体験資本スコアを計算
-    const capitalScores = {
-        physical: 0,      // 身体的 (Q1-Q2)
-        intellectual: 0,  // 知的 (Q3-Q4)
-        creative: 0,      // 創造的 (Q5-Q6)
-        cultural: 0,      // 文化的 (Q7-Q8)
-        social: 0,        // 社会的 (Q9-Q11)
-        emotional: 0,     // 感情的 (Q12-Q14)
-        spiritual: 0,     // 精神的 (Q15-Q16)
-        temporal: 0,      // 時間的 (Q17-Q18)
-        spatial: 0,       // 空間的 (Q19-Q20)
-        serendipity: 0,   // 偶然的 (Q21-Q22)
-        natural: 0,       // 自然的 (Q23-Q24)
-        economic: 0       // 経済的 (Q25-Q26)
-    };
-    
-    // 各質問の体験資本への紐付け（簡易版：A=2点、B=1点、C=0点）
-    const axisMapping = [
-        // Q1-Q2: 身体的
-        'physical', 'physical',
-        // Q3-Q4: 知的
-        'intellectual', 'intellectual',
-        // Q5-Q6: 創造的
-        'creative', 'creative',
-        // Q7-Q8: 文化的
-        'cultural', 'cultural',
-        // Q9-Q11: 社会的
-        'social', 'social', 'social',
-        // Q12-Q14: 感情的
-        'emotional', 'emotional', 'emotional',
-        // Q15-Q16: 精神的
-        'spiritual', 'spiritual',
-        // Q17-Q18: 時間的
-        'temporal', 'temporal',
-        // Q19-Q20: 空間的
-        'spatial', 'spatial',
-        // Q21-Q22: 偶然的
-        'serendipity', 'serendipity',
-        // Q23-Q24: 自然的
-        'natural', 'natural',
-        // Q25-Q26: 経済的
-        'economic', 'economic'
+    /* --- カルーセル初期化と回転 --- */
+    const characters = [
+        "1_sage.png", "2_consul.png", "3_commander.png", "4_queen.png", 
+        "5_alchemist.png", "6_traveler.png", "7_rebel.png", "8_king.png", 
+        "9_guardian.png", "10_keeper.png", "11_prophet.png", "12_merchant.png", 
+        "13_bard.png", "14_host.png", "15_captain.png", "16_jester.png"
     ];
     
-    // Q1-Q26の回答からスコア計算
-    for (let i = 0; i < 26; i++) {
-        const axis = axisMapping[i];
-        const answer = answers[i];
+    const carousel = document.getElementById('carousel');
+    const carouselScene = document.getElementById('carousel-scene');
+    const radius = 380; 
+    let theta = 360 / characters.length;
+    let currentAngle = 0;
+    let autoRotateTimer = null;
+
+    function initCarousel() {
+        characters.forEach((imgSrc, i) => {
+            const el = document.createElement('div');
+            el.className = 'carousel-item';
+            el.style.backgroundColor = "rgba(220, 20, 60, 0.1)"; 
+            el.innerHTML = `<img src="${imgSrc}" alt="Character ${i+1}">`;
+            
+            const itemAngle = theta * i;
+            el.style.transform = `rotateY(${itemAngle}deg) translateZ(${radius}px)`;
+            carousel.appendChild(el);
+        });
+    }
+
+    // 次の画像に回転
+    function rotateNext() {
+        currentAngle -= theta;
+        carousel.style.transform = `rotateY(${currentAngle}deg)`;
+        resetAutoRotate();
+    }
+
+    // 自動回転タイマーをリセット
+    function resetAutoRotate() {
+        if (autoRotateTimer) {
+            clearTimeout(autoRotateTimer);
+        }
+        autoRotateTimer = setTimeout(rotateNext, 5000);
+    }
+
+    // カルーセル画像をクリックした時のみ回転
+    carousel.addEventListener('click', function(e) {
+        e.stopPropagation();
+        rotateNext();
+    });
+
+    initCarousel();
+    resetAutoRotate(); // 初回の自動回転開始（5秒後に自動で回転）
+</script>
+<script>
+// 水彩ペイント背景の描画
+const canvas = document.getElementById('paintCanvas');
+const ctx = canvas.getContext('2d');
+
+// キャンバスサイズを設定
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// 4色パレット（紫・オレンジ・青・緑）
+const colors = [
+    ['#9b7dd4', '#b8a0e0', '#d4c2ed'],  // 紫系
+    ['#d4a87d', '#e0c2a0', '#edddc2'],  // オレンジ系
+    ['#7daad4', '#a0c5e0', '#c2dded'],  // 青系
+    ['#7dd4a8', '#a0e0c2', '#c2eddd']   // 緑系
+];
+
+// すべての色を平坦化
+const allColors = colors.flat();
+
+// 水彩の配列（管理用）
+const paintObjects = [];
+
+// 水彩オブジェクトの構造
+class PaintCircle {
+    constructor() {
+        this.color = allColors[Math.floor(Math.random() * allColors.length)];
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = 150 + Math.random() * 250;
+        this.alpha = 0;
+        this.targetAlpha = 0.15 + Math.random() * 0.15;
+        this.fadeIn = true;
+        this.lifeTime = 0;
+        this.maxLifeTime = 8000 + Math.random() * 4000; // 8-12秒
         
-        if (answer !== undefined && axis) {
-            // A=2点、B=1点、C=0点（3択の場合）
-            const score = answer === 0 ? 2 : answer === 1 ? 1 : 0;
-            capitalScores[axis] += score;
+        // 飛沫
+        this.splashes = [];
+        for (let i = 0; i < 3; i++) {
+            this.splashes.push({
+                offsetX: (Math.random() - 0.5) * 180,
+                offsetY: (Math.random() - 0.5) * 180,
+                size: 50 + Math.random() * 100,
+                alpha: 0.1 + Math.random() * 0.1
+            });
         }
     }
     
-    console.log('12軸の体験資本スコア:', capitalScores);
+    update(deltaTime) {
+        this.lifeTime += deltaTime;
+        
+        // フェードイン・アウト
+        if (this.lifeTime < 1000) {
+            // フェードイン（最初の1秒）
+            this.alpha = (this.lifeTime / 1000) * this.targetAlpha;
+        } else if (this.lifeTime > this.maxLifeTime - 2000) {
+            // フェードアウト（最後の2秒）
+            const fadeProgress = (this.maxLifeTime - this.lifeTime) / 2000;
+            this.alpha = fadeProgress * this.targetAlpha;
+        } else {
+            this.alpha = this.targetAlpha;
+        }
+        
+        return this.lifeTime < this.maxLifeTime;
+    }
     
-    // Step 2: Q27-Q34から16タイプを判定
-    const typeName = determine16Type();
-    
-    // 4軸のキーも計算
-    const q27_answer = answers[26];
-    const q28_answer = answers[27];
-    const q29_answer = answers[28];
-    const q30_answer = answers[29];
-    const q31_answer = answers[30];
-    const q32_answer = answers[31];
-    const q33_answer = answers[32];
-    const q34_answer = answers[33];
-    
-    const spirit_material_score = (q27_answer + q28_answer) / 2;
-    const is_spirit = spirit_material_score < 0.5;
-    
-    const independent_relation_score = (q29_answer + q30_answer) / 2;
-    const is_independent = independent_relation_score < 0.5;
-    
-    const introvert_extrovert_score = (q31_answer + q32_answer) / 2;
-    const is_introvert = introvert_extrovert_score < 0.5;
-    
-    const order_freedom_score = (q33_answer + q34_answer) / 2;
-    const is_order = order_freedom_score < 0.5;
-    
-    const typeKey = `${is_introvert ? 'introvert' : 'extrovert'}_${is_order ? 'order' : 'freedom'}_${is_independent ? 'independent' : 'relation'}_${is_spirit ? 'spirit' : 'material'}`;
-    
-    console.log('最終タイプ:', typeName);
-    console.log('タイプキー:', typeKey);
-    
-    // Step 3: タイプ情報を取得
-    const typeInfo = {
-        '沈黙の賢者': { nameEn: 'The Silent Sage', img: '1.png' },
-        '石の設計士': { nameEn: 'The Stone Architect', img: '2.png' },
-        '盲目の英雄': { nameEn: 'The Blind Hero', img: '3.png' },
-        '黄金の女王': { nameEn: 'The Golden Queen', img: '4.png' },
-        '異端の錬金術師': { nameEn: 'The Heretic Alchemist', img: '5.png' },
-        '地図を持たない旅人': { nameEn: 'The Mapless Traveler', img: '6.png' },
-        '嵐の革命家': { nameEn: 'The Storm Rebel', img: '7.png' },
-        '暴食の王': { nameEn: 'The Gluttonous King', img: '8.png' },
-        '誓いの守護者': { nameEn: 'The Sworn Guardian', img: '9.png' },
-        '森の番人': { nameEn: 'The Forest Keeper', img: '10.png' },
-        '鐘を鳴らす予言者': { nameEn: 'The Bell Prophet', img: '11.png' },
-        '施しの商人': { nameEn: 'The Giving Merchant', img: '12.png' },
-        '涙の吟遊詩人': { nameEn: 'The Bard of Tears', img: '13.png' },
-        '微笑みの酒場主': { nameEn: 'The Smiling Host', img: '14.png' },
-        '夢追いの船長': { nameEn: 'The Dreaming Captain', img: '15.png' },
-        '仮面の道化師': { nameEn: 'The Masked Jester', img: '16.png' }
-    };
-    
-    const result = {
-        name: typeName,
-        nameEn: typeInfo[typeName]?.nameEn || 'Unknown',
-        img: typeInfo[typeName]?.img || 'default.png'
-    };
-    
-    // 属性情報
-    const demographics = answers[34] || {}; // Q35（インデックス34）
-    const genderOptions = ["男性", "女性", "その他", "回答しない"];
-    const ageOptions = ["10代", "20代", "30代", "40代", "50代", "60代以上", "回答しない"];
-    
-    return {
-        typeName,
-        typeKey,
-        typeNameEn: result?.nameEn || 'Unknown',
-        result,
-        capitalScores,
-        gender: demographics[1] !== undefined ? genderOptions[demographics[1]] : 'Unknown',
-        ageGroup: demographics[0] !== undefined ? ageOptions[demographics[0]] : 'Unknown'
-    };
+    draw() {
+        // メイン円
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 飛沫
+        this.splashes.forEach(splash => {
+            ctx.globalAlpha = this.alpha * (splash.alpha / this.targetAlpha);
+            ctx.beginPath();
+            ctx.arc(this.x + splash.offsetX, this.y + splash.offsetY, splash.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
 }
 
+// 初期水彩を生成（少なめに）
+for (let i = 0; i < 15; i++) {
+    paintObjects.push(new PaintCircle());
+}
 
-window.onload = function() {
-    canvas = document.getElementById('canvas');
-    ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    show();
-};
+// アニメーションループ
+let lastTime = Date.now();
 
+function animate() {
+    const currentTime = Date.now();
+    const deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+    
+    // キャンバスをクリア
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 全ての水彩を更新・描画
+    for (let i = paintObjects.length - 1; i >= 0; i--) {
+        const alive = paintObjects[i].update(deltaTime);
+        if (alive) {
+            paintObjects[i].draw();
+        } else {
+            // 寿命が尽きたら削除
+            paintObjects.splice(i, 1);
+        }
+    }
+    
+    // 新しい水彩を追加（最大20個まで）
+    if (paintObjects.length < 20 && Math.random() < 0.01) {
+        paintObjects.push(new PaintCircle());
+    }
+    
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+// ウィンドウリサイズ対応
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    redraw();
 });
 
-function show() {
-    const card = document.getElementById('card');
-    card.classList.remove('fade-in');
-    card.classList.add('fade-out');
-    
-    setTimeout(() => {
-        // 属性質問の場合は質問番号を非表示
-        const qNumElement = document.getElementById('q-num');
-        if (questions[current].isDemographics) {
-            qNumElement.style.display = 'none';
-        } else {
-            qNumElement.style.display = 'block';
-            qNumElement.textContent = `Question ${String(current + 1).padStart(2, '0')}`;
+// スクロールで要素を表示するアニメーション
+const observerOptions = {
+    threshold: 0.2,
+    rootMargin: '0px 0px -100px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+            setTimeout(() => {
+                entry.target.classList.add('visible');
+            }, index * 150); // 順番に表示
         }
-        
-        const qText = document.getElementById('q-text');
-        qText.textContent = questions[current].q;
-        
-        // 覚醒演出は使用しない
-        const awakeningMsg = document.getElementById('awakening-msg');
-        qText.classList.remove('awakening');
-        awakeningMsg.style.display = 'none';
-        
-        const opts = document.getElementById('options');
-        opts.innerHTML = '';
-        
-        // 属性質問の場合
-        if (questions[current].isDemographics) {
-            const container = document.createElement('div');
-            container.className = 'demographics-container';
-            
-            questions[current].demographics.forEach((demo, demoIndex) => {
-                const item = document.createElement('div');
-                item.className = 'demographic-item';
-                
-                const label = document.createElement('div');
-                label.className = 'demographic-label';
-                label.textContent = demo.label;
-                item.appendChild(label);
-                
-                const optionsDiv = document.createElement('div');
-                optionsDiv.className = 'demographic-options';
-                
-                demo.options.forEach((opt, optIndex) => {
-                    const optDiv = document.createElement('div');
-                    optDiv.className = 'demographic-option';
-                    optDiv.textContent = opt;
-                    optDiv.onclick = () => selectDemographic(demoIndex, optIndex);
-                    optDiv.dataset.demoIndex = demoIndex;
-                    optDiv.dataset.optIndex = optIndex;
-                    optionsDiv.appendChild(optDiv);
-                });
-                
-                item.appendChild(optionsDiv);
-                container.appendChild(item);
-            });
-            
-            // 送信ボタン
-            const submitBtn = document.createElement('button');
-            submitBtn.className = 'btn-submit';
-            submitBtn.id = 'submit-demographics';
-            submitBtn.textContent = '診断結果を見る';
-            submitBtn.onclick = submitDemographics;
-            container.appendChild(submitBtn);
-            
-            opts.appendChild(container);
-        } else {
-            // 通常の質問
-            questions[current].opts.forEach((opt, i) => {
-                const div = document.createElement('div');
-                div.className = 'option';
-                const color = colors[i % colors.length];
-                div.innerHTML = `<span class="opt-label">${String.fromCharCode(65 + i)}.</span>${opt}`;
-                div.onclick = (e) => select(i, e);
-                div.dataset.color = color; // 色をデータ属性として保存（選択時の背景用）
-                opts.appendChild(div);
-            });
-        }
-        
-        document.getElementById('back-btn').disabled = current === 0;
-        
-        card.classList.remove('fade-out');
-        card.classList.add('fade-in');
-        
-        updateProgress();
-    }, 250);
-}
-
-let demographicsAnswers = {};
-
-function selectDemographic(demoIndex, optIndex) {
-    demographicsAnswers[demoIndex] = optIndex;
-    
-    // 選択状態を視覚的に表示
-    const allOptions = document.querySelectorAll(`.demographic-option[data-demo-index="${demoIndex}"]`);
-    allOptions.forEach(opt => opt.classList.remove('selected'));
-    
-    const selectedOpt = document.querySelector(`.demographic-option[data-demo-index="${demoIndex}"][data-opt-index="${optIndex}"]`);
-    if (selectedOpt) {
-        selectedOpt.classList.add('selected');
-    }
-    
-    // 両方選択されたら送信ボタンを有効化
-    const submitBtn = document.getElementById('submit-demographics');
-    if (Object.keys(demographicsAnswers).length === 2) {
-        submitBtn.classList.add('active');
-    }
-}
-
-// 16タイプを判定
-function determine16Type() {
-    // Q27-Q34の回答から4軸を判定
-    const q27_answer = answers[26]; // 0=精神, 1=物質
-    const q28_answer = answers[27]; // 0=精神, 1=物質
-    const q29_answer = answers[28]; // 0=独立, 1=関係
-    const q30_answer = answers[29]; // 0=独立, 1=関係
-    const q31_answer = answers[30]; // 0=内向, 1=外向
-    const q32_answer = answers[31]; // 0=内向, 1=外向
-    const q33_answer = answers[32]; // 0=秩序, 1=自由
-    const q34_answer = answers[33]; // 0=秩序, 1=自由
-    
-    // 精神/物質の判定
-    const spirit_material_score = (q27_answer + q28_answer) / 2;
-    const is_spirit = spirit_material_score < 0.5;
-    
-    // 独立/関係の判定
-    const independent_relation_score = (q29_answer + q30_answer) / 2;
-    const is_independent = independent_relation_score < 0.5;
-    
-    // 内向/外向の判定
-    const introvert_extrovert_score = (q31_answer + q32_answer) / 2;
-    const is_introvert = introvert_extrovert_score < 0.5;
-    
-    // 秩序/自由の判定
-    const order_freedom_score = (q33_answer + q34_answer) / 2;
-    const is_order = order_freedom_score < 0.5;
-    
-    // 16タイプのキーを生成
-    const typeKey = `${is_introvert ? 'introvert' : 'extrovert'}_${is_order ? 'order' : 'freedom'}_${is_independent ? 'independent' : 'relation'}_${is_spirit ? 'spirit' : 'material'}`;
-    
-    console.log('Type determination:', {
-        q27_answer, q28_answer, q29_answer, q30_answer,
-        q31_answer, q32_answer, q33_answer, q34_answer,
-        typeKey,
-        characterType: typeMappingNew[typeKey]
     });
-    
-    return typeMappingNew[typeKey] || "不明";
-}
+}, observerOptions);
 
-function submitDemographics() {
-    console.log('=== submitDemographics呼び出し ===');
-    console.log('demographicsAnswers:', demographicsAnswers);
-    console.log('必要な選択数: 2, 現在の選択数:', Object.keys(demographicsAnswers).length);
-    
-    if (Object.keys(demographicsAnswers).length !== 2) {
-        console.log('両方の質問が選択されていません');
-        return;
-    }
-    
-    // 回答を保存
-    answers[current] = demographicsAnswers;
-    console.log('属性質問の回答を保存しました:', answers[current]);
-    
-    // 16タイプを判定
-    console.log('16タイプ判定を開始...');
-    const characterType = determine16Type();
-    console.log('判定されたキャラクタータイプ:', characterType);
-    
-    // キャラクター出現演出
-    console.log('revealCharacter()を呼び出します...');
-    revealCharacter();
-}
+// ステップカードを監視
+document.querySelectorAll('.step-card').forEach(card => {
+    observer.observe(card);
+});
 
-function select(i, e) {
-    answers[current] = i;
-    
-    // 選択した色を取得
-    const selectedOption = e.target.closest('.option');
-    const choiceColor = selectedOption.dataset.color;
-    
-    // 選択した色を背景に追加
-    paintWithColor(choiceColor);
-    
-    splash(e.clientX, e.clientY);
-    
-    // プログレスバー更新
-    updateProgress();
-    
-    setTimeout(() => {
-        if (current < questions.length - 1) {
-            current++;
-            show();
-        } else {
-            // 最終回答後：キャラクター出現演出
-            revealCharacter();
-        }
-    }, 450);
-}
-
-// 選択した色で水彩を追加
-function paintWithColor(color) {
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height;
-    
-    // 大きさのバリエーション：小・中・大
-    const sizeVariation = Math.random();
-    let size;
-    if (sizeVariation < 0.4) {
-        size = 80 + Math.random() * 120; // 小
-    } else if (sizeVariation < 0.7) {
-        size = 150 + Math.random() * 200; // 中
-    } else {
-        size = 250 + Math.random() * 300; // 大
-    }
-    
-    ctx.globalAlpha = 0.25 + Math.random() * 0.2;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, size, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // 小さい飛沫（滲み）
-    const numSplashes = 2 + Math.floor(Math.random() * 3);
-    for (let j = 0; j < numSplashes; j++) {
-        const ox = (Math.random() - 0.5) * 250;
-        const oy = (Math.random() - 0.5) * 250;
-        const sz = 30 + Math.random() * 80;
-        
-        ctx.globalAlpha = 0.15 + Math.random() * 0.15;
-        ctx.beginPath();
-        ctx.arc(x + ox, y + oy, sz, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-// プログレスバー更新
-function updateProgress() {
-    // 属性質問（36問目）の場合は進行バーを更新しない
-    if (questions[current].isDemographics) {
-        return;
-    }
-    
-    const progress = ((current + 1) / 35) * 100;
-    document.getElementById('progress-bar').style.width = progress + '%';
-    document.getElementById('progress-text').textContent = `${current + 1} / 35`;
-}
-
-// 中央に収束する水彩
-function paintConverging() {
-    const color = colors[current % colors.length];
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const maxDistance = 200;
-    
-    // 中央付近にランダムに配置
-    const angle = Math.random() * Math.PI * 2;
-    const distance = Math.random() * maxDistance;
-    const x = centerX + Math.cos(angle) * distance;
-    const y = centerY + Math.sin(angle) * distance;
-    const size = 80 + Math.random() * 120;
-    
-    ctx.globalAlpha = 0.3;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, size, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // 小さい飛沫も中央寄りに
-    for (let i = 0; i < 2; i++) {
-        const smallAngle = Math.random() * Math.PI * 2;
-        const smallDist = Math.random() * (maxDistance * 0.7);
-        const ox = centerX + Math.cos(smallAngle) * smallDist;
-        const oy = centerY + Math.sin(smallAngle) * smallDist;
-        const sz = 40 + Math.random() * 60;
-        
-        ctx.globalAlpha = 0.2;
-        ctx.beginPath();
-        ctx.arc(ox, oy, sz, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-// キャラクター出現演出
-// テスト用：強制的に結果を表示
-function testReveal() {
-    console.log('=== テスト：強制的に結果を表示 ===');
-    
-    // ダミーデータで結果を表示
-    document.getElementById('character-img').src = '1_sage.png';
-    document.getElementById('character-name').textContent = 'テスト結果';
-    
-    // 質問カードをフェードアウト
-    const card = document.getElementById('card');
-    card.style.opacity = '0';
-    
-    // キャラクター画面を表示
-    setTimeout(() => {
-        document.getElementById('character-reveal').classList.add('active');
-    }, 500);
-}
-
-function revealCharacter() {
-    console.log('=== キャラクター出現開始 ===');
-    console.log('現在の質問番号:', current);
-    console.log('全回答数:', Object.keys(answers).length);
-    console.log('全回答:', answers);
-    
-    // 診断結果を計算
-    try {
-        const resultData = calculateResult();
-        const result = resultData.result;
-        
-        console.log('診断結果:', resultData);
-        console.log('キャラクター情報:', result);
-        
-        // Google Sheetsに送信
-        sendToGoogleSheets(resultData);
-        
-        // キャラクター情報を設定
-        if (result) {
-            console.log('画像パス:', result.img);
-            console.log('キャラクター名:', result.name);
-            document.getElementById('character-img').src = result.img;
-            document.getElementById('character-name').textContent = result.name;
-        } else {
-            console.error('エラー: キャラクター情報が見つかりません');
-            // フォールバック
-            document.getElementById('character-img').src = '1.png';
-            document.getElementById('character-name').textContent = '診断結果（デバッグモード）';
-        }
-        
-        // 質問カードをフェードアウト
-        const card = document.getElementById('card');
-        card.style.opacity = '0';
-        
-        // キャラクター画面を表示
-        setTimeout(() => {
-            document.getElementById('character-reveal').classList.add('active');
-        }, 500);
-    } catch (error) {
-        console.error('診断結果計算エラー:', error);
-        alert('診断結果の計算中にエラーが発生しました。コンソールを確認してください。');
-    }
-}
-
-// Google Sheetsにデータ送信（仮実装）
-function sendToGoogleSheets(data) {
-    const payload = {
-        timestamp: new Date().toISOString(),
-        typeKey: data.typeKey,
-        characterName: data.result?.name || 'Unknown',
-        characterNameEn: data.result?.nameEn || 'Unknown',
-        typeName: data.typeName,
-        gender: data.gender,
-        ageGroup: data.ageGroup,
-        // capitalScoresを含める
-        capitalScores: data.capitalScores
-    };
-    
-    console.log('送信データ:', payload);
-    
-    // 実際の送信処理（Google Apps ScriptのWebアプリURLに送信）
-    // fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
-    //     method: 'POST',
-    //     mode: 'no-cors',
-    //     headers: {'Content-Type': 'application/json'},
-    //     body: JSON.stringify(payload)
-    // }).catch(err => console.error('送信エラー:', err));
-}
-
-// 結果ページへ遷移
-function goToResult() {
-    const resultData = calculateResult();
-    
-    console.log('=== 診断結果詳細 ===');
-    console.log('診断結果:', resultData);
-    console.log('キャラクター名:', resultData.typeName);
-    console.log('体験資本スコア:', resultData.capitalScores);
-    console.log('Q1-Q26の回答:', answers.slice(0, 26));
-    
-    // 各体験資本の内訳を表示
-    console.log('--- 体験資本の詳細 ---');
-    const axisMapping = [
-        'physical', 'physical',
-        'intellectual', 'intellectual',
-        'creative', 'creative',
-        'cultural', 'cultural',
-        'social', 'social', 'social',
-        'emotional', 'emotional', 'emotional',
-        'spiritual', 'spiritual',
-        'temporal', 'temporal',
-        'spatial', 'spatial',
-        'serendipity', 'serendipity',
-        'natural', 'natural',
-        'economic', 'economic'
-    ];
-    
-    for (let i = 0; i < 26; i++) {
-        const qNum = i + 1;
-        const axis = axisMapping[i];
-        const answer = answers[i];
-        const score = answer === 0 ? 2 : answer === 1 ? 1 : 0;
-        console.log(`Q${qNum} (${axis}): 回答=${answer}, スコア=${score}`);
-    }
-    
-    // キャラクター名から対応するファイル名へのマッピング
-    const characterFiles = {
-        '沈黙の賢者': 'result_sage.html',
-        '石の設計士': 'result_architect.html',
-        '盲目の英雄': 'result_hero.html',
-        '黄金の女王': 'result_queen.html',
-        '異端の錬金術師': 'result_alchemist.html',
-        '地図を持たない旅人': 'result_traveler.html',
-        '嵐の革命家': 'result_rebel.html',
-        '暴食の王': 'result_king.html',
-        '誓いの守護者': 'result_guardian.html',
-        '森の番人': 'result_keeper.html',
-        '鐘を鳴らす予言者': 'result_prophet.html',
-        '施しの商人': 'result_merchant.html',
-        '涙の吟遊詩人': 'result_bard.html',
-        '微笑みの酒場主': 'result_host.html',
-        '夢追いの船長': 'result_captain.html',
-        '仮面の道化師': 'result_jester.html'
-    };
-    
-    // キャラクター名から結果ページのファイル名を取得
-    const resultPage = characterFiles[resultData.typeName] || 'result_sage.html';
-    
-    // 体験資本スコアをURLパラメータに追加
-    const params = new URLSearchParams();
-    Object.keys(resultData.capitalScores).forEach(key => {
-        params.append(key, resultData.capitalScores[key]);
-    });
-    
-    const finalUrl = `${resultPage}?${params.toString()}`;
-    
-    console.log('遷移先:', finalUrl);
-    
-    // 結果ページに遷移
-    window.location.href = finalUrl;
-}
-
-function splash(x, y) {
-    const s = document.createElement('div');
-    s.className = 'splash';
-    s.style.left = (x - 40) + 'px';
-    s.style.top = (y - 40) + 'px';
-    s.style.background = `radial-gradient(circle, ${colors[current % colors.length]} 0%, transparent 70%)`;
-    document.body.appendChild(s);
-    
-    setTimeout(() => s.remove(), 800);
-}
-
-function paint() {
-    const color = colors[current % colors.length];
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height;
-    const size = 120 + Math.random() * 180;
-    
-    ctx.globalAlpha = 0.25;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, size, 0, Math.PI * 2);
-    ctx.fill();
-    
-    for (let i = 0; i < 2; i++) {
-        const ox = (Math.random() - 0.5) * 140;
-        const oy = (Math.random() - 0.5) * 140;
-        const sz = 40 + Math.random() * 70;
-        
-        ctx.globalAlpha = 0.18;
-        ctx.beginPath();
-        ctx.arc(x + ox, y + oy, sz, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-function redraw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < current; i++) {
-        paint();
-    }
-}
-
-function goBack() {
-    if (current > 0) {
-        current--;
-        show();
-    }
-}
+// 紹介文のチャンクも監視
+document.querySelectorAll('.intro-chunk').forEach(chunk => {
+    observer.observe(chunk);
+});
 </script>
 
 </body>
