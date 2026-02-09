@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盲目の英雄 - ExC CANVAS診断結果</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Shippori+Mincho:wght@400;700&display=swap');
+
+        :root {
+            --primary: #7d91a6;
+            --primary-dark: #5c6d7e;
+            --accent: #9fb0c2;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Shippori Mincho', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ebf0 100%);
+            color: #333;
+            line-height: 1.8;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ヘッダー - キャラクターカラー */
+        .header {
+            background: #7d91a6;
+            color: #fff;
+            padding: 120px 40px 100px;
+            text-align: center;
+            position: relative;
+            margin-bottom: 0;
+        }
+
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 0.4em;
+            margin-bottom: 60px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+        }
+
+        .character-icon {
+            display: none;
+        }
+
+        .character-name-hero {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4.5rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-bottom: 20px;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .character-name-en-hero {
+            font-size: 0.95rem;
+            opacity: 0.7;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* キャラクター画像セクション */
+        .character-visual {
+            padding: 110px 40px 80px;
+            text-align: center;
+            background: #ffffff;
+            position: relative;
+        }
+
+        .character-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, var(--accent) 0%, transparent 100%);
+            opacity: 0.1;
+        }
+
+        .character-img {
+            width: 600px;
+            height: 600px;
+            object-fit: contain;
+            margin: 0 auto 50px;
+            filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.15));
+            position: relative;
+            z-index: 1;
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            line-height: 2.2;
+            color: #555;
+            max-width: 700px;
+            margin: 0 auto;
+            font-weight: 300;
+            font-style: italic;
+        }
+
+        /* フルワイド画像セクション */
+        .fullwidth-image-section {
+            width: 100%;
+            height: 600px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            margin: 0;
+            padding: 0;
+        }
+
+        .fullwidth-image-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to bottom, #fff, transparent);
+            z-index: 1;
+        }
+
+        .fullwidth-image-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to top, #fff, transparent);
+            z-index: 1;
+        }
+
+        .fullwidth-image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 4軸表示 */
+        .axes-section {
+            padding: 60px 40px;
+            background: #fff;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+        }
+
+        .axes-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .axis-card {
+            background: var(--primary);
+            color: #fff;
+            padding: 18px 35px;
+            border-radius: 100px;
+            text-align: center;
+            flex: 0 0 auto;
+            box-shadow: 0 4px 15px rgba(62, 78, 97, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .axis-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(62, 78, 97, 0.3);
+        }
+
+        .axis-label {
+            display: none;
+        }
+
+        .axis-value {
+            font-size: 1.1rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+        }
+
+        /* レーダーチャート */
+        .chart-section {
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+        }
+
+        .chart-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .scores-table {
+            max-width: 800px;
+            margin: 40px auto 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .score-item {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            border: 1px solid #e8ebf0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .score-item:hover {
+            box-shadow: 0 4px 12px rgba(74, 93, 124, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .score-left {
+            flex: 1;
+        }
+
+        .score-label {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .score-description {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .score-bar-container {
+            width: 100%;
+            max-width: 400px;
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .score-bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.8s ease-out;
+        }
+
+        .score-right {
+            text-align: right;
+            min-width: 100px;
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .score-level {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .score-level-text {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        /* 詳細セクション */
+        .detail-section {
+            padding: 0;
+            background: #fff;
+        }
+
+        .detail-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .detail-item {
+            margin-bottom: 60px;
+            padding: 40px;
+            background: #fff;
+            border-radius: 2px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .detail-item:last-child {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-left: none;
+            padding: 60px 50px;
+            margin-top: 80px;
+            box-shadow: 0 30px 80px rgba(74, 93, 124, 0.3);
+            border-radius: 4px;
+        }
+
+        .detail-item:last-child h3 {
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+
+        .detail-item:last-child h3::before {
+            content: '💡 ';
+        }
+
+        .detail-item:last-child p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.1rem;
+            line-height: 2.2;
+        }
+
+        .detail-item h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .detail-item.is-visible h3 {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .detail-item p {
+            font-size: 1.15rem;
+            line-height: 2.2;
+            color: #555;
+            font-weight: 300;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.8s ease-out 0.2s;
+        }
+
+        .detail-item.is-visible p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* シェアボタン */
+        .share-section {
+            padding: 80px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+        }
+
+        .btn-share {
+            display: inline-block;
+            padding: 18px 50px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            font-size: 1.1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin: 10px;
+            letter-spacing: 0.1em;
+        }
+
+        .btn-share:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 93, 124, 0.3);
+        }
+
+        .btn-restart {
+            background: #fff;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-restart:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* フッター */
+        .footer {
+            padding: 40px;
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+            background: #fff;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* スクロールアニメーション */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="logo">ExC Canvas</div>
+        <h1 class="character-name-hero">盲目の英雄</h1>
+        <p class="character-name-en-hero">The Blind Hero</p>
+    </div>
+
+    <!-- キャラクター画像 -->
+    <div class="character-visual fade-in-section">
+        <img class="character-img" src="3.png" alt="盲目の英雄">
+        <p class="tagline">明確な「あるべき姿」を掲げ、他者をそこへ導くことに使命を感じる。<br>自分の正しさを疑わず、目的のためなら多少の犠牲は厭わない。</p>
+    </div>
+
+    <!-- 4軸表示 -->
+    <div class="axes-section fade-in-section">
+        <h2 class="section-title">あなたの4つの軸</h2>
+        <div class="axes-grid">
+            <div class="axis-card">
+                <div class="axis-value">外向</div>
+            </div>
+            <div class="axis-card">
+                <div class="axis-value">秩序</div>
+            </div>
+            <div class="axis-card">
+                <div class="axis-value">独立</div>
+            </div>
+            <div class="axis-card">
+                <div class="axis-value">精神</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 体験資本スコア -->
+    <div class="chart-section fade-in-section">
+        <h2 class="section-title">あなたの体験資本の構成</h2>
+        <p style="text-align: center; color: #999; font-size: 0.95rem; margin-bottom: 30px;">各項目が全体に占める割合</p>
+        <div class="scores-table" id="scores-table"></div>
+    </div>
+
+    <!-- 詳細情報 -->
+    <div class="detail-section">
+        <!-- フルワイド画像（100%幅の英雄の別表情・背景画像） -->
+        <div class="fullwidth-image-section fade-in-section">
+            <img src="hero_fullwidth.jpg" alt="盲目の英雄 - フルビジュアル">
+        </div>
+        
+        <div class="detail-content">
+            <div class="detail-item fade-in-section">
+                <h3>キャラクター特徴</h3>
+                <p>明確な「あるべき姿」を掲げ、他者をそこへ導くことに使命を感じる。自分の正しさを疑わず、目的のためなら多少の犠牲は厭わない。</p>
+            </div>
+            <div class="detail-item fade-in-section">
+                <h3>強み</h3>
+                <p>カリスマ性、ビジョンの提示力、人を動かす言葉、決断力、不屈の精神</p>
+            </div>
+            <div class="detail-item fade-in-section">
+                <h3>副作用</h3>
+                <p>独善的、異論の排除、細部への無関心、足元の小さな犠牲に対する鈍感さ</p>
+            </div>
+            <div class="detail-item fade-in-section">
+                <h3>体験から分かるあなたの性格</h3>
+                <p>あなたは常に「先頭」に立ち、誰も成し遂げられなかった場所へ旗を立てることに人生を捧げてきました。自ら理想を掲げ、その方向性を明確に示すことで、多くの人があなたの背中を追いかけ、熱狂的な賞賛と期待を向けてきたはずです。その高揚感と使命感は、あなたを前へ前へと突き動かしてきました。しかし、遠くにある輝かしい理想ばかりを見つめ続けるあまり、歩みの足元で踏みつけてしまった小さな花や、途中で立ち止まり、ついて来れなくなった人々の不安や涙に、気づく余裕を失っているのかもしれません。</p>
+            </div>
+            <div class="detail-item fade-in-section">
+                <h3>体験の傾向</h3>
+                <p>使命感（正しい方向へ導こうとする）／主導性（自分が決めて動かす）／目的優先（過程の摩擦を軽視しがち）／対立耐性（反発されても進む）</p>
+            </div>
+            <div class="detail-item fade-in-section">
+                <h3>人生に影響を与えた体験</h3>
+                <p>自ら掲げた壮大なビジョンによって、多くの人の心が一つになり、不可能と思われた目標を達成したときの高揚感はありませんか。言葉一つで空気が変わり、人々の目に火が灯るあの瞬間。ある出来事をきっかけに、強烈な社会的使命感に目覚め、「自分はこの役割のために選ばれたのだ」と、運命のような確信を抱いた経験があるかもしれません。その確信が、あなたを「止まることを許されない役割」へと静かに押し出しているのかもしれません。</p>
+            </div>
+            <div class="detail-item fade-in-section">
+                <h3>不足している体験/避けてきた体験</h3>
+                <p>「敗北の受容と、持たざる者への共感」 自分の掲げた正義が間違っていたと認めるような挫折、あるいはリーダーという立場を降り、ただの一人の人間として弱音を吐くこと。 誰かに助けを求め、無力な自分を丸ごと受け入れてもらう経験を、あなたは「弱さ」として遠ざけてきたのではないでしょうか。しかし、敗北を知らない強さは、ときに残酷な武器へと変わります。</p>
+            </div>
+            <div class="detail-item fade-in-section">
+                <h3>あなたの体験から見える人生課題</h3>
+                <p>絶対的な正解を提示し続ける立場から一度降り、異なる価値観を持つ他者と対等な地平で向き合うことが、今のあなたには求められています。あなたの光に照らされなかった場所にも、別の正義や切実な事情が存在していることを認めること。カリスマという重い鎧を脱ぎ捨て、完璧な導き手ではなく、迷い、傷つきやすい一人の人間として手を差し出すこと。そこから始まる関係性こそが、あなたの本当の旅の入口になります。</p>
+            </div>
+            <div class="detail-item fade-in-section">
+                <h3>アドバイス</h3>
+                <p>あえて自分が主役ではない場所へ行き、最も立場の弱い人の雑用を手伝ったり、誰かの聞き役に徹したりしてみてください。 自分の意見や正論を一度封印し、最も声の小さい人の囁きに、全身で耳を傾けるのです。まばゆい光の中に答えはありません。あなたがこれまで見落としてきた「影」の中にこそ、今のあなたが必要としている真実が眠っています。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- シェアボタン -->
+    <div class="share-section fade-in-section">
+        <button class="btn-share" onclick="shareResult()">結果をシェアする</button>
+        <a href="./exc_canvas_v4.html" class="btn-share btn-restart">もう一度診断する</a>
+    </div>
+
+    <!-- フッター -->
+    <div class="footer">
+        © 2026 ExC CANVAS - Experience Capital Assessment
+    </div>
+</div>
+
+<script>
+// URLパラメータから体験資本スコアを取得
+const params = new URLSearchParams(window.location.search);
+
+console.log('=== デバッグ: URLパラメータ確認 ===');
+console.log('Full URL:', window.location.href);
+console.log('URLパラメータ一覧:');
+for (let [key, value] of params.entries()) {
+    console.log(`  ${key}: ${value}`);
+}
+
+// URLパラメータがない場合はダミーデータを使用（テスト用）
+const hasParams = params.has('physical') || params.has('intellectual');
+const capitalScores = hasParams ? {
+    physical: parseInt(params.get('physical')) || 0,
+    intellectual: parseInt(params.get('intellectual')) || 0,
+    creative: parseInt(params.get('creative')) || 0,
+    cultural: parseInt(params.get('cultural')) || 0,
+    social: parseInt(params.get('social')) || 0,
+    emotional: parseInt(params.get('emotional')) || 0,
+    spiritual: parseInt(params.get('spiritual')) || 0,
+    temporal: parseInt(params.get('temporal')) || 0,
+    spatial: parseInt(params.get('spatial')) || 0,
+    serendipity: parseInt(params.get('serendipity')) || 0,
+    natural: parseInt(params.get('natural')) || 0,
+    economic: parseInt(params.get('economic')) || 0
+} : {
+    // テスト用ダミーデータ（沈黙の賢者らしいスコア）
+    physical: 1,
+    intellectual: 6,
+    creative: 4,
+    cultural: 3,
+    social: 1,
+    emotional: 3,
+    spiritual: 6,
+    temporal: 4,
+    spatial: 2,
+    serendipity: 2,
+    natural: 3,
+    economic: 2
+};
+
+console.log('体験資本スコア:', capitalScores);
+console.log('合計:', Object.values(capitalScores).reduce((a,b) => a+b, 0));
+if (!hasParams) {
+    console.log('⚠️ URLパラメータがないため、ダミーデータを使用しています');
+}
+
+// スコア表を生成
+const scoresTableEl = document.getElementById('scores-table');
+const capitalLabels = {
+    physical: '身体的体験',
+    intellectual: '知的体験',
+    creative: '創造的体験',
+    cultural: '文化的体験',
+    social: '社会的体験',
+    emotional: '感情的体験',
+    spiritual: '精神的体験',
+    temporal: '時間的体験',
+    spatial: '空間的体験',
+    serendipity: '偶然的体験',
+    natural: '自然的体験',
+    economic: '経済的体験'
+};
+
+// スコアレベルの判定
+function getScoreLevel(score) {
+    if (score >= 5) return { text: '非常に豊富', color: '#4A5D7C' };
+    if (score >= 4) return { text: '豊富', color: '#5A7099' };
+    if (score >= 3) return { text: '平均的', color: '#8B9DC3' };
+    if (score >= 2) return { text: 'やや少ない', color: '#B0B8C8' };
+    if (score >= 1) return { text: '少ない', color: '#C8CDD6' };
+    return { text: 'ほぼなし', color: '#E0E3E8' };
+}
+
+// 各項目の説明
+const capitalDescriptions = {
+    physical: '身体を動かし、スポーツや運動を通じて得た体験',
+    intellectual: '学び、読書、思考を深めることで得た知的体験',
+    creative: '創作活動や表現を通じて得た創造的体験',
+    cultural: '芸術、音楽、文化に触れることで得た体験',
+    social: '人との交流やコミュニティ活動を通じた社会的体験',
+    emotional: '深い感情や心の動きを伴う情緒的体験',
+    spiritual: '信念、哲学、精神性を追求することで得た体験',
+    temporal: '時間の使い方や計画性に関わる時間的体験',
+    spatial: '場所や空間の移動、旅行などを通じた空間的体験',
+    serendipity: '予期せぬ出会いや偶然がもたらした体験',
+    natural: '自然との触れ合いや環境との関わりで得た体験',
+    economic: '経済活動や価値交換を通じて得た体験'
+};
+
+// 合計スコアを計算
+const totalScore = Object.values(capitalScores).reduce((a, b) => a + b, 0);
+
+// パーセンテージを計算（合計が100%になるように調整）
+const percentages = {};
+let sum = 0;
+const keys = Object.keys(capitalScores);
+
+keys.forEach((key, index) => {
+    const score = capitalScores[key];
+    if (index === keys.length - 1) {
+        // 最後の項目で調整して必ず100%にする
+        percentages[key] = 100 - sum;
+    } else {
+        const percentage = totalScore > 0 ? Math.round((score / totalScore) * 100) : 0;
+        percentages[key] = percentage;
+        sum += percentage;
+    }
+});
+
+Object.keys(capitalScores).forEach(key => {
+    const score = capitalScores[key];
+    const percentage = percentages[key];
+    const level = getScoreLevel(score);
+    
+    const item = document.createElement('div');
+    item.className = 'score-item';
+    item.innerHTML = `
+        <div class="score-left">
+            <div class="score-label">${capitalLabels[key]}</div>
+            <div class="score-description">${capitalDescriptions[key]}</div>
+            <div class="score-bar-container">
+                <div class="score-bar" style="width: ${percentage}%; background: ${level.color}"></div>
+            </div>
+        </div>
+        <div class="score-right">
+            <div class="score-value">${percentage}<span class="score-level">%</span></div>
+            <div class="score-level-text" style="color: ${level.color}">${level.text}</div>
+        </div>
+    `;
+    scoresTableEl.appendChild(item);
+});
+
+// スクロールアニメーション
+const fadeInSections = document.querySelectorAll('.fade-in-section');
+const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
+
+fadeInSections.forEach(section => {
+    observer.observe(section);
+});
+
+// detail-itemもアニメーション対象に
+document.querySelectorAll('.detail-item').forEach(item => {
+    observer.observe(item);
+});
+
+// シェア機能
+function shareResult() {
+    const characterName = '盲目の英雄';
+    const characterNameEn = 'The Blind Hero';
+    const shareText = `ExC CANVAS診断結果: ${characterName} (${characterNameEn})`;
+    const shareUrl = window.location.href;
+    
+    // X（Twitter）でシェア
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+    window.open(twitterUrl, '_blank', 'width=550,height=420');
+}
+
+window.addEventListener('load', () => {
+    const firstSection = document.querySelector('.character-visual');
+    if (firstSection) {
+        setTimeout(() => {
+            firstSection.classList.add('is-visible');
+        }, 300);
+    }
+});
+</script>
+
+</body>
+</html>

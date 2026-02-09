@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExC CANVAS - あなたの診断結果</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Noto+Serif+JP:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #C85A7C;
+            --primary-dark: #A04661;
+            --text-dark: #1a1a1a;
+            --text-gray: #666;
+            --bg-white: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        #paintCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        body {
+            font-family: 'Noto Serif JP', serif;
+            background: #ffffff;
+            color: var(--text-dark);
+            line-height: 1.9;
+            position: relative;
+            transition: background 0.8s ease;
+        }
+
+        /* キャラクター別パステルカラー背景は削除（Canvas水彩を使用） */
+
+        /* キャンバス背景 */
+        .canvas-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        .paint-layer {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 100px 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* キャラクター画像 */
+        .character-image {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .character-image img {
+            width: 480px;
+            height: 480px;
+            object-fit: contain;
+        }
+
+        /* キャラクター名 */
+        .character-name {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .character-name-jp {
+            font-size: 3rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0.08em;
+        }
+
+        .character-name-en {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            color: var(--text-gray);
+            font-weight: 300;
+            font-style: italic;
+            letter-spacing: 0.15em;
+        }
+
+        /* 体験の重心 */
+        .experience-weights {
+            margin-bottom: 100px;
+            text-align: center;
+        }
+
+        .weights-title {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text-gray);
+            margin-bottom: 25px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        .weights-grid {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .weight-item {
+            padding: 10px 24px;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .weight-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .weight-spiritual { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .weight-material { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .weight-independent { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .weight-relational { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+
+        /* コンテンツセクション */
+        .content-section {
+            margin-bottom: 70px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            letter-spacing: 0.05em;
+            padding-left: 18px;
+            border-left: 3px solid var(--primary);
+            position: relative;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: -3px;
+            top: -5px;
+            width: 3px;
+            height: calc(100% + 10px);
+            background: linear-gradient(180deg, var(--primary) 0%, rgba(200, 90, 124, 0.3) 100%);
+        }
+
+        .section-content {
+            font-size: 1rem;
+            line-height: 2;
+            color: var(--text-dark);
+            white-space: pre-line;
+        }
+
+        /* 強みと副作用の横並び */
+        .strength-weakness-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 70px;
+        }
+
+        .strength-weakness-container .content-section {
+            margin-bottom: 0;
+            padding: 30px;
+            background: #fafafa;
+            border-radius: 8px;
+            border-top: 2px solid var(--primary);
+        }
+
+        .strength-weakness-container .content-section:hover {
+            background: #f5f5f5;
+            transition: background 0.3s ease;
+        }
+
+        /* アドバイスセクション */
+        .advice-section {
+            background: linear-gradient(135deg, #fff5f8 0%, #fef8fa 100%);
+            padding: 45px 40px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 100px;
+            box-shadow: 0 4px 20px rgba(200, 90, 124, 0.08);
+            position: relative;
+        }
+
+        .advice-section::before {
+            content: '💡';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+
+        .advice-section .section-title {
+            color: var(--primary);
+            border-left: none;
+            padding-left: 0;
+        }
+
+        .advice-section .section-title::before {
+            display: none;
+        }
+
+        .advice-section .section-content {
+            font-weight: 500;
+            font-size: 1.05rem;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .container { padding: 60px 20px; }
+            .character-image img { width: 320px; height: 320px; }
+            .character-name-jp { font-size: 2.2rem; }
+            .character-name-en { font-size: 1.3rem; }
+            .strength-weakness-container {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+            .section-title { font-size: 1.15rem; }
+            .section-content { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="paintCanvas"></canvas>
+
+<div class="container">
+    <!-- キャラクター画像 -->
+    <div class="character-image">
+        <img id="char-img" src="1_sage.png" alt="キャラクター">
+    </div>
+
+    <!-- キャラクター名 -->
+    <div class="character-name">
+        <div class="character-name-jp" id="char-name-jp">沈黙の賢者</div>
+        <div class="character-name-en" id="char-name-en">The Silent Sage</div>
+    </div>
+
+    <!-- 体験の重心 -->
+    <div class="experience-weights">
+        <div class="weights-title">Experience Focus</div>
+        <div class="weights-grid" id="weights-grid"></div>
+    </div>
+
+    <!-- 性格 -->
+    <div class="content-section">
+        <div class="section-title">体験から分かるあなたの性格</div>
+        <div class="section-content" id="personality"></div>
+    </div>
+
+    <!-- 強みと副作用（横並び） -->
+    <div class="strength-weakness-container">
+        <div class="content-section">
+            <div class="section-title">体験によって培われた能力</div>
+            <div class="section-content" id="strength"></div>
+        </div>
+        <div class="content-section">
+            <div class="section-title">副作用</div>
+            <div class="section-content" id="weakness"></div>
+        </div>
+    </div>
+
+    <!-- 体験の傾向 -->
+    <div class="content-section">
+        <div class="section-title">体験の傾向</div>
+        <div class="section-content" id="tendency"></div>
+    </div>
+
+    <!-- 人生に影響を与えた体験 -->
+    <div class="content-section">
+        <div class="section-title">人生に影響を与えた体験</div>
+        <div class="section-content" id="impactful-exp"></div>
+    </div>
+
+    <!-- 不足している体験 -->
+    <div class="content-section">
+        <div class="section-title">不足している体験 / 避けてきた体験</div>
+        <div class="section-content" id="lacking-exp"></div>
+    </div>
+
+    <!-- 人生課題 -->
+    <div class="content-section">
+        <div class="section-title">あなたの体験から見える人生課題</div>
+        <div class="section-content" id="life-challenge"></div>
+    </div>
+
+    <!-- アドバイス -->
+    <div class="content-section advice-section">
+        <div class="section-title">アドバイス</div>
+        <div class="section-content" id="advice"></div>
+    </div>
+</div>
+
+<script>
+const characterData = {
+    "内向|秩序|個人|精神": {
+        "name": "沈黙の賢者",
+        "nameEn": "The Silent Sage",
+        "img": "1_sage.png",
+        "weights": ["精神", "独立"],
+        "strength": "深い思考、自分軸、論理的、孤独に強い",
+        "weakness": "現実社会への適応不全、他者への無関心、実行力の欠如、感情的な交流の拒絶",
+        "personality": "あなたは人生の多くの時間とエネルギーを、社会的な成功や物質的な豊かさの獲得ではなく、「内面世界の構築」に注いできました。\n現実世界の喧騒や表面的な流行をノイズとして切り離し、知識や思想を一つずつ積み重ね、誰にも侵されない精神の城を築いてきた人です。\nあなたの関心は常に「起きていること」そのものよりも、その背後にある「構造」や「意味」に向いています。一見無関係に見える出来事の中から共通の法則を見出す洞察力を持っています。\n一方で、その思考の深さゆえに、目的のない会話や軽い雑談を、どこか消耗するものとして感じてしまうこともあるでしょう。",
+        "tendency": "内省（1人で考え込む時間が長い）／実存的な問い（人生の意味を掘る）／論理の構築（ノートや文章で整理）／孤独耐性（単独行動が平気）",
+        "impactfulExp": "生の意味に強い疑問を抱き、「なぜ生きるのか」「何を信じて進めばいいのか」という問いに、何度も立ち止まってきた感覚はありませんか。\n答えの出ない問いを抱えたまま、哲学書や思想、宗教や言葉との出会いに、一時的に救われたり、呼吸ができるようになった経験があるかもしれません。また、周囲に理解されない孤独や、努力が報われなかった挫折の中で、誰にも頼れず、自分自身と向き合い続けてきた時間もあったでしょう。その過程で、他人から与えられた価値観ではなく、痛みや思索を通して練り上げた、あなただけの信念や世界観が、いつの間にか静かに形を成しているかもしれません。",
+        "lackingExp": "「理屈では説明できない、生の熱気やノイズ」\n意味もなく友人と大笑いする時間、感情をむき出しにしてぶつかり合う関係、汗をかいて息を切らし、空腹で食事を貪るような身体感覚。\nあなたは思考の世界に深く住むあまり、泥臭い現実の中で手足を動かし、頭ではなく「肌」で世界を感じる体験を、無意識のうちに避けてきたのかもしれません。",
+        "lifeChallenge": "あなたの頭の中にある美しい理論や真理は、そのままでは難解すぎて、ほとんど誰にも伝わりません。「分かってくれる人だけ分かればいい」という孤高の場所から一段降りて、論理よりも感情で動く人々に向けて、彼らの生活に役立つ形に知恵を噛み砕いて手渡すこと。\nあなたの知識が自己満足で終わるのか、それとも世界を照らす光になるのかは、他者との深い交わりができるかどうかにかかっています。",
+        "advice": "今すぐ赤提灯の居酒屋の喧騒や、爆音のライブハウスの最前列へ行ってください。\nたぶん、あなたは少し居心地が悪くなるはずです。\nそれでも、隣にいる見知らぬ誰かと肩を組み、意味もなく笑い合ってください。「なぜ？」と問うのは禁止です。頭ではなく、汗と体温と振動で世界を感じること。その圧倒的な「生のノイズ」だけが、あなたの叡智に血を通わせ、生きた力に変えることができるのです。"
+    }
+};
+
+const urlParams = new URLSearchParams(window.location.search);
+const typeKey = urlParams.get('type') || '内向|秩序|個人|精神';
+const data = characterData[typeKey];
+
+// キャラクター番号を取得してbodyにクラスを追加
+const charNumber = data ? data.img.match(/\d+/)[0] : '1';
+document.body.className = `char-${charNumber}`;
+
+// 水彩ペイント背景
+const canvas = document.getElementById('paintCanvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// キャラクター別カラーパレット（軸の組み合わせで統一）
+const axisCombinations = {
+    '内向|秩序|個人|精神': ['#9b7dd4', '#b8a0e0', '#d4c2ed'],  // 精神・独立 - 紫系
+    '内向|秩序|個人|物質': ['#d4a87d', '#e0c2a0', '#edddc2'],  // 物質・独立 - オレンジ系
+    '外向|秩序|個人|精神': ['#9b7dd4', '#b8a0e0', '#d4c2ed'],  // 精神・独立 - 紫系
+    '外向|秩序|個人|物質': ['#d4a87d', '#e0c2a0', '#edddc2'],  // 物質・独立 - オレンジ系
+    '内向|自由|個人|精神': ['#9b7dd4', '#b8a0e0', '#d4c2ed'],  // 精神・独立 - 紫系
+    '内向|自由|個人|物質': ['#d4a87d', '#e0c2a0', '#edddc2'],  // 物質・独立 - オレンジ系
+    '外向|自由|個人|精神': ['#9b7dd4', '#b8a0e0', '#d4c2ed'],  // 精神・独立 - 紫系
+    '外向|自由|個人|物質': ['#d4a87d', '#e0c2a0', '#edddc2'],  // 物質・独立 - オレンジ系
+    '内向|秩序|共鳴|精神': ['#7daad4', '#a0c5e0', '#c2dded'],  // 精神・関係 - 青系
+    '内向|秩序|共鳴|物質': ['#7dd4a8', '#a0e0c2', '#c2eddd'],  // 物質・関係 - 緑系
+    '外向|秩序|共鳴|精神': ['#7daad4', '#a0c5e0', '#c2dded'],  // 精神・関係 - 青系
+    '外向|秩序|共鳴|物質': ['#7dd4a8', '#a0e0c2', '#c2eddd'],  // 物質・関係 - 緑系
+    '内向|自由|共鳴|精神': ['#7daad4', '#a0c5e0', '#c2dded'],  // 精神・関係 - 青系
+    '内向|自由|共鳴|物質': ['#7dd4a8', '#a0e0c2', '#c2eddd'],  // 物質・関係 - 緑系
+    '外向|自由|共鳴|精神': ['#7daad4', '#a0c5e0', '#c2dded'],  // 精神・関係 - 青系
+    '外向|自由|共鳴|物質': ['#7dd4a8', '#a0e0c2', '#c2eddd']   // 物質・関係 - 緑系
+};
+
+const colors = axisCombinations[typeKey] || ['#9b7dd4', '#b8a0e0', '#d4c2ed'];
+
+// ランダムに水彩を配置
+function paint() {
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height;
+    const size = 150 + Math.random() * 250;
+    
+    ctx.globalAlpha = 0.15 + Math.random() * 0.15;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 小さい飛沫
+    for (let i = 0; i < 3; i++) {
+        const ox = (Math.random() - 0.5) * 180;
+        const oy = (Math.random() - 0.5) * 180;
+        const sz = 50 + Math.random() * 100;
+        
+        ctx.globalAlpha = 0.1 + Math.random() * 0.1;
+        ctx.beginPath();
+        ctx.arc(x + ox, y + oy, sz, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+// 初期ペイント（15個）
+for (let i = 0; i < 15; i++) {
+    paint();
+}
+
+// ウィンドウリサイズ対応
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < 15; i++) {
+        paint();
+    }
+});
+
+if (data) {
+    document.getElementById('char-img').src = data.img;
+    document.getElementById('char-name-jp').textContent = data.name;
+    document.getElementById('char-name-en').textContent = data.nameEn;
+    
+    const weightsGrid = document.getElementById('weights-grid');
+    const weightClasses = {
+        '精神': 'weight-spiritual',
+        '物質': 'weight-material',
+        '独立': 'weight-independent',
+        '共鳴': 'weight-relational',
+        '関係': 'weight-relational'
+    };
+    
+    data.weights.forEach(weight => {
+        const div = document.createElement('div');
+        div.className = `weight-item ${weightClasses[weight] || 'weight-spiritual'}`;
+        div.textContent = weight;
+        weightsGrid.appendChild(div);
+    });
+    
+    document.getElementById('personality').textContent = data.personality || '';
+    document.getElementById('strength').textContent = data.strength || '';
+    document.getElementById('weakness').textContent = data.weakness || '';
+    document.getElementById('tendency').textContent = data.tendency || '';
+    document.getElementById('impactful-exp').textContent = data.impactfulExp || '';
+    document.getElementById('lacking-exp').textContent = data.lackingExp || '';
+    document.getElementById('life-challenge').textContent = data.lifeChallenge || '';
+    document.getElementById('advice').textContent = data.advice || '';
+}
+</script>
+
+</body>
+</html>
