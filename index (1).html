@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ExC CANVAS</title>
+    <style>
+        /* =========================================
+           1. 共通設定 & ベーススタイル
+           ========================================= */
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Josefin+Sans:wght@300;400;700&family=Abril+Fatface&family=Playfair+Display:wght@400;700;900&family=Cinzel:wght@400;700&family=Shippori+Mincho:wght@400;700&display=swap');
+
+        :root {
+            --bg-canvas: #ffffff; 
+            --gold: #C85A7C; 
+            --gold-dark: #A04661; 
+            --gold-border: #7D344A; 
+            --text-main: #333333; 
+            --text-desc: #555555;
+            --btn-shadow: rgba(200, 90, 124, 0.4);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-canvas);
+            font-family: 'Shippori Mincho', serif; margin: 0; color: var(--text-main);
+            overflow-x: hidden; overflow-y: auto; position: relative; min-height: 100vh;
+        }
+
+        /* 水彩ペイント背景キャンバス */
+        #paintCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.55); pointer-events: none; z-index: -1;
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* ヘッダー */
+        header { position: absolute; top: 0; width: 100%; padding: 30px 20px 40px; text-align: center; z-index: 100; }
+        .logo-main { 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 4.5rem; 
+            color: var(--gold); 
+            letter-spacing: 0.15em; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-bottom: 2px;
+        }
+        .logo-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
+            font-weight: 400;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .logo-subtitle .highlight {
+            color: var(--gold);
+            font-weight: 700;
+        }
+        .logo-subtitle .normal {
+            color: #333333;
+        }
+
+        /* 背景演出：ペイントダブ */
+        .paint-dabs-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .paint-dab {
+            position: absolute; border-radius: 50%; background: radial-gradient(circle, currentColor 0%, transparent 80%);
+            opacity: 0; transform: scale(0); filter: blur(5px); animation: bubbleFloat 10s infinite ease-in-out;
+        }
+        @keyframes bubbleFloat {
+            0% { opacity: 0; transform: scale(0.5); } 
+            15% { opacity: 0.7; transform: scale(1); }
+            35% { opacity: 0.5; transform: scale(1.1); } 
+            50% { opacity: 0; transform: scale(1.15); }
+            65% { opacity: 0.6; transform: scale(1.1); }
+            85% { opacity: 0.4; transform: scale(1.05); } 
+            100% { opacity: 0; transform: scale(1); }
+        }
+        .dab1 { top: 10%; left: 5%; width: 180px; height: 180px; color: #FFD1DC; animation-duration: 14s; }
+        .dab2 { top: 60%; right: 10%; width: 200px; height: 200px; color: #FFDAB9; animation-delay: 5s; animation-duration: 16s; }
+        .dab3 { bottom: 5%; left: 20%; width: 120px; height: 120px; color: #B0E0E6; animation-delay: 2s; animation-duration: 12s; }
+        .dab4 { top: 25%; right: 20%; width: 100px; height: 100px; color: #DDA0DD; animation-delay: 7s; animation-duration: 13s; }
+        .dab5 { top: 75%; left: 50%; width: 150px; height: 150px; color: #FFE4B5; animation-delay: 3s; animation-duration: 15s; }
+        .dab6 { bottom: 20%; right: 30%; width: 90px; height: 90px; color: #E0BBE4; animation-delay: 9s; animation-duration: 14s; }
+        .dab7 { top: 50%; right: 5%; width: 130px; height: 130px; color: #C7CEEA; animation-delay: 1s; animation-duration: 15s; filter: blur(3px); }
+        .dab8 { top: 35%; left: 15%; width: 110px; height: 110px; color: #FADADD; animation-delay: 6s; animation-duration: 17s; }
+
+        /* ヒーローセクション */
+        .hero-section {
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding-top: 160px; padding-bottom: 60px; z-index: 5; position: relative;
+        }
+        
+        /* カルーセル */
+        .scene {
+            position: relative; width: 160px; height: 240px; perspective: 1200px; transform-style: preserve-3d;
+            margin-bottom: 120px; margin-top: 40px; cursor: pointer; opacity: 0; animation: fadeIn 1.2s ease-out 0.3s forwards;
+        }
+        .carousel { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .carousel-item {
+            position: absolute; width: 140px; height: 210px; left: 10px; top: 15px; background: transparent;
+            display: flex; align-items: center; justify-content: center; backface-visibility: hidden; overflow: hidden;
+        }
+        .carousel-item img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3)); }
+
+        /* キャッチコピー */
+        .main-catch-wrapper { margin-bottom: 40px; text-align: center; position: relative; }
+        .paint-stroke {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 320px;
+            background: radial-gradient(circle, rgba(220, 20, 60, 0.15) 0%, transparent 70%); border-radius: 50%;
+            z-index: -1; filter: blur(20px); opacity: 0; animation: fadeIn 1.5s ease-out 0.5s forwards;
+        }
+        .main-catch {
+            font-size: 2.8rem; color: var(--gold); font-weight: 700; letter-spacing: 0.08em; line-height: 2.0;
+            text-shadow: 0 2px 2px rgba(255,255,255,1); margin: 0; opacity: 0; animation: fadeIn 1.0s ease-out 0.6s forwards;
+        }
+
+        /* ボタン */
+        .controls { position: relative; text-align: center; z-index: 20; margin-bottom: 80px; opacity: 0; animation: fadeIn 1.0s ease-out 0.9s forwards; }
+        .btn-start {
+            background: linear-gradient(135deg, #E86B8F 0%, #D05A7C 100%);
+            border: none;
+            color: #ffffff;
+            padding: 28px 80px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            letter-spacing: 0.15em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 12px 30px rgba(232, 107, 143, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 auto;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-start::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-start:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-start span {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.1rem;
+            margin-top: 8px;
+            color: rgba(255, 255, 255, 0.95);
+            letter-spacing: 0.05em;
+            font-weight: normal;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-start:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 18px 45px var(--btn-shadow);
+        }
+        
+        .btn-start:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+        /* 紹介文 */
+        .intro-box {
+            text-align: left; max-width: 680px; padding: 0 24px; z-index: 5; margin: 0 auto;
+            border-top: 1px solid rgba(220, 20, 60, 0.4); padding-top: 60px; margin-bottom: 60px;
+            opacity: 0; animation: fadeIn 1.0s ease-out 1.2s forwards;
+        }
+        .intro-title { text-align: center; font-size: 2.2rem; color: var(--gold); font-weight: 700; margin-bottom: 30px; letter-spacing: 0.1em; }
+        .intro-desc { font-size: 1.3rem; color: var(--text-desc); line-height: 2.0; text-align: justify; font-feature-settings: "palt"; }
+        
+        .intro-chunk {
+            opacity: 0;
+            transform: translateY(20px);
+            margin-bottom: 2em;
+        }
+        
+        .intro-chunk.visible {
+            animation: fadeInChunk 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeInChunk {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ステップ紹介 */
+        .mechanism-section { width: 100%; background: rgba(220, 20, 60, 0.05); padding: 80px 20px 120px; display: flex; flex-direction: column; align-items: center; }
+        .section-title-ja { font-family: 'Shippori Mincho', serif; color: var(--text-main); font-size: 1.4rem; font-weight: 700; margin-bottom: 60px; position: relative; letter-spacing: 0.1em; }
+        .section-title-ja::after { content: ""; display: block; width: 60px; height: 2px; background: var(--gold); margin: 20px auto 0; border-radius: 2px; }
+        .steps-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 80px; 
+            max-width: 900px; 
+            width: 100%;
+            position: relative;
+            padding: 60px 0;
+        }
+        
+        /* ジャーニーの道 */
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 100px;
+            bottom: 100px;
+            width: 3px;
+            background: linear-gradient(to bottom, 
+                transparent 0%,
+                var(--gold) 10%, 
+                var(--gold) 90%,
+                transparent 100%);
+            transform: translateX(-1.5px);
+            opacity: 0.3;
+        }
+        
+        .step-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 245, 248, 0.95) 100%);
+            width: 100%; 
+            max-width: 650px; 
+            padding: 45px 50px;
+            border-radius: 20px; 
+            box-shadow: 0 10px 40px rgba(200, 90, 124, 0.15); 
+            text-align: left;
+            border: 2px solid rgba(200, 90, 124, 0.2);
+            position: relative; 
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        /* 旅路のマーカー */
+        .step-card::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: -40px;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            transform: translateX(-10px);
+            box-shadow: 0 0 0 5px rgba(200, 90, 124, 0.2);
+        }
+        
+        .step-card.visible {
+            animation: slideInUp 0.8s ease-out forwards;
+        }
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .step-card:hover { 
+            transform: translateY(-8px) scale(1.02); 
+            box-shadow: 0 15px 50px rgba(200, 90, 124, 0.25);
+            border-color: rgba(200, 90, 124, 0.4);
+        }
+        .step-num { 
+            font-family: 'Cinzel', serif; 
+            color: var(--gold); 
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            position: absolute; 
+            top: -15px; 
+            left: 30px; 
+            line-height: 1;
+            opacity: 0.9;
+            background: white;
+            padding: 0 10px;
+        }
+        .step-title { font-size: 1.8rem; font-weight: 700; color: var(--gold); margin: 10px 0 20px; letter-spacing: 0.05em; position: relative; z-index: 1; }
+        .step-desc { font-size: 1.3rem; color: var(--text-desc); line-height: 2.0; text-align: left; position: relative; z-index: 1; }
+
+        @media (max-width: 600px) {
+            .hero-section { padding-top: 100px; }
+            .scene { transform: scale(0.9); margin-bottom: 50px; }
+            .intro-desc { font-size: 0.85rem; line-height: 2.0; text-align: left; }
+            .main-catch { font-size: 1.3rem; }
+            .step-card { min-width: 100%; margin-bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 水彩ペイント背景 -->
+<canvas id="paintCanvas"></canvas>
+
+<div class="paint-dabs-container">
+    <div class="paint-dab dab1"></div><div class="paint-dab dab2"></div>
+    <div class="paint-dab dab3"></div><div class="paint-dab dab4"></div>
+    <div class="paint-dab dab5"></div><div class="paint-dab dab6"></div>
+    <div class="paint-dab dab7"></div><div class="paint-dab dab8"></div>
+</div>
+
+<header>
+    <div class="logo-main" onclick="location.reload()">ExC CANVAS</div>
+    <div class="logo-subtitle" onclick="location.reload()">
+        <span class="highlight">Ex</span><span class="normal">perience </span><span class="highlight">C</span><span class="normal">apital</span>
+    </div>
+</header>
+
+<div id="screen-top">
+    <section class="hero-section">
+        <div class="scene" id="carousel-scene">
+            <div class="carousel" id="carousel"></div>
+        </div>
+        
+        <div class="main-catch-wrapper">
+            <div class="paint-stroke"></div>
+            <h1 class="main-catch">あなたの「体験」を<br>「資本」として可視化します</h1>
+        </div>
+
+        <div class="controls">
+            <button class="btn-start" onclick="event.stopPropagation(); window.location.href='diagnosis.html'">
+                DRAW YOUR STORY <span>体験資本の可視化をはじめる</span>
+            </button>
+        </div>
+
+        <div class="intro-box">
+            <div class="intro-title">体験資本の可視化とは</div>
+            <div class="intro-desc">
+                <p class="intro-chunk">私たちは誰もが、人生を通じて無数の「体験」を積み重ねています。しかし、その価値は目に見えず、名前もなく、ただ記憶の中に埋もれていくだけでした。</p>
+                
+                <p class="intro-chunk">ExC CANVASは、世界で初めて、あなたの体験を「資本」として可視化するツールです。</p>
+                
+                <p class="intro-chunk">体験は、お金や学歴のように数値化できるものではありません。しかし、あなたの思考の癖、行動の傾向、価値観の源泉――それらすべては、過去の体験という「見えない資本」が形作っています。</p>
+                
+                <p class="intro-chunk">あなたの体験を12の軸で読み解き、一人の「キャラクター」として映し出します。まるで鏡の中の自分に名前がつくように、形のなかった過去が、物語を持つ存在になる。それは初めて、客観的に「自分」を見つめ直せる瞬間です。</p>
+                
+                <p class="intro-chunk">可視化された自分と向き合うことで見えてくるもの。それは、あなたがどんな体験によって形作られてきたのか。そして同時に、まだ経験していない「空白の領域」――足りない体験の存在です。過去を知り、不足を知ることで、これから何を経験すべきか、どんな未来を描くべきか。その答えへの道筋が、はっきりと見えてきます。</p>
+                
+                <p class="intro-chunk">真っ白なキャンバスに、あなた自身の色で人生を描いていく。ExC CANVASは、その最初の一筆となるツールです。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="mechanism-section">
+        <div class="section-title-ja">可視化のステップ</div>
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-title">記憶の探索</div>
+                <div class="step-desc">たった3分、記憶のキャンバスへ。あなたが無意識に積み重ねてきた思考や行動のクセを、いくつかの問いかけを通じて紐解きます。</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-title">物語の具現化</div>
+                <div class="step-desc">あなたの体験が、ひとつの「キャラクター」となって現れます。名前を持ち、物語を持つその姿は、まるでもう一人の自分。客観的な視点が、新しい気づきを運んでくれます。</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-title">未来を描く</div>
+                <div class="step-desc">自分に足りない「色」を知ることは、新しい可能性へのヒント。過去の体験を「資本」に変えて、人生をより豊かにする次の一歩を踏み出しましょう。</div>
+            </div>
+        </div>
+        
+        <div class="controls" style="margin-top: 60px;">
+            <button class="btn-start" onclick="event.stopPropagation(); window.location.href='diagnosis.html'">
+                DRAW YOUR STORY <span>体験資本の可視化をはじめる</span>
+            </button>
+        </div>
+    </section>
+</div>
+
+<script>
+    /* --- カルーセル初期化と回転 --- */
+    const characters = [
+        "1.png", "2.png", "3.png", "4.png", 
+        "5.png", "6.png", "7.png", "8.png", 
+        "9.png", "10.png", "11.png", "12.png", 
+        "13.png", "14.png", "15.png", "16.png"
+    ];
+    
+    const carousel = document.getElementById('carousel');
+    const carouselScene = document.getElementById('carousel-scene');
+    const radius = 380; 
+    let theta = 360 / characters.length;
+    let currentAngle = 0;
+    let autoRotateTimer = null;
+
+    function initCarousel() {
+        characters.forEach((imgSrc, i) => {
+            const el = document.createElement('div');
+            el.className = 'carousel-item';
+            el.style.backgroundColor = "rgba(220, 20, 60, 0.1)"; 
+            el.innerHTML = `<img src="${imgSrc}" alt="Character ${i+1}">`;
+            
+            const itemAngle = theta * i;
+            el.style.transform = `rotateY(${itemAngle}deg) translateZ(${radius}px)`;
+            carousel.appendChild(el);
+        });
+    }
+
+    // 次の画像に回転
+    function rotateNext() {
+        currentAngle -= theta;
+        carousel.style.transform = `rotateY(${currentAngle}deg)`;
+        resetAutoRotate();
+    }
+
+    // 自動回転タイマーをリセット
+    function resetAutoRotate() {
+        if (autoRotateTimer) {
+            clearTimeout(autoRotateTimer);
+        }
+        autoRotateTimer = setTimeout(rotateNext, 5000);
+    }
+
+    // カルーセル画像をクリックした時のみ回転
+    carousel.addEventListener('click', function(e) {
+        e.stopPropagation();
+        rotateNext();
+    });
+
+    initCarousel();
+    resetAutoRotate(); // 初回の自動回転開始（5秒後に自動で回転）
+</script>
+<script>
+// 水彩ペイント背景の描画
+const canvas = document.getElementById('paintCanvas');
+const ctx = canvas.getContext('2d');
+
+// キャンバスサイズを設定
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// 4色パレット（紫・オレンジ・青・緑）
+const colors = [
+    ['#9b7dd4', '#b8a0e0', '#d4c2ed'],  // 紫系
+    ['#d4a87d', '#e0c2a0', '#edddc2'],  // オレンジ系
+    ['#7daad4', '#a0c5e0', '#c2dded'],  // 青系
+    ['#7dd4a8', '#a0e0c2', '#c2eddd']   // 緑系
+];
+
+// すべての色を平坦化
+const allColors = colors.flat();
+
+// 水彩の配列（管理用）
+const paintObjects = [];
+
+// 水彩オブジェクトの構造
+class PaintCircle {
+    constructor() {
+        this.color = allColors[Math.floor(Math.random() * allColors.length)];
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = 150 + Math.random() * 250;
+        this.alpha = 0;
+        this.targetAlpha = 0.15 + Math.random() * 0.15;
+        this.fadeIn = true;
+        this.lifeTime = 0;
+        this.maxLifeTime = 8000 + Math.random() * 4000; // 8-12秒
+        
+        // 飛沫
+        this.splashes = [];
+        for (let i = 0; i < 3; i++) {
+            this.splashes.push({
+                offsetX: (Math.random() - 0.5) * 180,
+                offsetY: (Math.random() - 0.5) * 180,
+                size: 50 + Math.random() * 100,
+                alpha: 0.1 + Math.random() * 0.1
+            });
+        }
+    }
+    
+    update(deltaTime) {
+        this.lifeTime += deltaTime;
+        
+        // フェードイン・アウト
+        if (this.lifeTime < 1000) {
+            // フェードイン（最初の1秒）
+            this.alpha = (this.lifeTime / 1000) * this.targetAlpha;
+        } else if (this.lifeTime > this.maxLifeTime - 2000) {
+            // フェードアウト（最後の2秒）
+            const fadeProgress = (this.maxLifeTime - this.lifeTime) / 2000;
+            this.alpha = fadeProgress * this.targetAlpha;
+        } else {
+            this.alpha = this.targetAlpha;
+        }
+        
+        return this.lifeTime < this.maxLifeTime;
+    }
+    
+    draw() {
+        // メイン円
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 飛沫
+        this.splashes.forEach(splash => {
+            ctx.globalAlpha = this.alpha * (splash.alpha / this.targetAlpha);
+            ctx.beginPath();
+            ctx.arc(this.x + splash.offsetX, this.y + splash.offsetY, splash.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+}
+
+// 初期水彩を生成（少なめに）
+for (let i = 0; i < 15; i++) {
+    paintObjects.push(new PaintCircle());
+}
+
+// アニメーションループ
+let lastTime = Date.now();
+
+function animate() {
+    const currentTime = Date.now();
+    const deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+    
+    // キャンバスをクリア
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 全ての水彩を更新・描画
+    for (let i = paintObjects.length - 1; i >= 0; i--) {
+        const alive = paintObjects[i].update(deltaTime);
+        if (alive) {
+            paintObjects[i].draw();
+        } else {
+            // 寿命が尽きたら削除
+            paintObjects.splice(i, 1);
+        }
+    }
+    
+    // 新しい水彩を追加（最大20個まで）
+    if (paintObjects.length < 20 && Math.random() < 0.01) {
+        paintObjects.push(new PaintCircle());
+    }
+    
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+// ウィンドウリサイズ対応
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+// スクロールで要素を表示するアニメーション
+const observerOptions = {
+    threshold: 0.2,
+    rootMargin: '0px 0px -100px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+            setTimeout(() => {
+                entry.target.classList.add('visible');
+            }, index * 150); // 順番に表示
+        }
+    });
+}, observerOptions);
+
+// ステップカードを監視
+document.querySelectorAll('.step-card').forEach(card => {
+    observer.observe(card);
+});
+
+// 紹介文のチャンクも監視
+document.querySelectorAll('.intro-chunk').forEach(chunk => {
+    observer.observe(chunk);
+});
+</script>
+
+</body>
+</html>
