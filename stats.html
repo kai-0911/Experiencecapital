@@ -46,7 +46,7 @@
         /* ヘッダー */
         .header {
             text-align: center;
-            padding: 60px 20px 40px;
+            padding: 100px 20px 40px;
             position: relative;
             z-index: 1;
         }
@@ -321,6 +321,11 @@
     </style>
 </head>
 <body>
+
+<div class="top-nav" style="position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:12px 20px;z-index:1000;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 8px rgba(0,0,0,0.06);">
+    <a href="/" style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#C85A7C;text-decoration:none;letter-spacing:0.15em;font-weight:600;">ExC CANVAS</a>
+    <a href="/" style="font-size:0.8rem;color:#999;text-decoration:none;">トップに戻る</a>
+</div>
 
 <canvas id="paintCanvas"></canvas>
 

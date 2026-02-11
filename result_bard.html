@@ -31,7 +31,7 @@
         }
 
         /* ヘッダー - キャラクターカラー */
-        .header {
+        .header { padding-top: 160px !important;
             background: #A699BF;
             color: #fff;
             padding: 120px 40px 100px;
@@ -558,9 +558,49 @@
             .footer { padding: 20px 15px; font-size: 0.7rem; }
         }
 
+    
+        /* トップナビ */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+        }
+        .top-nav-logo {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 1.1rem;
+            color: #C85A7C;
+            text-decoration: none;
+            letter-spacing: 0.15em;
+            font-weight: 600;
+        }
+        .top-nav-home {
+            font-size: 0.8rem;
+            color: #999;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .top-nav-home:hover { color: #C85A7C; }
+        @media (max-width: 600px) {
+            .top-nav { padding: 10px 16px; }
+            .top-nav-logo { font-size: 0.9rem; }
+        }
     </style>
 </head>
 <body>
+<div class="top-nav">
+    <a href="/" class="top-nav-logo">ExC CANVAS</a>
+    <a href="/" class="top-nav-home">トップに戻る</a>
+</div>
+
 
 <div class="container">
     <!-- ヘッダー -->

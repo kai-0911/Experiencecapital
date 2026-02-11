@@ -450,6 +450,10 @@
     </style>
 </head>
 <body>
+<div style="position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,0.9);backdrop-filter:blur(10px);padding:10px 20px;z-index:1000;display:flex;justify-content:space-between;align-items:center;">
+    <a href="/" style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:#C85A7C;text-decoration:none;letter-spacing:0.15em;font-weight:600;opacity:0.7;">ExC CANVAS</a>
+    <a href="/" style="font-size:0.75rem;color:#aaa;text-decoration:none;">トップに戻る</a>
+</div>
 
 <canvas id="canvas"></canvas>
 
@@ -495,7 +499,7 @@
 const questions = [];
 
 // ========================================
-// 1. 身体的体験資本（Q1-Q2）
+// 1. 身体的体験資本（Q1-Q3）
 // ========================================
 
 questions.push({
@@ -1082,31 +1086,31 @@ function calculateResult() {
     const axisMapping = [
         // Q1-Q2: 身体的
         'physical', 'physical',
-        // Q3-Q4: 知的
+        // Q4-Q5: 知的
         'intellectual', 'intellectual',
-        // Q5-Q6: 創造的
+        // Q6-Q7: 創造的
         'creative', 'creative',
-        // Q7-Q8: 文化的
+        // Q8-Q9: 文化的
         'cultural', 'cultural',
-        // Q9-Q11: 社会的
+        // Q10-Q12: 社会的
         'social', 'social', 'social',
-        // Q12-Q14: 感情的
+        // Q13-Q15: 感情的
         'emotional', 'emotional', 'emotional',
-        // Q15-Q16: 精神的
+        // Q16-Q17: 精神的
         'spiritual', 'spiritual',
-        // Q17-Q18: 時間的
+        // Q18-Q19: 時間的
         'temporal', 'temporal',
-        // Q19-Q20: 空間的
+        // Q20-Q21: 空間的
         'spatial', 'spatial',
-        // Q21-Q22: 偶然的
+        // Q22-Q23: 偶然的
         'serendipity', 'serendipity',
-        // Q23-Q24: 自然的
+        // Q24-Q25: 自然的
         'natural', 'natural',
-        // Q25-Q26: 経済的
+        // Q26-Q27: 経済的
         'economic', 'economic'
     ];
     
-    // Q1-Q26の回答からスコア計算
+    // Q1-Q27の回答からスコア計算
     for (let i = 0; i < 26; i++) {
         const axis = axisMapping[i];
         const answer = answers[i];
@@ -1120,7 +1124,7 @@ function calculateResult() {
     
     console.log('12軸の体験資本スコア:', capitalScores);
     
-    // Step 2: Q27-Q34から16タイプを判定
+    // Step 2: Q28-Q35から16タイプを判定
     const typeName = determine16Type();
     
     // 4軸のキーも計算
@@ -1177,7 +1181,7 @@ function calculateResult() {
     };
     
     // 属性情報
-    const demographics = answers[34] || {}; // Q35（インデックス34）
+    const demographics = answers[34] || {}; // Q35（インデックス34）属性質問
     const genderOptions = ["男性", "女性", "その他", "回答しない"];
     const ageOptions = ["10代", "20代", "30代", "40代", "50代", "60代以上", "回答しない"];
     
@@ -1318,7 +1322,7 @@ function selectDemographic(demoIndex, optIndex) {
 
 // 16タイプを判定
 function determine16Type() {
-    // Q27-Q34の回答から4軸を判定
+    // Q27-Q34の回答から4軸を判定（体験資本26問の後、index 26から）
     const q27_answer = answers[26]; // 0=精神, 1=物質
     const q28_answer = answers[27]; // 0=精神, 1=物質
     const q29_answer = answers[28]; // 0=独立, 1=関係
