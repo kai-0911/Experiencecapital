@@ -1561,19 +1561,40 @@ function sendToGoogleSheets(data) {
     
     // 全軸の合計を計算
     const total = Object.values(scores).reduce((sum, val) => sum + val, 0);
+    if (total === 0) return;
     
-    // 各軸を全体に対するパーセンテージに変換（合計100%）
-    const toPercent = (axis) => {
-        if (total === 0) return 0;
-        return Math.round((scores[axis] / total) * 100);
-    };
+    // まず小数点でパーセンテージを計算
+    const axes = ['physical','intellectual','creative','cultural','social','emotional','spiritual','temporal','spatial','serendipity','natural','economic'];
+    const rawPercents = {};
+    axes.forEach(axis => {
+        rawPercents[axis] = (scores[axis] / total) * 100;
+    });
+    
+    // 切り捨てで整数化
+    const floored = {};
+    axes.forEach(axis => {
+        floored[axis] = Math.floor(rawPercents[axis]);
+    });
+    
+    // 合計が100になるよう調整（余りを小数部分が大きい順に+1）
+    let currentSum = axes.reduce((sum, axis) => sum + floored[axis], 0);
+    const remainders = axes.map(axis => ({
+        axis,
+        remainder: rawPercents[axis] - floored[axis]
+    })).sort((a, b) => b.remainder - a.remainder);
+    
+    let i = 0;
+    while (currentSum < 100 && i < remainders.length) {
+        floored[remainders[i].axis]++;
+        currentSum++;
+        i++;
+    }
     
     // デバイス判定
     const ua = navigator.userAgent;
     let device = 'PC';
     if (/iPhone|iPad|iPod/i.test(ua)) device = 'iOS';
     else if (/Android/i.test(ua)) device = 'Android';
-    else if (/Tablet/i.test(ua)) device = 'Tablet';
     
     // 回答時間（秒）
     const elapsedSec = Math.round((Date.now() - diagnosisStartTime) / 1000);
@@ -1583,18 +1604,18 @@ function sendToGoogleSheets(data) {
         typeKey: data.typeKey || 'Unknown',
         gender: data.gender || 'Unknown',
         ageGroup: data.ageGroup || 'Unknown',
-        physical: toPercent('physical'),
-        intellectual: toPercent('intellectual'),
-        creative: toPercent('creative'),
-        cultural: toPercent('cultural'),
-        social: toPercent('social'),
-        emotional: toPercent('emotional'),
-        spiritual: toPercent('spiritual'),
-        temporal: toPercent('temporal'),
-        spatial: toPercent('spatial'),
-        serendipity: toPercent('serendipity'),
-        natural: toPercent('natural'),
-        economic: toPercent('economic'),
+        physical: floored.physical,
+        intellectual: floored.intellectual,
+        creative: floored.creative,
+        cultural: floored.cultural,
+        social: floored.social,
+        emotional: floored.emotional,
+        spiritual: floored.spiritual,
+        temporal: floored.temporal,
+        spatial: floored.spatial,
+        serendipity: floored.serendipity,
+        natural: floored.natural,
+        economic: floored.economic,
         device: device,
         elapsedSeconds: elapsedSec
     };

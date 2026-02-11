@@ -113,12 +113,12 @@
         .carousel { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .carousel-item {
             position: absolute; width: 200px; height: 290px; left: 10px; top: 10px; background: transparent;
-            display: flex; align-items: center; justify-content: center; backface-visibility: hidden; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; backface-visibility: hidden;
         }
         .carousel-item img { 
             width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; 
             filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15));
-            transform: scale(1.8);
+            transform: scale(2.0);
         }
 
         /* キャッチコピー */
@@ -313,7 +313,8 @@
 
         @media (max-width: 600px) {
             .hero-section { padding-top: 100px; }
-            .scene { transform: scale(0.75); margin-bottom: 30px; }
+            .scene { transform: scale(0.5); margin-bottom: -20px; margin-top: -20px; }
+            .carousel-item img { transform: scale(2.0); }
             .intro-desc { font-size: 0.85rem; line-height: 2.0; text-align: left; }
             .main-catch { font-size: 1.3rem; }
             .step-card { min-width: 100%; margin-bottom: 10px; }
