@@ -1554,6 +1554,8 @@ function revealCharacter() {
 }
 
 // Google Sheetsにデータ送信
+const diagnosisStartTime = Date.now(); // 診断開始時刻を記録
+
 function sendToGoogleSheets(data) {
     const scores = data.capitalScores || {};
     
@@ -1565,6 +1567,16 @@ function sendToGoogleSheets(data) {
         if (total === 0) return 0;
         return Math.round((scores[axis] / total) * 100);
     };
+    
+    // デバイス判定
+    const ua = navigator.userAgent;
+    let device = 'PC';
+    if (/iPhone|iPad|iPod/i.test(ua)) device = 'iOS';
+    else if (/Android/i.test(ua)) device = 'Android';
+    else if (/Tablet/i.test(ua)) device = 'Tablet';
+    
+    // 回答時間（秒）
+    const elapsedSec = Math.round((Date.now() - diagnosisStartTime) / 1000);
     
     const payload = {
         characterName: data.typeName || 'Unknown',
@@ -1582,11 +1594,12 @@ function sendToGoogleSheets(data) {
         spatial: toPercent('spatial'),
         serendipity: toPercent('serendipity'),
         natural: toPercent('natural'),
-        economic: toPercent('economic')
+        economic: toPercent('economic'),
+        device: device,
+        elapsedSeconds: elapsedSec
     };
     
     console.log('送信データ:', payload);
-    console.log('合計:', Object.keys(scores).reduce((sum, key) => sum + toPercent(key), 0) + '%');
     
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNOCM1DMMRMMexb-zHfryomi4wCFSgH8f5eISSTuo6ZwJitX-2C9u8mXbMNzguXSzUfA/exec';
     
