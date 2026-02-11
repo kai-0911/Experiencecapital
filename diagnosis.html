@@ -1555,17 +1555,15 @@ function revealCharacter() {
 
 // Google Sheetsにデータ送信
 function sendToGoogleSheets(data) {
-    // 各軸の最大スコア（質問数×2点）
-    const maxScores = {
-        physical: 4, intellectual: 4, creative: 4, cultural: 4,
-        social: 6, emotional: 6, spiritual: 4, temporal: 4,
-        spatial: 4, serendipity: 4, natural: 4, economic: 4
-    };
+    const scores = data.capitalScores || {};
     
-    // パーセンテージに変換
+    // 全軸の合計を計算
+    const total = Object.values(scores).reduce((sum, val) => sum + val, 0);
+    
+    // 各軸を全体に対するパーセンテージに変換（合計100%）
     const toPercent = (axis) => {
-        const raw = data.capitalScores?.[axis] || 0;
-        return Math.round((raw / maxScores[axis]) * 100);
+        if (total === 0) return 0;
+        return Math.round((scores[axis] / total) * 100);
     };
     
     const payload = {
@@ -1588,6 +1586,7 @@ function sendToGoogleSheets(data) {
     };
     
     console.log('送信データ:', payload);
+    console.log('合計:', Object.keys(scores).reduce((sum, key) => sum + toPercent(key), 0) + '%');
     
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNOCM1DMMRMMexb-zHfryomi4wCFSgH8f5eISSTuo6ZwJitX-2C9u8mXbMNzguXSzUfA/exec';
     
