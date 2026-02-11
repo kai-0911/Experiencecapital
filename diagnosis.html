@@ -837,7 +837,7 @@ questions.push({
 });
 
 questions.push({
-    q: "これまでより強くストレスを感じたのは？",
+    q: "人間関係において、これまでより強くストレスを感じたのは？",
     opts: [
         "自由や選択が制限された時",
         "孤独や疎外感を感じた時"
@@ -877,7 +877,7 @@ questions.push({
 });
 
 questions.push({
-    q: "これまでより強くストレスを感じたのは？",
+    q: "日常生活において、これまでより強くストレスを感じたのは？",
     opts: [
         "予定が崩れ、混乱した時",
         "厳格なルールに縛られた時"
@@ -1555,23 +1555,36 @@ function revealCharacter() {
 
 // Google Sheetsにデータ送信
 function sendToGoogleSheets(data) {
+    // 各軸の最大スコア（質問数×2点）
+    const maxScores = {
+        physical: 4, intellectual: 4, creative: 4, cultural: 4,
+        social: 6, emotional: 6, spiritual: 4, temporal: 4,
+        spatial: 4, serendipity: 4, natural: 4, economic: 4
+    };
+    
+    // パーセンテージに変換
+    const toPercent = (axis) => {
+        const raw = data.capitalScores?.[axis] || 0;
+        return Math.round((raw / maxScores[axis]) * 100);
+    };
+    
     const payload = {
         characterName: data.typeName || 'Unknown',
         typeKey: data.typeKey || 'Unknown',
         gender: data.gender || 'Unknown',
         ageGroup: data.ageGroup || 'Unknown',
-        physical: data.capitalScores?.physical || 0,
-        intellectual: data.capitalScores?.intellectual || 0,
-        creative: data.capitalScores?.creative || 0,
-        cultural: data.capitalScores?.cultural || 0,
-        social: data.capitalScores?.social || 0,
-        emotional: data.capitalScores?.emotional || 0,
-        spiritual: data.capitalScores?.spiritual || 0,
-        temporal: data.capitalScores?.temporal || 0,
-        spatial: data.capitalScores?.spatial || 0,
-        serendipity: data.capitalScores?.serendipity || 0,
-        natural: data.capitalScores?.natural || 0,
-        economic: data.capitalScores?.economic || 0
+        physical: toPercent('physical'),
+        intellectual: toPercent('intellectual'),
+        creative: toPercent('creative'),
+        cultural: toPercent('cultural'),
+        social: toPercent('social'),
+        emotional: toPercent('emotional'),
+        spiritual: toPercent('spiritual'),
+        temporal: toPercent('temporal'),
+        spatial: toPercent('spatial'),
+        serendipity: toPercent('serendipity'),
+        natural: toPercent('natural'),
+        economic: toPercent('economic')
     };
     
     console.log('送信データ:', payload);
