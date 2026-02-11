@@ -433,6 +433,113 @@
             opacity: 1;
             transform: translateY(0);
         }
+    
+        /* ランキングセクション */
+        .ranking-section {
+            padding: 60px 40px;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+        }
+        .ranking-title {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+            letter-spacing: 0.05em;
+        }
+        .ranking-subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 30px;
+        }
+        .ranking-list {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            margin-bottom: 6px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+        .ranking-item.current {
+            border: 2px solid var(--primary, #C85A7C);
+            background: linear-gradient(135deg, rgba(200,90,124,0.04) 0%, rgba(200,90,124,0.08) 100%);
+            box-shadow: 0 2px 12px rgba(200,90,124,0.1);
+        }
+        .ranking-rank {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ccc;
+            min-width: 28px;
+            text-align: center;
+        }
+        .ranking-item:nth-child(1) .ranking-rank { color: #DAA520; font-size: 1.4rem; }
+        .ranking-item:nth-child(2) .ranking-rank { color: #A8A8A8; font-size: 1.3rem; }
+        .ranking-item:nth-child(3) .ranking-rank { color: #B87333; font-size: 1.3rem; }
+        .ranking-img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+            margin: 0 10px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        .ranking-name {
+            flex: 1;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #333;
+            letter-spacing: 0.02em;
+        }
+        .ranking-bar-container {
+            width: 80px;
+            height: 5px;
+            background: #eee;
+            border-radius: 3px;
+            margin-right: 10px;
+        }
+        .ranking-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary, #C85A7C), var(--accent, #E86B8F));
+            border-radius: 3px;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ranking-percent {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary, #C85A7C);
+            min-width: 42px;
+            text-align: right;
+        }
+        .ranking-loading {
+            text-align: center;
+            color: #bbb;
+            padding: 30px;
+            font-size: 0.9rem;
+        }
+        .ranking-total {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #bbb;
+            margin-top: 20px;
+            letter-spacing: 0.05em;
+        }
+        @media (max-width: 600px) {
+            .ranking-section { padding: 40px 20px; }
+            .ranking-img { width: 36px; height: 36px; }
+            .ranking-name { font-size: 0.8rem; }
+            .ranking-bar-container { width: 50px; }
+            .ranking-percent { font-size: 0.95rem; min-width: 36px; }
+        }
+
     </style>
 </head>
 <body>
@@ -528,11 +635,12 @@
     <div class="share-section fade-in-section">
         <button class="btn-share" onclick="shareResult()">結果をシェアする</button>
         <a href="/" class="btn-share btn-restart">もう一度診断する</a>
+        <a href="stats.html" class="btn-share btn-stats" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-color: transparent;">みんなの体験資本を見る</a>
     </div>
 
     <!-- フッター -->
     <div class="footer">
-        © 2026 ExC CANVAS - Experience Capital Assessment
+        <a href="https://forms.gle/Q7pZL3DfSZDCaCgW7" target="_blank" style="color: #C85A7C; font-size: 0.85rem; text-decoration: none; opacity: 0.7;">感想・お問い合わせはこちら</a><br><br>© 2026 ExC CANVAS - Experience Capital Assessment
     </div>
 </div>
 
@@ -723,5 +831,50 @@ window.addEventListener('load', () => {
 });
 </script>
 
+<script>
+
+// キャラクターランキング取得・表示
+(function() {
+    const charImgMap = {
+        '沈黙の賢者': '1.png', '石の設計士': '2.png', '盲目の英雄': '3.png',
+        '黄金の女王': '4.png', '異端の錬金術師': '5.png', '地図を持たない旅人': '6.png',
+        '嵐の革命家': '7.png', '暴食の王': '8.png', '誓いの守護者': '9.png',
+        '森の番人': '10.png', '鐘を鳴らす予言者': '11.png', '施しの商人': '12.png',
+        '涙の吟遊詩人': '13.png', '微笑みの酒場主': '14.png', '夢追いの船長': '15.png',
+        '仮面の道化師': '16.png'
+    };
+    const currentChar = document.querySelector('.character-name-hero')?.textContent?.trim();
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNOCM1DMMRMMexb-zHfryomi4wCFSgH8f5eISSTuo6ZwJitX-2C9u8mXbMNzguXSzUfA/exec';
+    
+    fetch(SCRIPT_URL)
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            var list = document.getElementById('ranking-list');
+            var totalEl = document.getElementById('ranking-total');
+            if (!data.ranking || data.ranking.length === 0) {
+                list.innerHTML = '<div class="ranking-loading">まだデータがありません</div>';
+                return;
+            }
+            var maxPct = data.ranking[0].percentage;
+            list.innerHTML = data.ranking.map(function(item, i) {
+                var isCurrent = item.name === currentChar;
+                var barWidth = maxPct > 0 ? Math.round((item.percentage / maxPct) * 100) : 0;
+                return '<div class="ranking-item ' + (isCurrent ? 'current' : '') + '">'
+                    + '<div class="ranking-rank">' + (i + 1) + '</div>'
+                    + '<img class="ranking-img" src="' + (charImgMap[item.name] || '') + '" alt="' + item.name + '">'
+                    + '<div class="ranking-name">' + item.name + '</div>'
+                    + '<div class="ranking-bar-container"><div class="ranking-bar" style="width:' + barWidth + '%"></div></div>'
+                    + '<div class="ranking-percent">' + item.percentage + '%</div>'
+                    + '</div>';
+            }).join('');
+            totalEl.textContent = '累計診断者数: ' + data.total + '人';
+        })
+        .catch(function(err) {
+            console.error('ランキング取得エラー:', err);
+            document.getElementById('ranking-list').innerHTML = '<div class="ranking-loading">データの取得に失敗しました</div>';
+        });
+})();
+
+</script>
 </body>
 </html>
