@@ -1553,29 +1553,37 @@ function revealCharacter() {
     }
 }
 
-// Google Sheetsにデータ送信（仮実装）
+// Google Sheetsにデータ送信
 function sendToGoogleSheets(data) {
     const payload = {
-        timestamp: new Date().toISOString(),
-        typeKey: data.typeKey,
-        characterName: data.result?.name || 'Unknown',
-        characterNameEn: data.result?.nameEn || 'Unknown',
-        typeName: data.typeName,
-        gender: data.gender,
-        ageGroup: data.ageGroup,
-        // capitalScoresを含める
-        capitalScores: data.capitalScores
+        characterName: data.typeName || 'Unknown',
+        typeKey: data.typeKey || 'Unknown',
+        gender: data.gender || 'Unknown',
+        ageGroup: data.ageGroup || 'Unknown',
+        physical: data.capitalScores?.physical || 0,
+        intellectual: data.capitalScores?.intellectual || 0,
+        creative: data.capitalScores?.creative || 0,
+        cultural: data.capitalScores?.cultural || 0,
+        social: data.capitalScores?.social || 0,
+        emotional: data.capitalScores?.emotional || 0,
+        spiritual: data.capitalScores?.spiritual || 0,
+        temporal: data.capitalScores?.temporal || 0,
+        spatial: data.capitalScores?.spatial || 0,
+        serendipity: data.capitalScores?.serendipity || 0,
+        natural: data.capitalScores?.natural || 0,
+        economic: data.capitalScores?.economic || 0
     };
     
     console.log('送信データ:', payload);
     
-    // 実際の送信処理（Google Apps ScriptのWebアプリURLに送信）
-    // fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
-    //     method: 'POST',
-    //     mode: 'no-cors',
-    //     headers: {'Content-Type': 'application/json'},
-    //     body: JSON.stringify(payload)
-    // }).catch(err => console.error('送信エラー:', err));
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNOCM1DMMRMMexb-zHfryomi4wCFSgH8f5eISSTuo6ZwJitX-2C9u8mXbMNzguXSzUfA/exec';
+    
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    }).catch(err => console.error('送信エラー:', err));
 }
 
 // 結果ページへ遷移
