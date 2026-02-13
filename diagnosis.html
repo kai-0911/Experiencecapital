@@ -641,10 +641,11 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const answerColors = {
-    0: '#81C784',  // ない → 緑
-    1: '#E57373'   // ある → 赤
-};
+const splashColors = [
+    '#E8B4B8', '#B8D4E3', '#F5D5A0', '#C8E6C9',
+    '#D1C4E9', '#FFCCBC', '#B2DFDB', '#F8BBD0',
+    '#DCEDC8', '#FFE0B2', '#E1BEE7', '#B3E5FC'
+];
 
 function paintSplash(color) {
     const x = Math.random() * canvas.width;
@@ -791,7 +792,7 @@ function flyOut(x, y, score) {
     card.style.transform = `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${x * 0.04}deg)`;
     card.style.opacity = '0';
     
-    paintSplash(answerColors[score] || '#B8D4E3');
+    paintSplash(splashColors[Math.floor(Math.random() * splashColors.length)]);
     
     setTimeout(() => processAnswer(score), 280);
 }
