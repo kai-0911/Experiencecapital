@@ -647,7 +647,11 @@ const capitalScores = hasParams ? {
 console.log('体験資本スコア:', capitalScores);
 console.log('合計:', Object.values(capitalScores).reduce((a,b) => a+b, 0));
 if (!hasParams) {
-    console.log('⚠️ URLパラメータがないため、ダミーデータを使用しています');
+    // 診断経由でない場合、スコアセクションを非表示
+    const cs = document.querySelector('.chart-section');
+    const ax = document.querySelector('.axes-section');
+    if (cs) cs.style.display = 'none';
+    if (ax) ax.style.display = 'none';
 }
 
 // スコア表を生成
