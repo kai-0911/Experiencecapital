@@ -2,391 +2,465 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ExC CANVAS - あなたの体験資本診断結果</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ExC CANVAS - みんなの体験資本</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Noto+Serif+JP:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Shippori+Mincho:wght@400;700&family=Cinzel:wght@400;700&display=swap');
 
         :root {
-            --primary: #C85A7C;
-            --primary-dark: #A04661;
-            --text-dark: #1a1a1a;
-            --text-gray: #666;
+            --rose: #C85A7C;
+            --rose-light: #F8E8ED;
+            --rose-dark: #A04661;
+            --text-main: #333;
+            --text-sub: #666;
+            --bg: #faf8f5;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        #paintCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.3;
-        }
-
         body {
-            font-family: 'Noto Serif JP', serif;
-            background: #ffffff;
-            color: var(--text-dark);
-            line-height: 1.9;
-            position: relative;
+            font-family: 'Shippori Mincho', serif;
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.8;
+            overflow-x: hidden;
         }
 
-        .container {
+        /* ナビ */
+        .top-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 20px;
+            background: rgba(250,248,245,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .top-nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem; color: var(--rose);
+            text-decoration: none; font-weight: 600;
+            letter-spacing: 0.1em;
+        }
+        .top-nav-right { display: flex; align-items: center; gap: 15px; }
+        .top-nav-link { font-size: 0.75rem; color: var(--text-sub); text-decoration: none; }
+        .top-nav-link:hover { color: var(--rose); }
+
+        /* ヒーロー */
+        .hero {
+            padding: 120px 30px 60px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--rose-light) 0%, var(--bg) 100%);
+        }
+        .hero-label {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem; letter-spacing: 0.3em;
+            color: var(--rose); margin-bottom: 12px;
+        }
+        .hero-title {
+            font-size: 2rem; font-weight: 700;
+            color: var(--text-main); margin-bottom: 10px;
+        }
+        .hero-count {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem; font-weight: 700;
+            color: var(--rose); line-height: 1.2;
+        }
+        .hero-count-label {
+            font-size: 0.85rem; color: var(--text-sub);
+        }
+
+        /* セクション共通 */
+        .section {
             max-width: 720px;
             margin: 0 auto;
-            padding: 100px 30px;
+            padding: 60px 25px;
+        }
+        .section-title {
+            font-size: 1.3rem; font-weight: 700;
+            color: var(--text-main); margin-bottom: 30px;
+            text-align: center; letter-spacing: 0.08em;
+        }
+        .section-title::after {
+            content: '';
+            display: block; width: 40px; height: 2px;
+            background: var(--rose);
+            margin: 15px auto 0;
+        }
+
+        /* 12軸平均スコア */
+        .axis-bars { display: flex; flex-direction: column; gap: 16px; }
+        .axis-row {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .axis-label {
+            width: 65px; font-size: 0.8rem; color: var(--text-sub);
+            text-align: right; flex-shrink: 0;
+        }
+        .axis-bar-bg {
+            flex: 1; height: 28px; background: #eee;
+            border-radius: 14px; overflow: hidden;
             position: relative;
-            z-index: 1;
+        }
+        .axis-bar-fill {
+            height: 100%; border-radius: 14px;
+            background: linear-gradient(90deg, var(--rose) 0%, #E8879F 100%);
+            width: 0%; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 10px;
+            min-width: 35px;
+        }
+        .axis-bar-value {
+            font-size: 0.7rem; color: #fff; font-weight: 700;
         }
 
-        /* ヘッダー：体験資本タイトル */
-        .capital-header {
+        /* キャラクター分布 */
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .char-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
             text-align: center;
-            margin-bottom: 60px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid rgba(200,90,124,0.1);
+            transition: transform 0.2s;
+        }
+        .char-item:hover { transform: translateY(-2px); }
+        .char-name {
+            font-size: 0.8rem; color: var(--text-main);
+            margin-bottom: 6px; font-weight: 700;
+        }
+        .char-count {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem; color: var(--rose);
+            font-weight: 700; line-height: 1;
+        }
+        .char-pct {
+            font-size: 0.7rem; color: var(--text-sub);
+            margin-top: 4px;
+        }
+        .char-bar-bg {
+            width: 100%; height: 6px;
+            background: #eee; border-radius: 3px;
+            margin-top: 8px; overflow: hidden;
+        }
+        .char-bar-fill {
+            height: 100%; border-radius: 3px;
+            background: var(--rose);
+            transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .capital-title {
-            font-size: 1rem;
-            color: var(--text-gray);
-            letter-spacing: 0.2em;
-            margin-bottom: 15px;
+        /* 年齢・性別 */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
         }
-
-        .capital-subtitle {
-            font-size: 2.5rem;
-            color: var(--primary);
-            font-weight: 700;
-            letter-spacing: 0.05em;
+        .demo-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
         }
-
-        /* キャラクター画像 */
-        .character-image {
+        .demo-title {
+            font-size: 0.9rem; font-weight: 700;
+            color: var(--text-main); margin-bottom: 20px;
             text-align: center;
+        }
+        .demo-item {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .demo-item:last-child { border-bottom: none; }
+        .demo-item-label { font-size: 0.8rem; color: var(--text-sub); }
+        .demo-item-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem; font-weight: 700; color: var(--rose);
+        }
+
+        /* CTA */
+        .cta-section {
+            text-align: center;
+            padding: 60px 25px 80px;
+        }
+        .btn-cta {
+            display: inline-block;
+            background: linear-gradient(135deg, #F06292 0%, #D05A7C 100%);
+            color: #fff; text-decoration: none;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            letter-spacing: 0.1em;
+            box-shadow: 0 8px 25px rgba(232,107,143,0.4);
+            transition: all 0.3s;
+        }
+        .btn-cta:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(232,107,143,0.5); }
+        .btn-cta-sub {
+            display: block;
+            font-family: 'Shippori Mincho', serif;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            font-weight: normal;
+            letter-spacing: 0.02em;
+        }
+
+        /* フッター */
+        .footer {
+            text-align: center; padding: 30px;
+            font-size: 0.7rem; color: #999;
+        }
+
+        /* ローディング */
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-sub);
+        }
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid #eee;
+            border-top-color: var(--rose);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-msg {
+            text-align: center; padding: 40px;
+            color: #999; font-size: 0.9rem;
+        }
+
+        /* レーダーチャート */
+        .radar-container {
+            display: flex; justify-content: center;
             margin-bottom: 40px;
         }
 
-        .character-image img {
-            width: 400px;
-            height: 400px;
-            object-fit: contain;
-        }
-
-        .character-name {
-            text-align: center;
-            margin-bottom: 70px;
-        }
-
-        .character-name-jp {
-            font-size: 2.2rem;
-            color: var(--text-dark);
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: 0.05em;
-        }
-
-        .character-name-en {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.3rem;
-            color: var(--text-gray);
-            font-weight: 300;
-            font-style: italic;
-            letter-spacing: 0.1em;
-        }
-
-        /* 体験資本スコア */
-        .capital-scores {
-            background: #fafafa;
-            padding: 40px 35px;
-            border-radius: 10px;
-            margin-bottom: 80px;
-            border-top: 3px solid var(--primary);
-        }
-
-        .scores-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 30px;
-            text-align: center;
-            letter-spacing: 0.05em;
-        }
-
-        .score-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        .score-item {
-            text-align: center;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #e8e8e8;
-        }
-
-        .score-label {
-            font-size: 0.9rem;
-            color: var(--text-gray);
-            margin-bottom: 10px;
-            letter-spacing: 0.1em;
-        }
-
-        .score-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .score-bar {
-            width: 100%;
-            height: 8px;
-            background: #e8e8e8;
-            border-radius: 10px;
-            margin-top: 12px;
-            overflow: hidden;
-        }
-
-        .score-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
-            transition: width 1s ease-out;
-        }
-
-        /* 体験資本の重心 */
-        .capital-focus {
-            margin-bottom: 80px;
-            text-align: center;
-        }
-
-        .focus-title {
-            font-size: 1rem;
-            color: var(--text-gray);
-            margin-bottom: 25px;
-            letter-spacing: 0.15em;
-        }
-
-        .focus-grid {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .focus-item {
-            padding: 10px 24px;
-            border-radius: 6px;
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 600;
-            letter-spacing: 0.1em;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .focus-spiritual { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .focus-material { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .focus-independent { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .focus-relational { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-
-        /* コンテンツセクション */
-        .content-section {
-            margin-bottom: 70px;
-        }
-
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 25px;
-            letter-spacing: 0.05em;
-            padding-left: 18px;
-            border-left: 3px solid var(--primary);
-            position: relative;
-        }
-
-        .section-title::before {
-            content: '';
-            position: absolute;
-            left: -3px;
-            top: -5px;
-            width: 3px;
-            height: calc(100% + 10px);
-            background: linear-gradient(180deg, var(--primary) 0%, rgba(200, 90, 124, 0.3) 100%);
-        }
-
-        .section-content {
-            font-size: 1rem;
-            line-height: 2;
-            color: var(--text-dark);
-            white-space: pre-line;
-        }
-
-        /* 資本・副作用の横並び */
-        .capital-sidebyside {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 70px;
-        }
-
-        .capital-sidebyside .content-section {
-            margin-bottom: 0;
-            padding: 30px;
-            background: #fafafa;
-            border-radius: 8px;
-            border-top: 2px solid var(--primary);
-        }
-
-        /* アドバイスセクション */
-        .advice-section {
-            background: linear-gradient(135deg, #fff5f8 0%, #fef8fa 100%);
-            padding: 45px 40px;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-            margin-bottom: 100px;
-            box-shadow: 0 4px 20px rgba(200, 90, 124, 0.08);
-            position: relative;
-        }
-
-        .advice-section::before {
-            content: '💡';
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 2rem;
-            opacity: 0.3;
-        }
-
-        .advice-section .section-title {
-            color: var(--primary);
-            border-left: none;
-            padding-left: 0;
-        }
-
-        .advice-section .section-title::before {
-            display: none;
-        }
-
-        .advice-section .section-content {
-            font-weight: 500;
-            font-size: 1.05rem;
-        }
-
+        /* モバイル */
         @media (max-width: 768px) {
-            .container { padding: 60px 20px; }
-            .character-image img { width: 300px; height: 300px; }
-            .capital-subtitle { font-size: 2rem; }
-            .score-grid { grid-template-columns: 1fr; }
-            .capital-sidebyside { grid-template-columns: 1fr; gap: 50px; }
+            .hero { padding: 100px 20px 40px; }
+            .hero-title { font-size: 1.5rem; }
+            .hero-count { font-size: 2.8rem; }
+            .section { padding: 40px 18px; }
+            .section-title { font-size: 1.1rem; }
+            .char-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .char-item { padding: 12px; }
+            .char-name { font-size: 0.7rem; }
+            .char-count { font-size: 1.4rem; }
+            .demo-grid { grid-template-columns: 1fr; gap: 15px; }
+            .axis-label { width: 55px; font-size: 0.7rem; }
+            .top-nav { padding: 10px 15px; }
+            .top-nav-logo { font-size: 0.9rem; }
+            .top-nav-link { font-size: 0.7rem; }
+            .btn-cta { padding: 16px 40px; font-size: 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title { font-size: 1.3rem; }
+            .hero-count { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
-<canvas id="paintCanvas"></canvas>
-
-<div class="container">
-    <!-- 体験資本タイトル -->
-    <div class="capital-header">
-        <div class="capital-title">YOUR EXPERIENCE CAPITAL</div>
-        <div class="capital-subtitle">あなたの体験資本</div>
-    </div>
-
-    <!-- キャラクター -->
-    <div class="character-image">
-        <img id="char-img" src="1_sage.png" alt="キャラクター">
-    </div>
-
-    <div class="character-name">
-        <div class="character-name-jp" id="char-name-jp">沈黙の賢者</div>
-        <div class="character-name-en" id="char-name-en">The Silent Sage</div>
-    </div>
-
-    <!-- 体験資本スコア -->
-    <div class="capital-scores">
-        <div class="scores-title">体験資本スコア</div>
-        <div class="score-grid">
-            <div class="score-item">
-                <div class="score-label">精神資本</div>
-                <div class="score-value" id="score-spiritual">0</div>
-                <div class="score-bar"><div class="score-fill" id="bar-spiritual"></div></div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">物質資本</div>
-                <div class="score-value" id="score-material">0</div>
-                <div class="score-bar"><div class="score-fill" id="bar-material"></div></div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">独立資本</div>
-                <div class="score-value" id="score-independent">0</div>
-                <div class="score-bar"><div class="score-fill" id="bar-independent"></div></div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">関係資本</div>
-                <div class="score-value" id="score-relational">0</div>
-                <div class="score-bar"><div class="score-fill" id="bar-relational"></div></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 体験資本の重心 -->
-    <div class="capital-focus">
-        <div class="focus-title">あなたの体験資本の重心</div>
-        <div class="focus-grid" id="focus-grid"></div>
-    </div>
-
-    <!-- 体験資本プロファイル -->
-    <div class="content-section">
-        <div class="section-title">あなたの体験資本プロファイル</div>
-        <div class="section-content" id="personality"></div>
-    </div>
-
-    <!-- 蓄積された資本・副作用 -->
-    <div class="capital-sidebyside">
-        <div class="content-section">
-            <div class="section-title">蓄積された体験資本</div>
-            <div class="section-content" id="strength"></div>
-        </div>
-        <div class="content-section">
-            <div class="section-title">資本の副作用</div>
-            <div class="section-content" id="weakness"></div>
-        </div>
-    </div>
-
-    <!-- 体験の傾向 -->
-    <div class="content-section">
-        <div class="section-title">体験資本の蓄積パターン</div>
-        <div class="section-content" id="tendency"></div>
-    </div>
-
-    <!-- 資本形成に影響を与えた体験 -->
-    <div class="content-section">
-        <div class="section-title">資本形成に影響を与えた体験</div>
-        <div class="section-content" id="impactful-exp"></div>
-    </div>
-
-    <!-- 不足している体験資本 -->
-    <div class="content-section">
-        <div class="section-title">不足している体験資本</div>
-        <div class="section-content" id="lacking-exp"></div>
-    </div>
-
-    <!-- 資本ポートフォリオの課題 -->
-    <div class="content-section">
-        <div class="section-title">体験資本ポートフォリオの課題</div>
-        <div class="section-content" id="life-challenge"></div>
-    </div>
-
-    <!-- 次に積むべき体験資本 -->
-    <div class="content-section advice-section">
-        <div class="section-title">次に積むべき体験資本</div>
-        <div class="section-content" id="advice"></div>
+<div class="top-nav">
+    <a href="/" class="top-nav-logo">ExC CANVAS</a>
+    <div class="top-nav-right">
+        <a href="diagnosis.html" class="top-nav-link">診断する</a>
+        <a href="/" class="top-nav-link">トップに戻る</a>
     </div>
 </div>
 
+<div class="hero">
+    <div class="hero-label">EVERYONE'S EXPERIENCE CAPITAL</div>
+    <h1 class="hero-title">みんなの体験資本</h1>
+    <div id="totalCount" class="hero-count">-</div>
+    <div class="hero-count-label">人が診断済み</div>
+</div>
+
+<div id="content">
+    <div class="loading" id="loadingArea">
+        <div class="loading-spinner"></div>
+        <div>統計データを読み込んでいます...</div>
+    </div>
+</div>
+
+<!-- 統計コンテンツ（JS で表示） -->
+<div id="statsContent" style="display: none;">
+
+    <!-- 12軸の平均スコア -->
+    <div class="section">
+        <div class="section-title">12軸の平均構成比</div>
+        <div class="axis-bars" id="axisBars"></div>
+    </div>
+
+    <!-- キャラクター分布 -->
+    <div class="section">
+        <div class="section-title">キャラクター分布</div>
+        <div class="char-grid" id="charGrid"></div>
+    </div>
+
+    <!-- 年齢・性別 -->
+    <div class="section">
+        <div class="section-title">診断ユーザーの属性</div>
+        <div class="demo-grid">
+            <div class="demo-box">
+                <div class="demo-title">年齢層</div>
+                <div id="ageList"></div>
+            </div>
+            <div class="demo-box">
+                <div class="demo-title">性別</div>
+                <div id="genderList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+        <a href="diagnosis.html" class="btn-cta">
+            DRAW YOUR STORY
+            <span class="btn-cta-sub">あなたも診断してみる</span>
+        </a>
+    </div>
+</div>
+
+<div class="footer">
+    © 2026 ExC CANVAS - Experience Capital Assessment
+</div>
+
 <script>
-// characterDataは前回と同じものを使用（省略のため一部のみ表示）
-const characterData = {
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNOCM1DMMRMMexb-zHfryomi4wCFSgH8f5eISSTuo6ZwJitX-2C9u8mXbMNzguXSzUfA/exec';
+
+const axisLabels = {
+    physical: '身体的',
+    intellectual: '知的',
+    creative: '創造的',
+    cultural: '文化的',
+    social: '社会的',
+    emotional: '感情的',
+    spiritual: '精神的',
+    temporal: '時間的',
+    spatial: '空間的',
+    serendipity: '偶然的',
+    natural: '自然的',
+    economic: '経済的'
+};
+
+const axisOrder = ['physical','intellectual','creative','cultural','social','emotional','spiritual','temporal','spatial','serendipity','natural','economic'];
+
+async function loadStats() {
+    try {
+        const res = await fetch(SCRIPT_URL);
+        const data = await res.json();
+        
+        if (!data || data.totalCount === 0) {
+            document.getElementById('loadingArea').innerHTML = '<div class="error-msg">まだ診断データがありません。最初の一人になりましょう！</div>';
+            return;
+        }
+        
+        renderStats(data);
+    } catch (err) {
+        console.error('データ取得エラー:', err);
+        document.getElementById('loadingArea').innerHTML = '<div class="error-msg">データの読み込みに失敗しました。<br>しばらくしてからもう一度お試しください。</div>';
+    }
+}
+
+function renderStats(data) {
+    // 合計
+    document.getElementById('totalCount').textContent = data.totalCount.toLocaleString();
+    
+    // 12軸バー
+    const axisBars = document.getElementById('axisBars');
+    const maxAvg = Math.max(...axisOrder.map(a => data.axisAverages[a] || 0));
+    
+    axisOrder.forEach(axis => {
+        const avg = data.axisAverages[axis] || 0;
+        const pct = maxAvg > 0 ? (avg / maxAvg) * 100 : 0;
+        
+        const row = document.createElement('div');
+        row.className = 'axis-row';
+        row.innerHTML = `
+            <div class="axis-label">${axisLabels[axis]}</div>
+            <div class="axis-bar-bg">
+                <div class="axis-bar-fill" data-width="${pct}">
+                    <span class="axis-bar-value">${avg.toFixed(1)}%</span>
+                </div>
+            </div>
+        `;
+        axisBars.appendChild(row);
+    });
+    
+    // キャラクター分布
+    const charGrid = document.getElementById('charGrid');
+    const chars = Object.entries(data.characterDistribution)
+        .sort((a, b) => b[1] - a[1]);
+    const maxChar = chars.length > 0 ? chars[0][1] : 1;
+    
+    chars.forEach(([name, count]) => {
+        const pct = ((count / data.totalCount) * 100).toFixed(1);
+        const barPct = (count / maxChar) * 100;
+        
+        const item = document.createElement('div');
+        item.className = 'char-item';
+        item.innerHTML = `
+            <div class="char-name">${name}</div>
+            <div class="char-count">${count}</div>
+            <div class="char-pct">${pct}%</div>
+            <div class="char-bar-bg">
+                <div class="char-bar-fill" data-width="${barPct}"></div>
+            </div>
+        `;
+        charGrid.appendChild(item);
+    });
+    
+    // 年齢層
+    const ageList = document.getElementById('ageList');
+    const ages = Object.entries(data.ageDistribution).sort((a, b) => b[1] - a[1]);
+    ages.forEach(([label, count]) => {
+        const pct = ((count / data.totalCount) * 100).toFixed(1);
+        const item = document.createElement('div');
+        item.className = 'demo-item';
+        item.innerHTML = `
+            <span class="demo-item-label">${label}</span>
+            <span class="demo-item-value">${count}<small style="font-size:0.7rem;color:#999;margin-left:4px">(${pct}%)</small></span>
+        `;
+        ageList.appendChild(item);
+    });
+    
+    // 性別
+    const genderList = document.getElementById('genderList');
+    const genders = Object.entries(data.genderDistribution).sort((a, b) => b[1] - a[1]);
+    genders.forEach(([label, count]) => {
+        const pct = ((count / data.totalCount) * 100).toFixed(1);
+        const item = document.createElement('div');
+        item.className = 'demo-item';
+        item.innerHTML = `
+            <span class="demo-item-label">${label}</span>
+            <span class="demo-item-value">${count}<small style="font-size:0.7rem;color:#999;margin-left:4px">(${pct}%)</small></span>
+        `;
+        genderList.appendChild(item);
+    });
+    
+    // ローディング非表示 → コンテンツ表示
+    document.getElementById('loadingArea').style.display = 'none';
+    document.getElementById('statsContent').style.display = 'block';
+    
+    // バーのアニメーション開始
+    setTimeout(() => {
+        document.querySelectorAll('.axis-bar-fill, .char-bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.width + '%';
+        });
+    }, 100);
+}
+
+loadStats();
+</script>
+
+</body>
+</html>
