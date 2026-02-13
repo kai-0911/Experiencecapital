@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ExC CANVAS</title>
-    <!-- v5 larger icons -->
+    <!-- v6 larger chars -->
     <style>
         /* =========================================
            1. 共通設定 & ベーススタイル
@@ -428,10 +428,10 @@
 
             /* カルーセル - モバイルサイズ調整 */
             .scene {
-                width: 180px; height: 260px;
-                margin-top: 15px; margin-bottom: 25px;
+                width: 220px; height: 300px;
+                margin-top: 15px; margin-bottom: 30px;
             }
-            .carousel-item { width: 150px; height: 220px; left: 15px; top: 20px; }
+            .carousel-item { width: 190px; height: 270px; left: 15px; top: 15px; }
             .carousel-item img { padding: 6px; border-radius: 8px; }
             .mobile-char { display: none !important; }
 
@@ -608,7 +608,7 @@
     const carousel = document.getElementById('carousel');
     const carouselScene = document.getElementById('carousel-scene');
     const isMobile = window.innerWidth <= 600;
-    const radius = isMobile ? 280 : 380; 
+    const radius = isMobile ? 320 : 380; 
     let theta = 360 / characters.length;
     let currentAngle = 0;
     let autoRotateTimer = null;
