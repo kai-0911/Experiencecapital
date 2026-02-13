@@ -87,25 +87,7 @@
             margin: 15px auto 0;
         }
 
-        /* 12軸平均スコア */
-        .axis-bars { display: flex; flex-direction: column; gap: 16px; }
-        .axis-row { display: flex; align-items: center; gap: 12px; }
-        .axis-label {
-            width: 65px; font-size: 0.8rem; color: var(--text-sub);
-            text-align: right; flex-shrink: 0;
-        }
-        .axis-bar-bg {
-            flex: 1; height: 28px; background: #eee;
-            border-radius: 14px; overflow: hidden;
-        }
-        .axis-bar-fill {
-            height: 100%; border-radius: 14px;
-            background: linear-gradient(90deg, var(--rose) 0%, #E8879F 100%);
-            width: 0%; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
-            display: flex; align-items: center; justify-content: flex-end;
-            padding-right: 10px; min-width: 35px;
-        }
-        .axis-bar-value { font-size: 0.7rem; color: #fff; font-weight: 700; }
+        
 
         /* キャラクターランキング */
         .char-ranking { display: flex; flex-direction: column; gap: 12px; }
@@ -169,7 +151,6 @@
             .hero-count { font-size: 2.8rem; }
             .section { padding: 40px 18px; }
             .section-title { font-size: 1.1rem; }
-            .axis-label { width: 55px; font-size: 0.7rem; }
             .rank-img { width: 40px; height: 40px; }
             .rank-name { font-size: 0.78rem; }
             .top-nav { padding: 10px 15px; }
@@ -213,10 +194,6 @@
         <div class="char-ranking" id="charRanking"></div>
     </div>
 
-    <div class="section">
-        <div class="section-title">12軸の平均構成比</div>
-        <div class="axis-bars" id="axisBars"></div>
-    </div>
 
     <div class="cta-section">
         <a href="diagnosis.html" class="btn-cta">
@@ -238,13 +215,8 @@ const JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx
 // 列インデックス (A=0)
 // A:タイムスタンプ B:キャラクター名 C:タイプキー D:性別 E:年齢層
 // F:身体 G:知的 H:創造 I:文化 J:社会 K:感情 L:精神 M:時間 N:空間 O:偶然 P:自然 Q:経済
-const COL = { character: 1, gender: 3, age: 4, axisStart: 5 };
+const COL = { character: 1 };
 
-const axisLabels = {
-    physical: '身体的', intellectual: '知的', creative: '創造的', cultural: '文化的',
-    social: '社会的', emotional: '感情的', spiritual: '精神的', temporal: '時間的',
-    spatial: '空間的', serendipity: '偶然的', natural: '自然的', economic: '経済的'
-};
 // キャラクター → 画像マッピング
 const charImages = {
     '沈黙の賢者': '1.png', '石の設計士': '2.png', '盲目の英雄': '3.png',
@@ -254,7 +226,6 @@ const charImages = {
     '涙の吟遊詩人': '13.png', '微笑みの酒場主': '14.png', '夢追いの船長': '15.png',
     '仮面の道化師': '16.png'
 };
-const axisOrder = Object.keys(axisLabels);
 
 async function loadStats() {
     try {
@@ -288,34 +259,18 @@ async function loadStats() {
 function processData(rows) {
     const total = rows.length;
 
-    // 12軸 平均
-    const sums = {}; axisOrder.forEach(a => sums[a] = 0);
-    rows.forEach(row => {
-        axisOrder.forEach((a, i) => { sums[a] += parseFloat(row[COL.axisStart + i]) || 0; });
-    });
-    const avgs = {}; axisOrder.forEach(a => avgs[a] = Math.round((sums[a] / total) * 10) / 10);
 
     // キャラクター
     const charMap = {};
     rows.forEach(r => { const n = r[COL.character] || '不明'; charMap[n] = (charMap[n] || 0) + 1; });
 
-    renderStats({ totalCount: total, axisAverages: avgs, characterDistribution: charMap });
+    renderStats({ totalCount: total, characterDistribution: charMap });
 }
 
 function renderStats(data) {
     document.getElementById('totalCount').textContent = data.totalCount.toLocaleString();
 
-    // 12軸バー
-    const barsEl = document.getElementById('axisBars');
-    const maxAvg = Math.max(...axisOrder.map(a => data.axisAverages[a] || 0));
-    axisOrder.forEach(axis => {
-        const avg = data.axisAverages[axis] || 0;
-        const pct = maxAvg > 0 ? (avg / maxAvg) * 100 : 0;
-        const row = document.createElement('div');
-        row.className = 'axis-row';
-        row.innerHTML = `<div class="axis-label">${axisLabels[axis]}</div><div class="axis-bar-bg"><div class="axis-bar-fill" data-width="${pct}"><span class="axis-bar-value">${avg.toFixed(1)}%</span></div></div>`;
-        barsEl.appendChild(row);
-    });
+
 
     // キャラクターランキング
     const rankEl = document.getElementById('charRanking');
