@@ -107,31 +107,39 @@
         }
         .axis-bar-value { font-size: 0.7rem; color: #fff; font-weight: 700; }
 
-        /* キャラクター分布 */
-        .char-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .char-item {
-            background: #fff; border-radius: 12px; padding: 16px;
-            text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-            border: 1px solid rgba(200,90,124,0.1); transition: transform 0.2s;
+        /* キャラクターランキング */
+        .char-ranking { display: flex; flex-direction: column; gap: 12px; }
+        .rank-item {
+            display: flex; align-items: center; gap: 14px;
+            background: #fff; border-radius: 14px; padding: 12px 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid rgba(200,90,124,0.08);
+            transition: transform 0.2s;
         }
-        .char-item:hover { transform: translateY(-2px); }
-        .char-name { font-size: 0.8rem; color: var(--text-main); margin-bottom: 6px; font-weight: 700; }
-        .char-count {
+        .rank-item:hover { transform: translateY(-2px); }
+        .rank-item.top3 { border-left: 3px solid var(--rose); }
+        .rank-num {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.8rem; color: var(--rose); font-weight: 700; line-height: 1;
+            font-size: 1.4rem; font-weight: 700; color: var(--rose);
+            width: 28px; text-align: center; flex-shrink: 0;
         }
-        .char-pct { font-size: 0.7rem; color: var(--text-sub); margin-top: 4px; }
-        .char-bar-bg { width: 100%; height: 6px; background: #eee; border-radius: 3px; margin-top: 8px; overflow: hidden; }
-        .char-bar-fill { height: 100%; border-radius: 3px; background: var(--rose); transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1); }
-
-        /* 年齢・性別 */
-        .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .demo-box { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
-        .demo-title { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; text-align: center; }
-        .demo-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-        .demo-item:last-child { border-bottom: none; }
-        .demo-item-label { font-size: 0.8rem; color: var(--text-sub); }
-        .demo-item-value { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 700; color: var(--rose); }
+        .rank-img {
+            width: 48px; height: 48px; border-radius: 50%;
+            object-fit: cover; flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .rank-info { flex: 1; min-width: 0; }
+        .rank-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+        .rank-bar-wrap { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .rank-bar-bg { flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+        .rank-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--rose) 0%, #E8879F 100%); transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1); }
+        .rank-stats {
+            font-size: 0.7rem; color: var(--text-sub); white-space: nowrap;
+        }
+        .rank-count {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem; font-weight: 700; color: var(--rose);
+        }
 
         /* CTA */
         .cta-section { text-align: center; padding: 60px 25px 80px; }
@@ -161,12 +169,9 @@
             .hero-count { font-size: 2.8rem; }
             .section { padding: 40px 18px; }
             .section-title { font-size: 1.1rem; }
-            .char-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-            .char-item { padding: 12px; }
-            .char-name { font-size: 0.7rem; }
-            .char-count { font-size: 1.4rem; }
-            .demo-grid { grid-template-columns: 1fr; gap: 15px; }
             .axis-label { width: 55px; font-size: 0.7rem; }
+            .rank-img { width: 40px; height: 40px; }
+            .rank-name { font-size: 0.78rem; }
             .top-nav { padding: 10px 15px; }
             .top-nav-logo { font-size: 0.9rem; }
             .top-nav-link { font-size: 0.7rem; }
@@ -204,27 +209,13 @@
 
 <div id="statsContent" style="display: none;">
     <div class="section">
+        <div class="section-title">キャラクターランキング</div>
+        <div class="char-ranking" id="charRanking"></div>
+    </div>
+
+    <div class="section">
         <div class="section-title">12軸の平均構成比</div>
         <div class="axis-bars" id="axisBars"></div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">キャラクター分布</div>
-        <div class="char-grid" id="charGrid"></div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">診断ユーザーの属性</div>
-        <div class="demo-grid">
-            <div class="demo-box">
-                <div class="demo-title">年齢層</div>
-                <div id="ageList"></div>
-            </div>
-            <div class="demo-box">
-                <div class="demo-title">性別</div>
-                <div id="genderList"></div>
-            </div>
-        </div>
     </div>
 
     <div class="cta-section">
@@ -242,7 +233,7 @@
 // Google Sheets から直接CSV取得
 // ================================
 const SHEET_ID = '1tayI4i3FW2gFqCNxfpR6kgJ3MbI6-GGPLWdJY3aQwjA';
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
+const JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
 // 列インデックス (A=0)
 // A:タイムスタンプ B:キャラクター名 C:タイプキー D:性別 E:年齢層
@@ -254,44 +245,40 @@ const axisLabels = {
     social: '社会的', emotional: '感情的', spiritual: '精神的', temporal: '時間的',
     spatial: '空間的', serendipity: '偶然的', natural: '自然的', economic: '経済的'
 };
+// キャラクター → 画像マッピング
+const charImages = {
+    '沈黙の賢者': '1.png', '石の設計士': '2.png', '盲目の英雄': '3.png',
+    '黄金の女王': '4.png', '異端の錬金術師': '5.png', '地図を持たない旅人': '6.png',
+    '嵐の革命家': '7.png', '暴食の王': '8.png', '誓いの守護者': '9.png',
+    '森の番人': '10.png', '鐘を鳴らす予言者': '11.png', '施しの商人': '12.png',
+    '涙の吟遊詩人': '13.png', '微笑みの酒場主': '14.png', '夢追いの船長': '15.png',
+    '仮面の道化師': '16.png'
+};
 const axisOrder = Object.keys(axisLabels);
-
-// CSVパーサー（引用符対応）
-function parseCSV(text) {
-    const rows = [];
-    let cur = '', inQ = false;
-    for (const line of text.split('\n')) {
-        if (!line.trim() && !inQ) continue;
-        cur += (cur ? '\n' : '') + line;
-        inQ = ((cur.match(/"/g) || []).length % 2 !== 0);
-        if (!inQ) {
-            const cols = []; let col = '', q = false;
-            for (let i = 0; i < cur.length; i++) {
-                const ch = cur[i];
-                if (ch === '"') { if (q && cur[i+1] === '"') { col += '"'; i++; } else q = !q; }
-                else if (ch === ',' && !q) { cols.push(col.trim()); col = ''; }
-                else col += ch;
-            }
-            cols.push(col.trim());
-            rows.push(cols);
-            cur = '';
-        }
-    }
-    return rows;
-}
 
 async function loadStats() {
     try {
-        const res = await fetch(CSV_URL);
+        const res = await fetch(JSON_URL);
         if (!res.ok) throw new Error('Fetch failed: ' + res.status);
-        const text = await res.text();
-        const rows = parseCSV(text);
-
-        if (rows.length <= 1) {
+        let text = await res.text();
+        
+        // Google Visualization APIのレスポンスはJSONPラッパー付き
+        // "google.visualization.Query.setResponse({...})" → 中身のJSONだけ取り出す
+        const match = text.match(/google\.visualization\.Query\.setResponse\((.+)\);?\s*$/s);
+        if (!match) throw new Error('Unexpected response format');
+        const json = JSON.parse(match[1]);
+        
+        if (!json.table || !json.table.rows || json.table.rows.length === 0) {
             document.getElementById('loadingArea').innerHTML = '<div class="error-msg">まだ診断データがありません。<br>最初の一人になりましょう！</div>';
             return;
         }
-        processData(rows.slice(1)); // ヘッダー除外
+        
+        // rows を単純な配列に変換
+        const rows = json.table.rows.map(row => 
+            row.c.map(cell => cell ? (cell.v !== null && cell.v !== undefined ? String(cell.v) : '') : '')
+        );
+        
+        processData(rows);
     } catch (err) {
         console.error('データ取得エラー:', err);
         document.getElementById('loadingArea').innerHTML = '<div class="error-msg">データの読み込みに失敗しました。<br>しばらくしてからもう一度お試しください。</div>';
@@ -312,14 +299,7 @@ function processData(rows) {
     const charMap = {};
     rows.forEach(r => { const n = r[COL.character] || '不明'; charMap[n] = (charMap[n] || 0) + 1; });
 
-    // 年齢・性別
-    const ageMap = {}, genMap = {};
-    rows.forEach(r => {
-        const a = r[COL.age] || '不明'; ageMap[a] = (ageMap[a] || 0) + 1;
-        const g = r[COL.gender] || '不明'; genMap[g] = (genMap[g] || 0) + 1;
-    });
-
-    renderStats({ totalCount: total, axisAverages: avgs, characterDistribution: charMap, ageDistribution: ageMap, genderDistribution: genMap });
+    renderStats({ totalCount: total, axisAverages: avgs, characterDistribution: charMap });
 }
 
 function renderStats(data) {
@@ -337,30 +317,27 @@ function renderStats(data) {
         barsEl.appendChild(row);
     });
 
-    // キャラクター
-    const charEl = document.getElementById('charGrid');
+    // キャラクターランキング
+    const rankEl = document.getElementById('charRanking');
     const chars = Object.entries(data.characterDistribution).sort((a, b) => b[1] - a[1]);
     const maxC = chars[0]?.[1] || 1;
-    chars.forEach(([name, count]) => {
+    chars.forEach(([name, count], idx) => {
         const pct = ((count / data.totalCount) * 100).toFixed(1);
+        const img = charImages[name] || '1.png';
         const item = document.createElement('div');
-        item.className = 'char-item';
-        item.innerHTML = `<div class="char-name">${name}</div><div class="char-count">${count}</div><div class="char-pct">${pct}%</div><div class="char-bar-bg"><div class="char-bar-fill" data-width="${(count/maxC)*100}"></div></div>`;
-        charEl.appendChild(item);
-    });
-
-    // 年齢
-    const ageEl = document.getElementById('ageList');
-    Object.entries(data.ageDistribution).sort((a, b) => b[1] - a[1]).forEach(([label, count]) => {
-        const pct = ((count / data.totalCount) * 100).toFixed(1);
-        ageEl.innerHTML += `<div class="demo-item"><span class="demo-item-label">${label}</span><span class="demo-item-value">${count}<small style="font-size:0.7rem;color:#999;margin-left:4px">(${pct}%)</small></span></div>`;
-    });
-
-    // 性別
-    const genEl = document.getElementById('genderList');
-    Object.entries(data.genderDistribution).sort((a, b) => b[1] - a[1]).forEach(([label, count]) => {
-        const pct = ((count / data.totalCount) * 100).toFixed(1);
-        genEl.innerHTML += `<div class="demo-item"><span class="demo-item-label">${label}</span><span class="demo-item-value">${count}<small style="font-size:0.7rem;color:#999;margin-left:4px">(${pct}%)</small></span></div>`;
+        item.className = 'rank-item' + (idx < 3 ? ' top3' : '');
+        item.innerHTML = `
+            <div class="rank-num">${idx + 1}</div>
+            <img class="rank-img" src="${img}" alt="${name}">
+            <div class="rank-info">
+                <div class="rank-name">${name}</div>
+                <div class="rank-bar-wrap">
+                    <div class="rank-bar-bg"><div class="rank-bar-fill" data-width="${(count/maxC)*100}"></div></div>
+                    <div class="rank-stats"><span class="rank-count">${count}</span>人 (${pct}%)</div>
+                </div>
+            </div>
+        `;
+        rankEl.appendChild(item);
     });
 
     document.getElementById('loadingArea').style.display = 'none';
