@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ExC CANVAS</title>
+    <!-- v3 mobile fix -->
     <style>
         /* =========================================
            1. 共通設定 & ベーススタイル
@@ -22,10 +23,18 @@
 
         * { box-sizing: border-box; }
 
+        html {
+            overflow-x: clip;
+            max-width: 100vw;
+        }
+
+        #screen-top { overflow: hidden; width: 100%; max-width: 100vw; }
+
         body {
             background-color: var(--bg-canvas);
             font-family: 'Shippori Mincho', serif; margin: 0; color: var(--text-main);
-            overflow-x: hidden; overflow-y: auto; position: relative; min-height: 100vh;
+            overflow-x: clip; overflow-y: auto; position: relative; min-height: 100vh;
+            max-width: 100vw; width: 100%;
         }
 
         /* 水彩ペイント背景キャンバス */
@@ -49,31 +58,44 @@
         }
 
         /* ヘッダー */
-        header { position: absolute; top: 0; width: 100%; padding: 30px 20px 40px; text-align: center; z-index: 100; }
+        header { 
+            position: fixed; top: 0; left: 0; right: 0; width: 100%;
+            padding: 12px 20px;
+            text-align: center; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(200,90,124,0.08);
+            display: flex; align-items: center; justify-content: space-between;
+        }
         .logo-main { 
             font-family: 'Cormorant Garamond', serif; 
-            font-size: 4.5rem; 
+            font-size: 1.2rem; 
             color: var(--gold); 
-            letter-spacing: 0.15em; 
+            letter-spacing: 0.12em; 
             font-weight: 600; 
-            cursor: pointer; 
-            margin-bottom: 2px;
-            text-shadow: 0 2px 8px rgba(200, 90, 124, 0.3);
-        }
-        .logo-subtitle {
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            letter-spacing: 0.2em;
-            font-weight: 400;
             cursor: pointer;
-            margin-top: 5px;
+            flex-shrink: 0;
         }
-        .logo-subtitle .highlight {
-            color: var(--gold);
-            font-weight: 700;
+        .logo-subtitle { display: none; }
+        .header-links {
+            display: flex; gap: 18px; align-items: center;
         }
-        .logo-subtitle .normal {
-            color: #333333;
+        .header-link {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 0.7rem; color: #777;
+            text-decoration: none; white-space: nowrap;
+            transition: color 0.2s;
+        }
+        .header-link:hover { color: var(--gold); }
+        .header-link .full-text { display: inline; }
+        .header-link .short-text { display: none; }
+        .header-link.primary {
+            color: #fff;
+            background: var(--gold);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.65rem;
         }
 
         /* 背景演出：ペイントダブ */
@@ -103,10 +125,11 @@
         /* ヒーローセクション */
         .hero-section {
             min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding-top: 160px; padding-bottom: 60px; z-index: 5; position: relative;
+            padding-top: 80px; padding-bottom: 60px; z-index: 5; position: relative;
+            overflow: hidden; width: 100%;
         }
         
-        /* カルーセル */
+        /* カルーセル（PC: 3D回転） */
         .scene {
             position: relative; width: 160px; height: 240px; perspective: 1200px; transform-style: preserve-3d;
             margin-bottom: 120px; margin-top: 40px; cursor: pointer; opacity: 0; animation: fadeIn 1.2s ease-out 0.3s forwards;
@@ -122,6 +145,21 @@
             background: transparent; 
             border-radius: 10px;
             padding: 10px;
+        }
+
+        /* モバイル: シンプル単体画像 */
+        .mobile-char {
+            display: none;
+            width: 180px; height: 230px;
+            margin: 15px auto 20px;
+            opacity: 0; animation: fadeIn 0.8s ease-out 0.3s forwards;
+            position: relative;
+        }
+        .mobile-char img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 25px rgba(200,90,124,0.2));
+            transition: opacity 0.5s ease;
         }
 
         /* キャッチコピー */
@@ -320,73 +358,34 @@
         .step-title { font-size: 1.8rem; font-weight: 700; color: var(--gold); margin: 10px 0 20px; letter-spacing: 0.05em; position: relative; z-index: 1; }
         .step-desc { font-size: 1.3rem; color: var(--text-desc); line-height: 2.0; text-align: left; position: relative; z-index: 1; }
 
-        /* トグルナビ */
-        .toggle-nav {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 20px;
-            margin-bottom: 30px;
-            padding: 0 20px;
-            opacity: 0;
-            animation: fadeIn 1.0s ease-out 1.2s forwards;
-        }
-        .toggle-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 22px;
-            background: rgba(255,255,255,0.85);
-            border: 2px solid rgba(200,90,124,0.18);
-            border-radius: 50px;
-            text-decoration: none;
-            color: #666;
-            font-size: 0.82rem;
-            font-family: 'Shippori Mincho', serif;
-            font-weight: 600;
-            transition: all 0.25s;
-            backdrop-filter: blur(6px);
-            box-shadow: 0 3px 12px rgba(0,0,0,0.04);
-        }
-        .toggle-item:hover {
-            border-color: var(--rose);
-            background: rgba(248,232,237,0.9);
-            color: var(--rose);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(200,90,124,0.12);
-        }
-        .toggle-item:active { transform: scale(0.97); }
-        .toggle-icon { font-size: 1.1rem; }
-        .toggle-label { letter-spacing: 0.03em; }
-
         @media (max-width: 600px) {
-            /* ヘッダー */
-            header { padding: 20px 15px 5px; }
-            .logo-main { font-size: 1.6rem; letter-spacing: 0.08em; }
-            .logo-subtitle { font-size: 0.55rem; letter-spacing: 0.12em; }
+            /* 全体 - iOS Safari対応の横スクロール完全防止 */
+            html { overflow-x: clip !important; max-width: 100vw !important; }
+            body { overflow-x: clip !important; max-width: 100vw !important; }
+            #screen-top { overflow: hidden !important; max-width: 100vw !important; }
+
+            /* ヘッダー - handled at bottom of media query */
 
             /* ヒーロー */
             .hero-section {
                 min-height: auto;
-                padding-top: 55px;
+                padding-top: 50px;
                 padding-bottom: 20px;
+                padding-left: 15px;
+                padding-right: 15px;
             }
 
-            /* カルーセル */
-            .scene {
-                width: 100px; height: 150px;
-                margin-top: 10px; margin-bottom: 20px;
-            }
-            .carousel-item { width: 85px; height: 130px; left: 7px; top: 10px; }
-            .carousel-item img { padding: 5px; border-radius: 6px; }
+            /* カルーセル - モバイルでは3D非表示、単体画像表示 */
+            .scene { display: none !important; }
+            .mobile-char { display: block !important; }
 
             /* キャッチ */
-            .main-catch-wrapper { margin-bottom: 15px; }
-            .main-catch { font-size: 1rem; line-height: 1.7; letter-spacing: 0.04em; }
-            .paint-stroke { width: 160px; height: 160px; }
+            .main-catch-wrapper { margin-bottom: 18px; padding: 0 10px; }
+            .main-catch { font-size: 1.05rem; line-height: 1.8; letter-spacing: 0.04em; }
+            .paint-stroke { width: 180px; height: 180px; }
 
             /* CTAボタン */
-            .controls { margin-bottom: 25px; }
+            .controls { margin-bottom: 20px; }
             .btn-start {
                 padding: 14px 32px;
                 font-size: 0.75rem;
@@ -407,7 +406,7 @@
             .intro-chunk { font-size: 0.78rem; line-height: 1.9; margin-bottom: 1.2em; }
 
             /* ステップセクション */
-            .mechanism-section { padding: 40px 15px 60px; }
+            .mechanism-section { padding: 40px 15px 60px; overflow: hidden; }
             .section-title-ja { font-size: 0.95rem; margin-bottom: 30px; letter-spacing: 0.05em; }
             .section-title-ja::after { width: 40px; margin-top: 12px; }
             .steps-container { gap: 45px; padding: 30px 0; }
@@ -424,66 +423,17 @@
             .step-title { font-size: 0.9rem; margin: 5px 0 10px; }
             .step-desc { font-size: 0.75rem; line-height: 1.8; }
 
-            /* トグルナビ */
-            .toggle-nav { gap: 8px; margin-top: 15px; margin-bottom: 20px; padding: 0 15px; }
-            .toggle-item { padding: 10px 16px; font-size: 0.72rem; gap: 5px; }
-            .toggle-icon { font-size: 0.9rem; }
-
             /* 装飾 */
             .paint-dab { transform: scale(0.35) !important; }
 
-            /* デスクトップリンク非表示 */
-            .desktop-links { display: none !important; }
-        }
-
-        /* ===== トグルナビ（モバイル固定下部） ===== */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            z-index: 9999;
-            background: rgba(255,255,255,0.97);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(200,90,124,0.12);
-            padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-        }
-        .mobile-nav-inner {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .mobile-nav-btn {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            padding: 6px 2px;
-            border-radius: 10px;
-            text-decoration: none;
-            color: #777;
-            font-size: 0.55rem;
-            font-family: 'Shippori Mincho', serif;
-            transition: all 0.2s;
-            background: transparent;
-            border: 1.5px solid transparent;
-            white-space: nowrap;
-        }
-        .mobile-nav-btn svg { width: 18px; height: 18px; }
-        .mobile-nav-btn.primary {
-            background: linear-gradient(135deg, #F06292, #D05A7C);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 3px 12px rgba(232,107,143,0.3);
-        }
-        .mobile-nav-btn:not(.primary):active {
-            background: rgba(200,90,124,0.08);
-        }
-        @media (max-width: 600px) {
-            .mobile-nav { display: block; }
-            body { padding-bottom: 80px; }
+            /* ヘッダーナビ（モバイル） */
+            header { padding: 8px 8px; }
+            .logo-main { font-size: 0.8rem; letter-spacing: 0.04em; }
+            .header-links { gap: 6px; }
+            .header-link { font-size: 0.55rem; }
+            .header-link.primary { font-size: 0.55rem; padding: 4px 8px; }
+            .header-link .full-text { display: none; }
+            .header-link .short-text { display: inline; }
         }
     </style>
 </head>
@@ -501,15 +451,22 @@
 
 <header>
     <div class="logo-main" onclick="location.reload()">ExC CANVAS</div>
-    <div class="logo-subtitle" onclick="location.reload()">
-        <span class="highlight">Ex</span><span class="normal">perience </span><span class="highlight">C</span><span class="normal">apital</span>
-    </div>
+    <nav class="header-links">
+        <a href="characters.html" class="header-link"><span class="full-text">体験のかたち</span><span class="short-text">かたち</span></a>
+        <a href="result_experience_capital.html" class="header-link"><span class="full-text">みんなの体験資本</span><span class="short-text">みんな</span></a>
+        <a href="diagnosis.html" class="header-link primary">診断する</a>
+    </nav>
 </header>
 
 <div id="screen-top">
     <section class="hero-section">
+        <!-- PC: 3Dカルーセル -->
         <div class="scene" id="carousel-scene">
             <div class="carousel" id="carousel"></div>
+        </div>
+        <!-- モバイル: シンプル画像切替 -->
+        <div class="mobile-char" id="mobileChar" onclick="nextMobileChar()">
+            <img id="mobileCharImg" src="1.png" alt="Character">
         </div>
         
         <div class="main-catch-wrapper">
@@ -521,18 +478,6 @@
             <button class="btn-start" onclick="event.stopPropagation(); window.location.href='diagnosis.html'">
                 DRAW YOUR STORY <span>体験資本の可視化をはじめる</span>
             </button>
-        </div>
-
-        <!-- トグルナビ -->
-        <div class="toggle-nav">
-            <a href="characters.html" class="toggle-item">
-                <span class="toggle-icon">👥</span>
-                <span class="toggle-label">16キャラ一覧</span>
-            </a>
-            <a href="result_experience_capital.html" class="toggle-item">
-                <span class="toggle-icon">📊</span>
-                <span class="toggle-label">みんなの結果</span>
-            </a>
         </div>
 
         <div class="intro-box">
@@ -592,12 +537,14 @@
     
     const carousel = document.getElementById('carousel');
     const carouselScene = document.getElementById('carousel-scene');
-    const radius = 380; 
+    const isMobile = window.innerWidth <= 600;
+    const radius = isMobile ? 0 : 380; 
     let theta = 360 / characters.length;
     let currentAngle = 0;
     let autoRotateTimer = null;
 
     function initCarousel() {
+        if (isMobile) return; // モバイルでは3Dカルーセル不要
         characters.forEach((imgSrc, i) => {
             const el = document.createElement('div');
             el.className = 'carousel-item'; 
@@ -632,6 +579,24 @@
 
     initCarousel();
     resetAutoRotate(); // 初回の自動回転開始（5秒後に自動で回転）
+
+    /* --- モバイル用シンプル画像切替 --- */
+    let mobileCharIndex = 0;
+    function nextMobileChar() {
+        mobileCharIndex = (mobileCharIndex + 1) % characters.length;
+        const img = document.getElementById('mobileCharImg');
+        if (img) {
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.src = characters[mobileCharIndex];
+                img.style.opacity = '1';
+            }, 250);
+        }
+    }
+    // モバイル自動切替
+    if (window.innerWidth <= 600) {
+        setInterval(nextMobileChar, 3000);
+    }
 </script>
 <script>
 // 水彩ペイント背景の描画
@@ -786,24 +751,6 @@ document.querySelectorAll('.intro-chunk').forEach(chunk => {
     observer.observe(chunk);
 });
 </script>
-
-<!-- モバイル固定ナビ -->
-<nav class="mobile-nav">
-    <div class="mobile-nav-inner">
-        <a href="characters.html" class="mobile-nav-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-            キャラ
-        </a>
-        <a href="diagnosis.html" class="mobile-nav-btn primary">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            診断する
-        </a>
-        <a href="result_experience_capital.html" class="mobile-nav-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-            みんな
-        </a>
-    </div>
-</nav>
 
 </body>
 </html>
