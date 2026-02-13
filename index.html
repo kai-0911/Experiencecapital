@@ -40,7 +40,7 @@
 
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(255, 255, 255, 0.35); pointer-events: none; z-index: -1;
+            background-color: rgba(255, 255, 255, 0.55); pointer-events: none; z-index: -1;
         }
 
         @keyframes fadeIn { 
@@ -58,7 +58,6 @@
             font-weight: 600; 
             cursor: pointer; 
             margin-bottom: 2px;
-            text-shadow: 0 2px 8px rgba(200, 90, 124, 0.3);
         }
         .logo-subtitle {
             font-family: 'Cinzel', serif;
@@ -84,51 +83,50 @@
         }
         @keyframes bubbleFloat {
             0% { opacity: 0; transform: scale(0.5); } 
-            15% { opacity: 0.85; transform: scale(1); }
-            35% { opacity: 0.65; transform: scale(1.1); } 
-            50% { opacity: 0.1; transform: scale(1.15); }
-            65% { opacity: 0.75; transform: scale(1.1); }
-            85% { opacity: 0.5; transform: scale(1.05); } 
+            15% { opacity: 0.7; transform: scale(1); }
+            35% { opacity: 0.5; transform: scale(1.1); } 
+            50% { opacity: 0; transform: scale(1.15); }
+            65% { opacity: 0.6; transform: scale(1.1); }
+            85% { opacity: 0.4; transform: scale(1.05); } 
             100% { opacity: 0; transform: scale(1); }
         }
-        .dab1 { top: 10%; left: 5%; width: 220px; height: 220px; color: #FF9AB5; animation-duration: 14s; }
-        .dab2 { top: 60%; right: 10%; width: 240px; height: 240px; color: #FFB88C; animation-delay: 5s; animation-duration: 16s; }
-        .dab3 { bottom: 5%; left: 20%; width: 160px; height: 160px; color: #87CEEB; animation-delay: 2s; animation-duration: 12s; }
-        .dab4 { top: 25%; right: 20%; width: 140px; height: 140px; color: #DDA0DD; animation-delay: 7s; animation-duration: 13s; }
-        .dab5 { top: 75%; left: 50%; width: 180px; height: 180px; color: #FFD700; animation-delay: 3s; animation-duration: 15s; }
-        .dab6 { bottom: 20%; right: 30%; width: 120px; height: 120px; color: #E8A4C8; animation-delay: 9s; animation-duration: 14s; }
-        .dab7 { top: 50%; right: 5%; width: 160px; height: 160px; color: #A8C8F0; animation-delay: 1s; animation-duration: 15s; filter: blur(3px); }
-        .dab8 { top: 35%; left: 15%; width: 140px; height: 140px; color: #FFB6C1; animation-delay: 6s; animation-duration: 17s; }
+        .dab1 { top: 10%; left: 5%; width: 180px; height: 180px; color: #FFD1DC; animation-duration: 14s; }
+        .dab2 { top: 60%; right: 10%; width: 200px; height: 200px; color: #FFDAB9; animation-delay: 5s; animation-duration: 16s; }
+        .dab3 { bottom: 5%; left: 20%; width: 120px; height: 120px; color: #B0E0E6; animation-delay: 2s; animation-duration: 12s; }
+        .dab4 { top: 25%; right: 20%; width: 100px; height: 100px; color: #DDA0DD; animation-delay: 7s; animation-duration: 13s; }
+        .dab5 { top: 75%; left: 50%; width: 150px; height: 150px; color: #FFE4B5; animation-delay: 3s; animation-duration: 15s; }
+        .dab6 { bottom: 20%; right: 30%; width: 90px; height: 90px; color: #E0BBE4; animation-delay: 9s; animation-duration: 14s; }
+        .dab7 { top: 50%; right: 5%; width: 130px; height: 130px; color: #C7CEEA; animation-delay: 1s; animation-duration: 15s; filter: blur(3px); }
+        .dab8 { top: 35%; left: 15%; width: 110px; height: 110px; color: #FADADD; animation-delay: 6s; animation-duration: 17s; }
 
         /* ヒーローセクション */
         .hero-section {
             min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding-top: 160px; padding-bottom: 60px; z-index: 5; position: relative;
+            padding-top: 190px; padding-bottom: 60px; z-index: 5; position: relative;
         }
         
         /* カルーセル */
         .scene {
-            position: relative; width: 160px; height: 240px; perspective: 1200px; transform-style: preserve-3d;
-            margin-bottom: 120px; margin-top: 40px; cursor: pointer; opacity: 0; animation: fadeIn 1.2s ease-out 0.3s forwards;
+            position: relative; width: 220px; height: 310px; perspective: 1200px; transform-style: preserve-3d;
+            margin-bottom: 90px; margin-top: 20px; cursor: pointer; opacity: 0; animation: fadeIn 1.2s ease-out 0.3s forwards;
         }
         .carousel { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .carousel-item {
-            position: absolute; width: 140px; height: 210px; left: 10px; top: 15px; background: transparent;
-            display: flex; align-items: center; justify-content: center; backface-visibility: hidden; overflow: hidden;
+            position: absolute; width: 200px; height: 290px; left: 10px; top: 10px; background: transparent;
+            display: flex; align-items: center; justify-content: center; backface-visibility: hidden;
+            overflow: hidden;
         }
         .carousel-item img { 
             width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; 
-            filter: drop-shadow(0 15px 30px rgba(200, 90, 124, 0.25)); 
-            background: white; 
-            border-radius: 10px;
-            padding: 10px;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15));
+            transform: scale(1.6);
         }
 
         /* キャッチコピー */
         .main-catch-wrapper { margin-bottom: 40px; text-align: center; position: relative; }
         .paint-stroke {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 320px;
-            background: radial-gradient(circle, rgba(232, 107, 143, 0.2) 0%, rgba(255, 180, 100, 0.1) 40%, transparent 70%); border-radius: 50%;
+            background: radial-gradient(circle, rgba(220, 20, 60, 0.15) 0%, transparent 70%); border-radius: 50%;
             z-index: -1; filter: blur(20px); opacity: 0; animation: fadeIn 1.5s ease-out 0.5s forwards;
         }
         .main-catch {
@@ -139,7 +137,7 @@
         /* ボタン */
         .controls { position: relative; text-align: center; z-index: 20; margin-bottom: 80px; opacity: 0; animation: fadeIn 1.0s ease-out 0.9s forwards; }
         .btn-start {
-            background: linear-gradient(135deg, #F06292 0%, #E84880 50%, #D05A7C 100%);
+            background: linear-gradient(135deg, #E86B8F 0%, #D05A7C 100%);
             border: none;
             color: #ffffff;
             padding: 28px 80px;
@@ -196,12 +194,6 @@
         .btn-start:active {
             transform: translateY(-1px) scale(1);
         }
-        
-        @keyframes btnPulse {
-            0%, 100% { box-shadow: 0 12px 30px rgba(232, 107, 143, 0.5); }
-            50% { box-shadow: 0 12px 45px rgba(232, 107, 143, 0.7), 0 0 20px rgba(232, 107, 143, 0.3); }
-        }
-        .btn-start { animation: fadeIn 1.0s ease-out 0.9s forwards, btnPulse 2.5s ease-in-out 2s infinite; }
 
         /* 紹介文 */
         .intro-box {
@@ -230,7 +222,7 @@
         }
 
         /* ステップ紹介 */
-        .mechanism-section { width: 100%; background: linear-gradient(180deg, rgba(232, 107, 143, 0.06) 0%, rgba(232, 107, 143, 0.12) 50%, rgba(255, 200, 150, 0.08) 100%); padding: 80px 20px 120px; display: flex; flex-direction: column; align-items: center; }
+        .mechanism-section { width: 100%; background: rgba(220, 20, 60, 0.05); padding: 80px 20px 120px; display: flex; flex-direction: column; align-items: center; }
         .section-title-ja { font-family: 'Shippori Mincho', serif; color: var(--text-main); font-size: 1.4rem; font-weight: 700; margin-bottom: 60px; position: relative; letter-spacing: 0.1em; }
         .section-title-ja::after { content: ""; display: block; width: 60px; height: 2px; background: var(--gold); margin: 20px auto 0; border-radius: 2px; }
         .steps-container { 
@@ -262,14 +254,14 @@
         }
         
         .step-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 245, 248, 0.97) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 245, 248, 0.95) 100%);
             width: 100%; 
             max-width: 650px; 
             padding: 45px 50px;
             border-radius: 20px; 
-            box-shadow: 0 10px 40px rgba(200, 90, 124, 0.18); 
+            box-shadow: 0 10px 40px rgba(200, 90, 124, 0.15); 
             text-align: left;
-            border: 2px solid rgba(200, 90, 124, 0.25);
+            border: 2px solid rgba(200, 90, 124, 0.2);
             position: relative; 
             transition: all 0.4s ease;
             opacity: 0;
@@ -321,11 +313,28 @@
         .step-desc { font-size: 1.3rem; color: var(--text-desc); line-height: 2.0; text-align: left; position: relative; z-index: 1; }
 
         @media (max-width: 600px) {
-            .hero-section { padding-top: 100px; }
-            .scene { transform: scale(0.9); margin-bottom: 50px; }
-            .intro-desc { font-size: 0.85rem; line-height: 2.0; text-align: left; }
-            .main-catch { font-size: 1.3rem; }
+            .hero-section { padding-top: 90px; min-height: auto; padding-bottom: 30px; }
+            header { padding: 12px 15px 15px; }
+            .logo-main { font-size: 2rem; letter-spacing: 0.08em; margin-bottom: 0; }
+            .logo-subtitle { font-size: 0.6rem; letter-spacing: 0.15em; }
+            .scene { 
+                width: 140px; height: 200px; 
+                margin-bottom: 30px; margin-top: 10px; 
+            }
+            .carousel-item { width: 130px; height: 185px; left: 5px; top: 8px; }
+            .carousel-item img { transform: scale(1.6); }
+            .main-catch { font-size: 1.3rem; line-height: 1.8; }
+            .main-catch-wrapper { margin-bottom: 25px; }
+            .btn-start { padding: 16px 40px; font-size: 1rem; }
+            .btn-start span { font-size: 0.8rem; }
+            .controls { margin-bottom: 30px; }
+            .intro-desc { font-size: 0.82rem; line-height: 2.0; text-align: left; }
+            .section-title-main { font-size: 1.2rem; }
+            .intro-title { font-size: 1.4rem; letter-spacing: 0.05em; }
             .step-card { min-width: 100%; margin-bottom: 10px; }
+            .step-title { font-size: 0.95rem; }
+            .step-desc { font-size: 0.82rem; }
+            .paint-stroke { width: 200px; height: 200px; }
         }
     </style>
 </head>
@@ -422,7 +431,7 @@
     
     const carousel = document.getElementById('carousel');
     const carouselScene = document.getElementById('carousel-scene');
-    const radius = 380; 
+    const radius = window.innerWidth <= 600 ? 220 : 450; 
     let theta = 360 / characters.length;
     let currentAngle = 0;
     let autoRotateTimer = null;
@@ -472,12 +481,12 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// 4色パレット（紫・オレンジ・青・緑）- 鮮やか版
+// 4色パレット（紫・オレンジ・青・緑）
 const colors = [
-    ['#a06ee0', '#c490f0', '#ddb8f8'],  // 紫系
-    ['#e0985a', '#f0b880', '#f8d8b0'],  // オレンジ系
-    ['#5a9ae0', '#80b8f0', '#b0d8f8'],  // 青系
-    ['#5ae098', '#80f0b8', '#b0f8d8']   // 緑系
+    ['#9b7dd4', '#b8a0e0', '#d4c2ed'],  // 紫系
+    ['#d4a87d', '#e0c2a0', '#edddc2'],  // オレンジ系
+    ['#7daad4', '#a0c5e0', '#c2dded'],  // 青系
+    ['#7dd4a8', '#a0e0c2', '#c2eddd']   // 緑系
 ];
 
 // すべての色を平坦化
@@ -494,7 +503,7 @@ class PaintCircle {
         this.y = Math.random() * canvas.height;
         this.size = 150 + Math.random() * 250;
         this.alpha = 0;
-        this.targetAlpha = 0.2 + Math.random() * 0.2;
+        this.targetAlpha = 0.15 + Math.random() * 0.15;
         this.fadeIn = true;
         this.lifeTime = 0;
         this.maxLifeTime = 8000 + Math.random() * 4000; // 8-12秒
