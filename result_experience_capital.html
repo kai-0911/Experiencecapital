@@ -89,9 +89,7 @@
 
         /* 12軸平均スコア */
         .axis-bars { display: flex; flex-direction: column; gap: 16px; }
-        .axis-row {
-            display: flex; align-items: center; gap: 12px;
-        }
+        .axis-row { display: flex; align-items: center; gap: 12px; }
         .axis-label {
             width: 65px; font-size: 0.8rem; color: var(--text-sub);
             text-align: right; flex-shrink: 0;
@@ -99,148 +97,62 @@
         .axis-bar-bg {
             flex: 1; height: 28px; background: #eee;
             border-radius: 14px; overflow: hidden;
-            position: relative;
         }
         .axis-bar-fill {
             height: 100%; border-radius: 14px;
             background: linear-gradient(90deg, var(--rose) 0%, #E8879F 100%);
             width: 0%; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
             display: flex; align-items: center; justify-content: flex-end;
-            padding-right: 10px;
-            min-width: 35px;
+            padding-right: 10px; min-width: 35px;
         }
-        .axis-bar-value {
-            font-size: 0.7rem; color: #fff; font-weight: 700;
-        }
+        .axis-bar-value { font-size: 0.7rem; color: #fff; font-weight: 700; }
 
         /* キャラクター分布 */
-        .char-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
+        .char-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .char-item {
-            background: #fff;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-            border: 1px solid rgba(200,90,124,0.1);
-            transition: transform 0.2s;
+            background: #fff; border-radius: 12px; padding: 16px;
+            text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid rgba(200,90,124,0.1); transition: transform 0.2s;
         }
         .char-item:hover { transform: translateY(-2px); }
-        .char-name {
-            font-size: 0.8rem; color: var(--text-main);
-            margin-bottom: 6px; font-weight: 700;
-        }
+        .char-name { font-size: 0.8rem; color: var(--text-main); margin-bottom: 6px; font-weight: 700; }
         .char-count {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.8rem; color: var(--rose);
-            font-weight: 700; line-height: 1;
+            font-size: 1.8rem; color: var(--rose); font-weight: 700; line-height: 1;
         }
-        .char-pct {
-            font-size: 0.7rem; color: var(--text-sub);
-            margin-top: 4px;
-        }
-        .char-bar-bg {
-            width: 100%; height: 6px;
-            background: #eee; border-radius: 3px;
-            margin-top: 8px; overflow: hidden;
-        }
-        .char-bar-fill {
-            height: 100%; border-radius: 3px;
-            background: var(--rose);
-            transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
+        .char-pct { font-size: 0.7rem; color: var(--text-sub); margin-top: 4px; }
+        .char-bar-bg { width: 100%; height: 6px; background: #eee; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+        .char-bar-fill { height: 100%; border-radius: 3px; background: var(--rose); transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1); }
 
         /* 年齢・性別 */
-        .demo-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-        .demo-box {
-            background: #fff;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-        }
-        .demo-title {
-            font-size: 0.9rem; font-weight: 700;
-            color: var(--text-main); margin-bottom: 20px;
-            text-align: center;
-        }
-        .demo-item {
-            display: flex; justify-content: space-between;
-            align-items: center; padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
+        .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .demo-box { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+        .demo-title { font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; text-align: center; }
+        .demo-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
         .demo-item:last-child { border-bottom: none; }
         .demo-item-label { font-size: 0.8rem; color: var(--text-sub); }
-        .demo-item-value {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.1rem; font-weight: 700; color: var(--rose);
-        }
+        .demo-item-value { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 700; color: var(--rose); }
 
         /* CTA */
-        .cta-section {
-            text-align: center;
-            padding: 60px 25px 80px;
-        }
+        .cta-section { text-align: center; padding: 60px 25px 80px; }
         .btn-cta {
             display: inline-block;
             background: linear-gradient(135deg, #F06292 0%, #D05A7C 100%);
-            color: #fff; text-decoration: none;
-            padding: 18px 50px;
-            border-radius: 50px;
-            font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
-            letter-spacing: 0.1em;
-            box-shadow: 0 8px 25px rgba(232,107,143,0.4);
-            transition: all 0.3s;
+            color: #fff; text-decoration: none; padding: 18px 50px;
+            border-radius: 50px; font-family: 'Cinzel', serif;
+            font-size: 1.1rem; letter-spacing: 0.1em;
+            box-shadow: 0 8px 25px rgba(232,107,143,0.4); transition: all 0.3s;
         }
         .btn-cta:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(232,107,143,0.5); }
-        .btn-cta-sub {
-            display: block;
-            font-family: 'Shippori Mincho', serif;
-            font-size: 0.85rem;
-            margin-top: 6px;
-            font-weight: normal;
-            letter-spacing: 0.02em;
-        }
+        .btn-cta-sub { display: block; font-family: 'Shippori Mincho', serif; font-size: 0.85rem; margin-top: 6px; font-weight: normal; }
 
-        /* フッター */
-        .footer {
-            text-align: center; padding: 30px;
-            font-size: 0.7rem; color: #999;
-        }
+        .footer { text-align: center; padding: 30px; font-size: 0.7rem; color: #999; }
 
         /* ローディング */
-        .loading {
-            text-align: center;
-            padding: 80px 20px;
-            color: var(--text-sub);
-        }
-        .loading-spinner {
-            width: 40px; height: 40px;
-            border: 3px solid #eee;
-            border-top-color: var(--rose);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 20px;
-        }
+        .loading { text-align: center; padding: 80px 20px; color: var(--text-sub); }
+        .loading-spinner { width: 40px; height: 40px; border: 3px solid #eee; border-top-color: var(--rose); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        .error-msg {
-            text-align: center; padding: 40px;
-            color: #999; font-size: 0.9rem;
-        }
-
-        /* レーダーチャート */
-        .radar-container {
-            display: flex; justify-content: center;
-            margin-bottom: 40px;
-        }
+        .error-msg { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
 
         /* モバイル */
         @media (max-width: 768px) {
@@ -260,7 +172,6 @@
             .top-nav-link { font-size: 0.7rem; }
             .btn-cta { padding: 16px 40px; font-size: 1rem; }
         }
-
         @media (max-width: 480px) {
             .hero-title { font-size: 1.3rem; }
             .hero-count { font-size: 2.2rem; }
@@ -291,22 +202,17 @@
     </div>
 </div>
 
-<!-- 統計コンテンツ（JS で表示） -->
 <div id="statsContent" style="display: none;">
-
-    <!-- 12軸の平均スコア -->
     <div class="section">
         <div class="section-title">12軸の平均構成比</div>
         <div class="axis-bars" id="axisBars"></div>
     </div>
 
-    <!-- キャラクター分布 -->
     <div class="section">
         <div class="section-title">キャラクター分布</div>
         <div class="char-grid" id="charGrid"></div>
     </div>
 
-    <!-- 年齢・性別 -->
     <div class="section">
         <div class="section-title">診断ユーザーの属性</div>
         <div class="demo-grid">
@@ -321,7 +227,6 @@
         </div>
     </div>
 
-    <!-- CTA -->
     <div class="cta-section">
         <a href="diagnosis.html" class="btn-cta">
             DRAW YOUR STORY
@@ -330,137 +235,143 @@
     </div>
 </div>
 
-<div class="footer">
-    © 2026 ExC CANVAS - Experience Capital Assessment
-</div>
+<div class="footer">© 2026 ExC CANVAS - Experience Capital Assessment</div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNOCM1DMMRMMexb-zHfryomi4wCFSgH8f5eISSTuo6ZwJitX-2C9u8mXbMNzguXSzUfA/exec';
+// ================================
+// Google Sheets から直接CSV取得
+// ================================
+const SHEET_ID = '1tayI4i3FW2gFqCNxfpR6kgJ3MbI6-GGPLWdJY3aQwjA';
+const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
+
+// 列インデックス (A=0)
+// A:タイムスタンプ B:キャラクター名 C:タイプキー D:性別 E:年齢層
+// F:身体 G:知的 H:創造 I:文化 J:社会 K:感情 L:精神 M:時間 N:空間 O:偶然 P:自然 Q:経済
+const COL = { character: 1, gender: 3, age: 4, axisStart: 5 };
 
 const axisLabels = {
-    physical: '身体的',
-    intellectual: '知的',
-    creative: '創造的',
-    cultural: '文化的',
-    social: '社会的',
-    emotional: '感情的',
-    spiritual: '精神的',
-    temporal: '時間的',
-    spatial: '空間的',
-    serendipity: '偶然的',
-    natural: '自然的',
-    economic: '経済的'
+    physical: '身体的', intellectual: '知的', creative: '創造的', cultural: '文化的',
+    social: '社会的', emotional: '感情的', spiritual: '精神的', temporal: '時間的',
+    spatial: '空間的', serendipity: '偶然的', natural: '自然的', economic: '経済的'
 };
+const axisOrder = Object.keys(axisLabels);
 
-const axisOrder = ['physical','intellectual','creative','cultural','social','emotional','spiritual','temporal','spatial','serendipity','natural','economic'];
+// CSVパーサー（引用符対応）
+function parseCSV(text) {
+    const rows = [];
+    let cur = '', inQ = false;
+    for (const line of text.split('\n')) {
+        if (!line.trim() && !inQ) continue;
+        cur += (cur ? '\n' : '') + line;
+        inQ = ((cur.match(/"/g) || []).length % 2 !== 0);
+        if (!inQ) {
+            const cols = []; let col = '', q = false;
+            for (let i = 0; i < cur.length; i++) {
+                const ch = cur[i];
+                if (ch === '"') { if (q && cur[i+1] === '"') { col += '"'; i++; } else q = !q; }
+                else if (ch === ',' && !q) { cols.push(col.trim()); col = ''; }
+                else col += ch;
+            }
+            cols.push(col.trim());
+            rows.push(cols);
+            cur = '';
+        }
+    }
+    return rows;
+}
 
 async function loadStats() {
     try {
-        const res = await fetch(SCRIPT_URL);
-        const data = await res.json();
-        
-        if (!data || data.totalCount === 0) {
-            document.getElementById('loadingArea').innerHTML = '<div class="error-msg">まだ診断データがありません。最初の一人になりましょう！</div>';
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error('Fetch failed: ' + res.status);
+        const text = await res.text();
+        const rows = parseCSV(text);
+
+        if (rows.length <= 1) {
+            document.getElementById('loadingArea').innerHTML = '<div class="error-msg">まだ診断データがありません。<br>最初の一人になりましょう！</div>';
             return;
         }
-        
-        renderStats(data);
+        processData(rows.slice(1)); // ヘッダー除外
     } catch (err) {
         console.error('データ取得エラー:', err);
         document.getElementById('loadingArea').innerHTML = '<div class="error-msg">データの読み込みに失敗しました。<br>しばらくしてからもう一度お試しください。</div>';
     }
 }
 
+function processData(rows) {
+    const total = rows.length;
+
+    // 12軸 平均
+    const sums = {}; axisOrder.forEach(a => sums[a] = 0);
+    rows.forEach(row => {
+        axisOrder.forEach((a, i) => { sums[a] += parseFloat(row[COL.axisStart + i]) || 0; });
+    });
+    const avgs = {}; axisOrder.forEach(a => avgs[a] = Math.round((sums[a] / total) * 10) / 10);
+
+    // キャラクター
+    const charMap = {};
+    rows.forEach(r => { const n = r[COL.character] || '不明'; charMap[n] = (charMap[n] || 0) + 1; });
+
+    // 年齢・性別
+    const ageMap = {}, genMap = {};
+    rows.forEach(r => {
+        const a = r[COL.age] || '不明'; ageMap[a] = (ageMap[a] || 0) + 1;
+        const g = r[COL.gender] || '不明'; genMap[g] = (genMap[g] || 0) + 1;
+    });
+
+    renderStats({ totalCount: total, axisAverages: avgs, characterDistribution: charMap, ageDistribution: ageMap, genderDistribution: genMap });
+}
+
 function renderStats(data) {
-    // 合計
     document.getElementById('totalCount').textContent = data.totalCount.toLocaleString();
-    
+
     // 12軸バー
-    const axisBars = document.getElementById('axisBars');
+    const barsEl = document.getElementById('axisBars');
     const maxAvg = Math.max(...axisOrder.map(a => data.axisAverages[a] || 0));
-    
     axisOrder.forEach(axis => {
         const avg = data.axisAverages[axis] || 0;
         const pct = maxAvg > 0 ? (avg / maxAvg) * 100 : 0;
-        
         const row = document.createElement('div');
         row.className = 'axis-row';
-        row.innerHTML = `
-            <div class="axis-label">${axisLabels[axis]}</div>
-            <div class="axis-bar-bg">
-                <div class="axis-bar-fill" data-width="${pct}">
-                    <span class="axis-bar-value">${avg.toFixed(1)}%</span>
-                </div>
-            </div>
-        `;
-        axisBars.appendChild(row);
+        row.innerHTML = `<div class="axis-label">${axisLabels[axis]}</div><div class="axis-bar-bg"><div class="axis-bar-fill" data-width="${pct}"><span class="axis-bar-value">${avg.toFixed(1)}%</span></div></div>`;
+        barsEl.appendChild(row);
     });
-    
-    // キャラクター分布
-    const charGrid = document.getElementById('charGrid');
-    const chars = Object.entries(data.characterDistribution)
-        .sort((a, b) => b[1] - a[1]);
-    const maxChar = chars.length > 0 ? chars[0][1] : 1;
-    
+
+    // キャラクター
+    const charEl = document.getElementById('charGrid');
+    const chars = Object.entries(data.characterDistribution).sort((a, b) => b[1] - a[1]);
+    const maxC = chars[0]?.[1] || 1;
     chars.forEach(([name, count]) => {
         const pct = ((count / data.totalCount) * 100).toFixed(1);
-        const barPct = (count / maxChar) * 100;
-        
         const item = document.createElement('div');
         item.className = 'char-item';
-        item.innerHTML = `
-            <div class="char-name">${name}</div>
-            <div class="char-count">${count}</div>
-            <div class="char-pct">${pct}%</div>
-            <div class="char-bar-bg">
-                <div class="char-bar-fill" data-width="${barPct}"></div>
-            </div>
-        `;
-        charGrid.appendChild(item);
+        item.innerHTML = `<div class="char-name">${name}</div><div class="char-count">${count}</div><div class="char-pct">${pct}%</div><div class="char-bar-bg"><div class="char-bar-fill" data-width="${(count/maxC)*100}"></div></div>`;
+        charEl.appendChild(item);
     });
-    
-    // 年齢層
-    const ageList = document.getElementById('ageList');
-    const ages = Object.entries(data.ageDistribution).sort((a, b) => b[1] - a[1]);
-    ages.forEach(([label, count]) => {
+
+    // 年齢
+    const ageEl = document.getElementById('ageList');
+    Object.entries(data.ageDistribution).sort((a, b) => b[1] - a[1]).forEach(([label, count]) => {
         const pct = ((count / data.totalCount) * 100).toFixed(1);
-        const item = document.createElement('div');
-        item.className = 'demo-item';
-        item.innerHTML = `
-            <span class="demo-item-label">${label}</span>
-            <span class="demo-item-value">${count}<small style="font-size:0.7rem;color:#999;margin-left:4px">(${pct}%)</small></span>
-        `;
-        ageList.appendChild(item);
+        ageEl.innerHTML += `<div class="demo-item"><span class="demo-item-label">${label}</span><span class="demo-item-value">${count}<small style="font-size:0.7rem;color:#999;margin-left:4px">(${pct}%)</small></span></div>`;
     });
-    
+
     // 性別
-    const genderList = document.getElementById('genderList');
-    const genders = Object.entries(data.genderDistribution).sort((a, b) => b[1] - a[1]);
-    genders.forEach(([label, count]) => {
+    const genEl = document.getElementById('genderList');
+    Object.entries(data.genderDistribution).sort((a, b) => b[1] - a[1]).forEach(([label, count]) => {
         const pct = ((count / data.totalCount) * 100).toFixed(1);
-        const item = document.createElement('div');
-        item.className = 'demo-item';
-        item.innerHTML = `
-            <span class="demo-item-label">${label}</span>
-            <span class="demo-item-value">${count}<small style="font-size:0.7rem;color:#999;margin-left:4px">(${pct}%)</small></span>
-        `;
-        genderList.appendChild(item);
+        genEl.innerHTML += `<div class="demo-item"><span class="demo-item-label">${label}</span><span class="demo-item-value">${count}<small style="font-size:0.7rem;color:#999;margin-left:4px">(${pct}%)</small></span></div>`;
     });
-    
-    // ローディング非表示 → コンテンツ表示
+
     document.getElementById('loadingArea').style.display = 'none';
     document.getElementById('statsContent').style.display = 'block';
-    
-    // バーのアニメーション開始
+
     setTimeout(() => {
-        document.querySelectorAll('.axis-bar-fill, .char-bar-fill').forEach(bar => {
-            bar.style.width = bar.dataset.width + '%';
-        });
+        document.querySelectorAll('[data-width]').forEach(bar => { bar.style.width = bar.dataset.width + '%'; });
     }, 100);
 }
 
 loadStats();
 </script>
-
 </body>
 </html>
