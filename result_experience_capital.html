@@ -97,6 +97,7 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.04);
             border: 1px solid rgba(200,90,124,0.08);
             transition: transform 0.2s;
+            cursor: pointer;
         }
         .rank-item:hover { transform: translateY(-2px); }
         .rank-item.top3 { border-left: 3px solid var(--rose); }
@@ -210,7 +211,6 @@
 // Google Sheets から直接CSV取得
 // ================================
 const SHEET_ID = '1tayI4i3FW2gFqCNxfpR6kgJ3MbI6-GGPLWdJY3aQwjA';
-const JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
 // 列インデックス (A=0)
 // A:タイムスタンプ B:キャラクター名 C:タイプキー D:性別 E:年齢層
@@ -226,26 +226,51 @@ const charImages = {
     '涙の吟遊詩人': '13.png', '微笑みの酒場主': '14.png', '夢追いの船長': '15.png',
     '仮面の道化師': '16.png'
 };
+const charPages = {
+    '沈黙の賢者': 'result_sage.html', '石の設計士': 'result_architect.html',
+    '盲目の英雄': 'result_hero.html', '黄金の女王': 'result_queen.html',
+    '異端の錬金術師': 'result_alchemist.html', '地図を持たない旅人': 'result_traveler.html',
+    '嵐の革命家': 'result_rebel.html', '暴食の王': 'result_king.html',
+    '誓いの守護者': 'result_guardian.html', '森の番人': 'result_keeper.html',
+    '鐘を鳴らす予言者': 'result_prophet.html', '施しの商人': 'result_merchant.html',
+    '涙の吟遊詩人': 'result_bard.html', '微笑みの酒場主': 'result_host.html',
+    '夢追いの船長': 'result_captain.html', '仮面の道化師': 'result_jester.html'
+};
 
 async function loadStats() {
     try {
-        const res = await fetch(JSON_URL);
-        if (!res.ok) throw new Error('Fetch failed: ' + res.status);
-        let text = await res.text();
+        // JSONP方式：scriptタグ経由でCORS回避
+        const callbackName = '_gvizCallback_' + Date.now();
         
-        // Google Visualization APIのレスポンスはJSONPラッパー付き
-        // "google.visualization.Query.setResponse({...})" → 中身のJSONだけ取り出す
-        const match = text.match(/google\.visualization\.Query\.setResponse\((.+)\);?\s*$/s);
-        if (!match) throw new Error('Unexpected response format');
-        const json = JSON.parse(match[1]);
+        const data = await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error('タイムアウト'));
+                delete window[callbackName];
+            }, 15000);
+            
+            window[callbackName] = function(response) {
+                clearTimeout(timeout);
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(response);
+            };
+            
+            const script = document.createElement('script');
+            script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:${callbackName}`;
+            script.onerror = () => {
+                clearTimeout(timeout);
+                reject(new Error('スクリプト読み込み失敗'));
+            };
+            document.body.appendChild(script);
+        });
         
-        if (!json.table || !json.table.rows || json.table.rows.length === 0) {
+        if (!data.table || !data.table.rows || data.table.rows.length === 0) {
             document.getElementById('loadingArea').innerHTML = '<div class="error-msg">まだ診断データがありません。<br>最初の一人になりましょう！</div>';
             return;
         }
         
         // rows を単純な配列に変換
-        const rows = json.table.rows.map(row => 
+        const rows = data.table.rows.map(row => 
             row.c.map(cell => cell ? (cell.v !== null && cell.v !== undefined ? String(cell.v) : '') : '')
         );
         
@@ -279,7 +304,11 @@ function renderStats(data) {
     chars.forEach(([name, count], idx) => {
         const pct = ((count / data.totalCount) * 100).toFixed(1);
         const img = charImages[name] || '1.png';
-        const item = document.createElement('div');
+        const page = charPages[name] || '#';
+        const item = document.createElement('a');
+        item.href = page;
+        item.style.textDecoration = 'none';
+        item.style.color = 'inherit';
         item.className = 'rank-item' + (idx < 3 ? ' top3' : '');
         item.innerHTML = `
             <div class="rank-num">${idx + 1}</div>
