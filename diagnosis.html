@@ -379,6 +379,67 @@
         }
         .reveal .r-btn:active { transform: scale(0.96); }
 
+        /* 分析中エフェクト */
+        .analyzing {
+            position: fixed; inset: 0; z-index: 250;
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: rgba(250,247,243,0.98);
+            text-align: center;
+        }
+        .analyzing.active { display: flex; }
+        .analyzing-text {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 0.9rem; color: #bbb;
+            margin-bottom: 40px;
+            letter-spacing: 0.15em;
+        }
+        .analyzing-circles {
+            position: relative;
+            width: 120px; height: 120px;
+            margin-bottom: 30px;
+        }
+        .a-ring {
+            position: absolute; border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--rose);
+            opacity: 0.4;
+        }
+        .a-ring-1 {
+            inset: 0;
+            animation: aSpin 2s linear infinite;
+        }
+        .a-ring-2 {
+            inset: 15px;
+            border-top-color: #e0985a;
+            animation: aSpin 1.5s linear infinite reverse;
+        }
+        .a-ring-3 {
+            inset: 30px;
+            border-top-color: #5a9ae0;
+            animation: aSpin 1.8s linear infinite;
+        }
+        @keyframes aSpin { to { transform: rotate(360deg); } }
+        .analyzing-dots {
+            display: flex; gap: 8px;
+        }
+        .analyzing-dots span {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--rose); opacity: 0.3;
+            animation: aDot 1.2s ease-in-out infinite;
+        }
+        .analyzing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .analyzing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes aDot { 0%,100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.4); } }
+        .analyzing-msg {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 0.75rem; color: #ccc;
+            margin-top: 30px;
+            opacity: 0;
+            animation: fadeInSlow 1s ease 1.5s forwards;
+        }
+        @keyframes fadeInSlow { to { opacity: 1; } }
+
         /* ===== 水彩背景 ===== */
         .splash {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -427,6 +488,18 @@
     <img id="revealImg" src="">
     <div class="r-name" id="revealName"></div>
     <div class="r-en" id="revealNameEn"></div>
+
+<!-- 分析中オーバーレイ -->
+<div class="analyzing" id="analyzing">
+    <div class="analyzing-circles">
+        <div class="a-ring a-ring-1"></div>
+        <div class="a-ring a-ring-2"></div>
+        <div class="a-ring a-ring-3"></div>
+    </div>
+    <div class="analyzing-text">あなたの体験を分析中</div>
+    <div class="analyzing-dots"><span></span><span></span><span></span></div>
+    <div class="analyzing-msg">体験の色と形を読み解いています…</div>
+</div>
     <button class="r-btn" onclick="goToResult()">詳しく見る →</button>
 </div>
 
@@ -554,9 +627,9 @@ function render() {
         const axisName = Object.values(axisLabels)[axisIdx] || '';
         area.innerHTML = `
             <div class="q-card" id="swipeCard">
-                <div class="card-dir cd-left">← ない</div>
-                <div class="card-dir cd-up">↑ うっすら</div>
-                <div class="card-dir cd-right">ある →</div>
+                <div class="card-dir cd-left">←</div>
+                <div class="card-dir cd-up">↑</div>
+                <div class="card-dir cd-right">→</div>
                 <div class="q-text">${q.q}</div>
                 <div class="swipe-hint" id="swipeHint"></div>
                 <div class="toggle-3">
@@ -576,8 +649,8 @@ function render() {
         const q = typeQuestions[qi];
         area.innerHTML = `
             <div class="q-card" id="swipeCard">
-                <div class="card-dir cd-left">← A</div>
-                <div class="card-dir cd-right">B →</div>
+                <div class="card-dir cd-left">←</div>
+                <div class="card-dir cd-right">→</div>
                 <div class="q-text">${q.q}</div>
                 <div class="swipe-hint" id="swipeHint"></div>
                 <div class="toggle-2">
@@ -826,10 +899,25 @@ function submitAll() {
     const r = calculateResult();
     sendToGoogleSheets(r);
     const info = typeInfo[r.typeName];
-    document.getElementById('revealImg').src = info.img;
-    document.getElementById('revealName').textContent = r.typeName;
-    document.getElementById('revealNameEn').textContent = info.nameEn;
-    document.getElementById('reveal').classList.add('active');
+
+    // 1. 分析中エフェクト表示
+    document.getElementById('analyzing').classList.add('active');
+
+    // 2. 3秒後にフェードアウト → キャラ表示
+    setTimeout(() => {
+        const an = document.getElementById('analyzing');
+        an.style.transition = 'opacity 0.6s ease';
+        an.style.opacity = '0';
+
+        setTimeout(() => {
+            an.classList.remove('active');
+            an.style.opacity = '';
+            document.getElementById('revealImg').src = info.img;
+            document.getElementById('revealName').textContent = r.typeName;
+            document.getElementById('revealNameEn').textContent = info.nameEn;
+            document.getElementById('reveal').classList.add('active');
+        }, 600);
+    }, 3000);
 }
 
 function sendToGoogleSheets(data) {
