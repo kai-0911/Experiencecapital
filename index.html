@@ -47,9 +47,12 @@
             z-index: -2;
         }
 
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(255, 255, 255, 0.35); pointer-events: none; z-index: -1;
+        body::before { display: none; }
+        #whiteOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #fff; pointer-events: none; z-index: -1;
+            opacity: 0.75;
+            transition: opacity 0.3s ease;
         }
 
         @keyframes fadeIn { 
@@ -151,7 +154,7 @@
         .menu-overlay.open { opacity: 1; pointer-events: auto; }
 
         /* 背景演出：ペイントダブ */
-        .paint-dabs-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .paint-dabs-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; opacity: 0; transition: opacity 3s ease; }
         .paint-dab {
             position: absolute; border-radius: 50%; background: radial-gradient(circle, currentColor 0%, transparent 80%);
             opacity: 0; transform: scale(0); filter: blur(5px); animation: bubbleFloat 10s infinite ease-in-out;
@@ -494,6 +497,7 @@
 
 <!-- 水彩ペイント背景 -->
 <canvas id="paintCanvas"></canvas>
+<div id="whiteOverlay"></div>
 
 <div class="paint-dabs-container">
     <div class="paint-dab dab1"></div><div class="paint-dab dab2"></div>
@@ -668,80 +672,59 @@
     }
 </script>
 <script>
-// 水彩ペイント背景の描画
+// 水彩ペイント背景の描画 - 1秒ごとに丸が増える
 const canvas = document.getElementById('paintCanvas');
 const ctx = canvas.getContext('2d');
 
-// キャンバスサイズを設定
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// 4色パレット（紫・オレンジ・青・緑）- 鮮やか版
 const colors = [
-    ['#a06ee0', '#c490f0', '#ddb8f8'],  // 紫系
-    ['#e0985a', '#f0b880', '#f8d8b0'],  // オレンジ系
-    ['#5a9ae0', '#80b8f0', '#b0d8f8'],  // 青系
-    ['#5ae098', '#80f0b8', '#b0f8d8']   // 緑系
+    ['#a06ee0', '#c490f0', '#ddb8f8'],
+    ['#e0985a', '#f0b880', '#f8d8b0'],
+    ['#5a9ae0', '#80b8f0', '#b0d8f8'],
+    ['#5ae098', '#80f0b8', '#b0f8d8']
 ];
-
-// すべての色を平坦化
 const allColors = colors.flat();
-
-// 水彩の配列（管理用）
 const paintObjects = [];
 
-// 水彩オブジェクトの構造
 class PaintCircle {
     constructor() {
         this.color = allColors[Math.floor(Math.random() * allColors.length)];
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = 150 + Math.random() * 250;
+        this.size = 100 + Math.random() * 200;
         this.alpha = 0;
-        this.targetAlpha = 0.2 + Math.random() * 0.2;
-        this.fadeIn = true;
+        this.targetAlpha = 0.15 + Math.random() * 0.2;
         this.lifeTime = 0;
-        this.maxLifeTime = 8000 + Math.random() * 4000; // 8-12秒
-        
-        // 飛沫
+        this.maxLifeTime = 10000 + Math.random() * 6000;
         this.splashes = [];
         for (let i = 0; i < 3; i++) {
             this.splashes.push({
                 offsetX: (Math.random() - 0.5) * 180,
                 offsetY: (Math.random() - 0.5) * 180,
-                size: 50 + Math.random() * 100,
-                alpha: 0.1 + Math.random() * 0.1
+                size: 40 + Math.random() * 80,
+                alpha: 0.08 + Math.random() * 0.08
             });
         }
     }
-    
     update(deltaTime) {
         this.lifeTime += deltaTime;
-        
-        // フェードイン・アウト
-        if (this.lifeTime < 1000) {
-            // フェードイン（最初の1秒）
-            this.alpha = (this.lifeTime / 1000) * this.targetAlpha;
+        if (this.lifeTime < 1500) {
+            this.alpha = (this.lifeTime / 1500) * this.targetAlpha;
         } else if (this.lifeTime > this.maxLifeTime - 2000) {
-            // フェードアウト（最後の2秒）
-            const fadeProgress = (this.maxLifeTime - this.lifeTime) / 2000;
-            this.alpha = fadeProgress * this.targetAlpha;
+            this.alpha = Math.max(0, ((this.maxLifeTime - this.lifeTime) / 2000) * this.targetAlpha);
         } else {
             this.alpha = this.targetAlpha;
         }
-        
         return this.lifeTime < this.maxLifeTime;
     }
-    
     draw() {
-        // メイン円
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
-        
-        // 飛沫
         this.splashes.forEach(splash => {
             ctx.globalAlpha = this.alpha * (splash.alpha / this.targetAlpha);
             ctx.beginPath();
@@ -751,41 +734,39 @@ class PaintCircle {
     }
 }
 
-// 初期水彩を生成（少なめに）
-for (let i = 0; i < 15; i++) {
-    paintObjects.push(new PaintCircle());
-}
+// 最初は0個 → 1秒ごとに1個追加、最大20個
+let addCount = 0;
+const maxCircles = 20;
+const addInterval = setInterval(() => {
+    if (addCount < maxCircles) {
+        paintObjects.push(new PaintCircle());
+        addCount++;
+    }
+    // 20個以降も消えたら補充
+    if (paintObjects.length < 12 && addCount >= maxCircles) {
+        paintObjects.push(new PaintCircle());
+    }
+}, 1000);
 
-// アニメーションループ
 let lastTime = Date.now();
-
 function animate() {
     const currentTime = Date.now();
     const deltaTime = currentTime - lastTime;
     lastTime = currentTime;
     
-    // キャンバスをクリア
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 全ての水彩を更新・描画
     for (let i = paintObjects.length - 1; i >= 0; i--) {
         const alive = paintObjects[i].update(deltaTime);
         if (alive) {
             paintObjects[i].draw();
         } else {
-            // 寿命が尽きたら削除
             paintObjects.splice(i, 1);
         }
     }
     
-    // 新しい水彩を追加（最大20個まで）
-    if (paintObjects.length < 20 && Math.random() < 0.01) {
-        paintObjects.push(new PaintCircle());
-    }
-    
     requestAnimationFrame(animate);
 }
-
 animate();
 
 // ウィンドウリサイズ対応
@@ -819,6 +800,25 @@ document.querySelectorAll('.step-card').forEach(card => {
 document.querySelectorAll('.intro-chunk').forEach(chunk => {
     observer.observe(chunk);
 });
+
+// ===== 時間経過で徐々に色づくエフェクト =====
+(function timeColorReveal() {
+    const whiteOverlay = document.getElementById('whiteOverlay');
+    const dabsContainer = document.querySelector('.paint-dabs-container');
+    let elapsed = 0;
+    const totalDuration = 15000;
+    
+    // 5秒後にCSS色玉もフェードイン
+    setTimeout(() => { dabsContainer.style.opacity = '1'; }, 5000);
+    
+    function tick() {
+        elapsed += 200;
+        const progress = Math.min(elapsed / totalDuration, 1);
+        whiteOverlay.style.opacity = (0.75 - progress * 0.70).toFixed(3);
+        if (progress < 1) setTimeout(tick, 200);
+    }
+    tick();
+})()
 </script>
 
 </body>
