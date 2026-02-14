@@ -655,6 +655,14 @@ if (!hasParams) {
     if (ax) ax.style.display = 'none';
 }
 
+// ニックネーム表示
+const nickname = params.get("nickname");
+if (nickname && hasParams) {
+    document.querySelectorAll(".section-title").forEach(el => {
+        el.textContent = el.textContent.replace("あなたの", nickname + "さんの");
+    });
+}
+
 // スコア表を生成
 const scoresTableEl = document.getElementById('scores-table');
 const capitalLabels = {
