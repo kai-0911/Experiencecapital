@@ -83,10 +83,11 @@
             padding: 28px 20px 24px;
             text-align: center;
             animation: cardIn 0.3s ease-out;
-            overflow: hidden;
+            overflow: visible;
             touch-action: none;
             user-select: none;
             -webkit-user-select: none;
+            position: relative;
         }
         @keyframes cardIn {
             from { opacity: 0; transform: translateY(16px); }
@@ -132,6 +133,103 @@
             font-size: 0.65rem; color: #ccc; text-align: center;
             margin-bottom: 14px; letter-spacing: 0.05em;
             min-height: 1.2em;
+        }
+        /* 初回スワイプガイド */
+        .swipe-guide {
+            position: absolute; inset: 0;
+            pointer-events: none;
+            animation: guideIn 0.8s ease forwards;
+            transition: opacity 0.5s;
+        }
+        .guide-arrow-left {
+            position: absolute; left: -8px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.6rem; color: #d4a0a0;
+            animation: guideSlideL 1.5s ease-in-out infinite;
+        }
+        .guide-arrow-right {
+            position: absolute; right: -8px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.6rem; color: #d4a0a0;
+            animation: guideSlideR 1.5s ease-in-out infinite;
+        }
+        .guide-arrow-up {
+            position: absolute; top: -4px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem; color: #d4a0a0;
+            animation: guideSlideU 1.5s ease-in-out infinite;
+            white-space: nowrap;
+        }
+        @keyframes guideIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes guideSlideL { 0%,100% { transform: translateY(-50%) translateX(0); opacity:0.4; } 50% { transform: translateY(-50%) translateX(-6px); opacity:1; } }
+        @keyframes guideSlideR { 0%,100% { transform: translateY(-50%) translateX(0); opacity:0.4; } 50% { transform: translateY(-50%) translateX(6px); opacity:1; } }
+        @keyframes guideSlideU { 0%,100% { transform: translateX(-50%) translateY(0); opacity:0.4; } 50% { transform: translateX(-50%) translateY(-6px); opacity:1; } }
+
+        /* 最初のガイド画面 */
+        .intro-guide {
+            position: fixed; inset: 0; z-index: 500;
+            background: #fff;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 40px 30px;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .intro-guide.hide { animation: fadeOut 0.4s ease forwards; pointer-events: none; }
+        @keyframes fadeOut { to { opacity: 0; } }
+
+        .guide-card {
+            width: 220px; height: 160px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 30px rgba(200,90,124,0.12);
+            position: relative;
+            margin-bottom: 40px;
+        }
+        .guide-card-label {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem; color: #bbb;
+            font-family: 'Shippori Mincho', serif;
+        }
+        .guide-dir {
+            position: absolute;
+            font-size: 0.72rem; color: var(--rose);
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .guide-dir-left {
+            left: -70px; top: 50%; transform: translateY(-50%);
+            animation: guideSlideL 1.8s ease-in-out infinite;
+        }
+        .guide-dir-right {
+            right: -85px; top: 50%; transform: translateY(-50%);
+            animation: guideSlideR 1.8s ease-in-out infinite;
+        }
+        .guide-dir-up {
+            top: -30px; left: 50%; transform: translateX(-50%);
+            animation: guideSlideU 1.8s ease-in-out infinite;
+        }
+        .guide-title {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.1rem; color: #555;
+            margin-bottom: 10px; font-weight: 600;
+        }
+        .guide-sub {
+            font-size: 0.75rem; color: #aaa;
+            margin-bottom: 35px; line-height: 1.8;
+            text-align: center;
+        }
+        .guide-start-btn {
+            padding: 14px 50px;
+            background: linear-gradient(135deg, #F06292, #D05A7C);
+            color: #fff; border: none; border-radius: 40px;
+            font-family: 'Shippori Mincho', serif;
+            font-size: 0.9rem; font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(232,107,143,0.3);
+            -webkit-tap-highlight-color: transparent;
         }
         /* カードスワイプアニメ */
         .q-card.swipe-left { animation: swipeLeft 0.35s ease forwards; }
@@ -284,6 +382,20 @@
 <body>
 
 <div class="splash" id="splashBg"></div>
+
+<!-- 最初のガイド画面 -->
+<div class="intro-guide" id="introGuide">
+    <div class="guide-title">操作ガイド</div>
+    <div class="guide-sub">カードをスワイプして<br>回答してください</div>
+    <div class="guide-card">
+        <div class="guide-card-label">質問カード</div>
+        <div class="guide-dir guide-dir-left">← ない</div>
+        <div class="guide-dir guide-dir-up">↑ うっすら</div>
+        <div class="guide-dir guide-dir-right">はっきりある →</div>
+    </div>
+    <div class="guide-sub">ボタンタップでも回答できます</div>
+    <button class="guide-start-btn" onclick="dismissGuide()">はじめる</button>
+</div>
 
 <div class="nav">
     <a href="/" class="nav-logo">ExC CANVAS</a>
@@ -448,8 +560,9 @@ function render() {
         const qi = currentIndex - capitalQuestions.length;
         const q = typeQuestions[qi];
         area.innerHTML = `
-            <div class="q-card">
+            <div class="q-card" id="swipeCard">
                 <div class="q-text">${q.q}</div>
+                <div class="swipe-hint" id="swipeHint"></div>
                 <div class="toggle-2">
                     <div class="t2-btn t2-left" onclick="answer2(0)"><span class="t2-arrow">A.</span>${q.left}</div>
                     <div class="t2-btn t2-right" onclick="answer2(1)"><span class="t2-arrow">B.</span>${q.right}</div>
@@ -502,11 +615,13 @@ let touchStartX = 0, touchStartY = 0, touchStartTime = 0, swiping = false;
     const area = document.getElementById('questionArea');
     
     area.addEventListener('touchstart', (e) => {
-        // ボタンタップは無視（短いタップはスワイプにしない）
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
         touchStartTime = Date.now();
         swiping = true;
+        // ガイドを消す
+        const guide = document.getElementById('swipeGuide');
+        if (guide) guide.style.opacity = '0';
     }, {passive: true});
 
     area.addEventListener('touchmove', (e) => {
@@ -518,16 +633,26 @@ let touchStartX = 0, touchStartY = 0, touchStartTime = 0, swiping = false;
         const dx = e.touches[0].clientX - touchStartX;
         const dy = e.touches[0].clientY - touchStartY;
         const absDx = Math.abs(dx), absDy = Math.abs(dy);
+        const phase = getPhase();
         
-        if (absDx > 20 || (dy < -20 && absDy > absDx)) {
-            e.preventDefault();
-            card.style.transition = 'none';
-            if (absDx > absDy) {
+        if (phase === 'capital') {
+            if (absDx > 20 || (dy < -20 && absDy > absDx)) {
+                e.preventDefault();
+                card.style.transition = 'none';
+                if (absDx > absDy) {
+                    card.style.transform = `translateX(${dx * 0.5}px) rotate(${dx * 0.04}deg)`;
+                    if (hint) hint.textContent = dx < -40 ? '← ない' : dx > 40 ? 'はっきりある →' : '';
+                } else if (dy < -20) {
+                    card.style.transform = `translateY(${dy * 0.4}px)`;
+                    if (hint) hint.textContent = dy < -40 ? '↑ うっすら覚えてる' : '';
+                }
+            }
+        } else if (phase === 'type') {
+            if (absDx > 20) {
+                e.preventDefault();
+                card.style.transition = 'none';
                 card.style.transform = `translateX(${dx * 0.5}px) rotate(${dx * 0.04}deg)`;
-                if (hint) hint.textContent = dx < -40 ? '← ない' : dx > 40 ? 'はっきりある →' : '';
-            } else if (dy < -20) {
-                card.style.transform = `translateY(${dy * 0.4}px)`;
-                if (hint) hint.textContent = dy < -40 ? '↑ うっすら覚えてる' : '';
+                if (hint) hint.textContent = dx < -40 ? '← A' : dx > 40 ? 'B →' : '';
             }
         }
     }, {passive: false});
@@ -544,8 +669,8 @@ let touchStartX = 0, touchStartY = 0, touchStartTime = 0, swiping = false;
         const absDx = Math.abs(dx), absDy = Math.abs(dy);
         const elapsed = Date.now() - touchStartTime;
         const threshold = 50;
+        const phase = getPhase();
 
-        // 短いタップ（200ms以下で移動距離小）はボタンに任せる
         if (elapsed < 200 && absDx < 20 && absDy < 20) {
             card.style.transition = '';
             card.style.transform = '';
@@ -555,29 +680,33 @@ let touchStartX = 0, touchStartY = 0, touchStartTime = 0, swiping = false;
         card.style.transition = 'transform 0.15s ease';
         card.style.transform = '';
 
-        // capital phaseのみスワイプ判定
-        if (getPhase() !== 'capital') {
-            if (hint) hint.textContent = '';
-            return;
-        }
-
-        if (absDx > threshold && absDx > absDy) {
-            answer3(dx < 0 ? 0 : 2, dx < 0 ? 'left' : 'right');
-        } else if (dy < -threshold && absDy > absDx) {
-            answer3(1, 'up');
-        } else {
-            if (hint) hint.textContent = '';
+        if (phase === 'capital') {
+            if (absDx > threshold && absDx > absDy) {
+                answer3(dx < 0 ? 0 : 2, dx < 0 ? 'left' : 'right');
+            } else if (dy < -threshold && absDy > absDx) {
+                answer3(1, 'up');
+            } else {
+                if (hint) hint.textContent = '';
+            }
+        } else if (phase === 'type') {
+            if (absDx > threshold) {
+                answer2(dx < 0 ? 0 : 1, dx < 0 ? 'left' : 'right');
+            } else {
+                if (hint) hint.textContent = '';
+            }
         }
     }, {passive: true});
 })();
 
-function answer2(score) {
-    const btns = document.querySelectorAll('.toggle-2 .t2-btn');
-    btns.forEach(b => b.classList.remove('selected'));
-    btns[score].classList.add('selected');
+function answer2(score, direction) {
+    const card = document.getElementById('swipeCard');
+    if (card) {
+        const dir = direction || (score === 0 ? 'left' : 'right');
+        card.classList.add('swipe-' + dir);
+    }
     answers[currentIndex] = score;
     addSplash();
-    setTimeout(() => { currentIndex++; render(); }, 220);
+    setTimeout(() => { currentIndex++; render(); }, 300);
 }
 
 function selectDemo(type, el) {
@@ -714,6 +843,12 @@ function goToResult() {
 
 initSplash();
 render();
+
+function dismissGuide() {
+    const g = document.getElementById('introGuide');
+    g.classList.add('hide');
+    setTimeout(() => g.remove(), 400);
+}
 </script>
 </body>
 </html>
