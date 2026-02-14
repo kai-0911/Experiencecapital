@@ -321,6 +321,27 @@
             background: var(--rose-light);
             color: var(--rose); font-weight: 700;
         }
+        .optional {
+            font-size: 0.6rem; color: #bbb; font-weight: 400;
+            margin-left: 4px;
+        }
+        .nickname-input {
+            width: 100%; padding: 10px 14px;
+            border: 2px solid #e8e4df;
+            border-radius: 10px;
+            font-size: 0.85rem; color: #555;
+            font-family: 'Shippori Mincho', serif;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        .nickname-input:focus {
+            border-color: var(--rose);
+        }
+        .nickname-input::placeholder {
+            color: #ccc;
+        }
         .demo-submit {
             display: block; width: 100%;
             padding: 16px; margin-top: 22px;
@@ -578,7 +599,7 @@ function getPhase() {
 // ===========================
 // 水彩背景
 // ===========================
-const splashColors = ['#E87090','#7AB8E0','#F0C060','#80D0A0','#B890E0','#F09870','#70C8C0','#E890B8'];
+const splashColors = ['#F0C0C8','#C0D8F0','#F5DCA0','#C0E8D0','#D8C8F0','#F0D0B8','#B8E0D8','#F0C8D8'];
 let splashCount = 0;
 function initSplash() {
     const bg = document.getElementById('splashBg');
@@ -597,7 +618,7 @@ function addSplash() {
     const d = document.createElement('div');
     d.className = 'splash-dot';
     const s = 80 + progress * 350 + Math.random() * 120;
-    const op = 0.15 + progress * 0.25;
+    const op = 0.10 + progress * 0.15;
     d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${splashColors[Math.floor(Math.random()*splashColors.length)]};opacity:${op};transition:all 1.5s ease`;
     bg.appendChild(d);
     splashCount++;
@@ -607,8 +628,8 @@ function addSplash() {
         if (cur < 400) {
             dot.style.width = (cur * 1.06) + 'px';
             dot.style.height = (cur * 1.06) + 'px';
-            const curOp = parseFloat(dot.style.opacity) || 0.15;
-            dot.style.opacity = Math.min(curOp * 1.04, 0.45);
+            const curOp = parseFloat(dot.style.opacity) || 0.10;
+            dot.style.opacity = Math.min(curOp * 1.02, 0.25);
         }
     });
 }
@@ -664,6 +685,10 @@ function render() {
         area.innerHTML = `
             <div class="demo-section">
                 <div class="demo-title">最後に、あなたについて教えてください</div>
+                <div class="demo-group">
+                    <label>ニックネーム<span class="optional">（任意）</span></label>
+                    <input type="text" class="nickname-input" id="nicknameInput" placeholder="例：たろう" maxlength="12" oninput="demoData.nickname=this.value">
+                </div>
                 <div class="demo-group">
                     <label>年齢</label>
                     <div class="demo-options">
@@ -935,6 +960,7 @@ function sendToGoogleSheets(data) {
     const ua=navigator.userAgent; let device='PC';
     if(/iPhone|iPad|iPod/i.test(ua))device='iOS'; else if(/Android/i.test(ua))device='Android';
     const payload = {characterName:data.typeName,typeKey:data.typeKey,gender:data.gender,ageGroup:data.ageGroup,
+        nickname:demoData.nickname||'',
         ...Object.fromEntries(axes.map(a=>[a,floored[a]])),device,elapsedSeconds:Math.round((Date.now()-diagnosisStartTime)/1000)};
     const URL='https://script.google.com/macros/s/AKfycbwNOCM1DMMRMMexb-zHfryomi4wCFSgH8f5eISSTuo6ZwJitX-2C9u8mXbMNzguXSzUfA/exec';
     fetch(URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(e=>console.error('送信エラー:',e));
@@ -945,6 +971,7 @@ function goToResult() {
     const page = characterFiles[r.typeName] || 'result_sage.html';
     const params = new URLSearchParams();
     Object.entries(r.capitalScores).forEach(([k,v])=>params.append(k,v));
+    if (demoData.nickname) params.append('nickname', demoData.nickname);
     window.location.href = page + '?' + params.toString();
 }
 
