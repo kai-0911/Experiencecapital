@@ -89,6 +89,18 @@
             -webkit-user-select: none;
             position: relative;
         }
+        /* カード上の方向ヒント（控えめ） */
+        .card-dir {
+            position: absolute;
+            font-size: 0.55rem;
+            color: #ddd;
+            font-family: 'Shippori Mincho', serif;
+            pointer-events: none;
+            letter-spacing: 0.03em;
+        }
+        .cd-left { left: 6px; top: 50%; transform: translateY(-50%); }
+        .cd-right { right: 6px; top: 50%; transform: translateY(-50%); }
+        .cd-up { top: 6px; left: 50%; transform: translateX(-50%); }
         @keyframes cardIn {
             from { opacity: 0; transform: translateY(16px); }
             to { opacity: 1; transform: translateY(0); }
@@ -542,6 +554,9 @@ function render() {
         const axisName = Object.values(axisLabels)[axisIdx] || '';
         area.innerHTML = `
             <div class="q-card" id="swipeCard">
+                <div class="card-dir cd-left">← ない</div>
+                <div class="card-dir cd-up">↑ うっすら</div>
+                <div class="card-dir cd-right">ある →</div>
                 <div class="q-text">${q.q}</div>
                 <div class="swipe-hint" id="swipeHint"></div>
                 <div class="toggle-3">
@@ -561,6 +576,8 @@ function render() {
         const q = typeQuestions[qi];
         area.innerHTML = `
             <div class="q-card" id="swipeCard">
+                <div class="card-dir cd-left">← A</div>
+                <div class="card-dir cd-right">B →</div>
                 <div class="q-text">${q.q}</div>
                 <div class="swipe-hint" id="swipeHint"></div>
                 <div class="toggle-2">
