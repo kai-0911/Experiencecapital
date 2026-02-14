@@ -178,8 +178,8 @@
 <div class="hero">
     <div class="hero-label">EVERYONE'S EXPERIENCE CAPITAL</div>
     <h1 class="hero-title">みんなの体験資本</h1>
-    <div id="totalCount" class="hero-count">-</div>
-    <div class="hero-count-label">人が診断済み</div>
+    <div id="totalCount" class="hero-count" style="display:none"></div>
+    <div class="hero-count-label" style="display:none"></div>
 </div>
 
 <div id="content">
@@ -293,7 +293,7 @@ function processData(rows) {
 }
 
 function renderStats(data) {
-    document.getElementById('totalCount').textContent = data.totalCount.toLocaleString();
+    // totalCount非表示
 
 
 
@@ -317,7 +317,7 @@ function renderStats(data) {
                 <div class="rank-name">${name}</div>
                 <div class="rank-bar-wrap">
                     <div class="rank-bar-bg"><div class="rank-bar-fill" data-width="${(count/maxC)*100}"></div></div>
-                    <div class="rank-stats"><span class="rank-count">${count}</span>人 (${pct}%)</div>
+                    <div class="rank-stats">${pct}%</div>
                 </div>
             </div>
         `;
