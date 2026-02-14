@@ -265,18 +265,18 @@
 
         /* ===== 2択トグル ===== */
         .toggle-2 {
-            display: flex; flex-direction: column;
+            display: grid; grid-template-columns: 1fr 1fr;
             gap: 10px; width: 100%;
         }
         .toggle-2 .t2-btn {
-            width: 100%; padding: 18px 18px;
+            width: 100%; padding: 16px 10px;
             border: 2px solid #e8e4df;
             border-radius: 14px;
             background: #fff;
             cursor: pointer; transition: all 0.15s;
-            text-align: left;
-            font-size: 0.95rem; color: #555;
-            line-height: 1.6;
+            text-align: center;
+            font-size: 0.8rem; color: #555;
+            line-height: 1.5;
             font-family: 'Shippori Mincho', serif;
             -webkit-tap-highlight-color: transparent;
         }
@@ -447,7 +447,7 @@
         }
         .splash-dot {
             position: absolute; border-radius: 50%;
-            opacity: 0.08; filter: blur(50px);
+            opacity: 0.15; filter: blur(20px);
             transition: width 2s ease, height 2s ease, opacity 2s ease;
         }
     </style>
@@ -578,15 +578,15 @@ function getPhase() {
 // ===========================
 // 水彩背景
 // ===========================
-const splashColors = ['#E8B4B8','#B8D4E3','#F5D5A0','#C8E6C9','#D1C4E9','#FFCCBC','#B2DFDB','#F8BBD0'];
+const splashColors = ['#E87090','#7AB8E0','#F0C060','#80D0A0','#B890E0','#F09870','#70C8C0','#E890B8'];
 let splashCount = 0;
 function initSplash() {
     const bg = document.getElementById('splashBg');
     for (let i = 0; i < 3; i++) {
         const d = document.createElement('div');
         d.className = 'splash-dot';
-        const s = 40 + Math.random() * 60;
-        d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${splashColors[i % splashColors.length]};transition:all 2s ease`;
+        const s = 60 + Math.random() * 80;
+        d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${splashColors[i % splashColors.length]};opacity:0.12;transition:all 2s ease`;
         bg.appendChild(d);
         splashCount++;
     }
@@ -596,17 +596,19 @@ function addSplash() {
     const progress = Math.min(currentIndex / totalQuestions, 1);
     const d = document.createElement('div');
     d.className = 'splash-dot';
-    const s = 60 + progress * 300 + Math.random() * 100;
-    d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${splashColors[Math.floor(Math.random()*splashColors.length)]};opacity:${0.05 + progress * 0.1};transition:all 1.5s ease`;
+    const s = 80 + progress * 350 + Math.random() * 120;
+    const op = 0.15 + progress * 0.25;
+    d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${splashColors[Math.floor(Math.random()*splashColors.length)]};opacity:${op};transition:all 1.5s ease`;
     bg.appendChild(d);
     splashCount++;
-    // 古いドットを少し大きくする
     const dots = bg.querySelectorAll('.splash-dot');
     dots.forEach(dot => {
         const cur = parseFloat(dot.style.width);
-        if (cur < 300) {
-            dot.style.width = (cur * 1.05) + 'px';
-            dot.style.height = (cur * 1.05) + 'px';
+        if (cur < 400) {
+            dot.style.width = (cur * 1.06) + 'px';
+            dot.style.height = (cur * 1.06) + 'px';
+            const curOp = parseFloat(dot.style.opacity) || 0.15;
+            dot.style.opacity = Math.min(curOp * 1.04, 0.45);
         }
     });
 }
@@ -874,9 +876,9 @@ function calculateResult() {
     const relRaw = s.social + s.cultural + s.emotional;
     const irCapital = relRaw > indRaw ? 3 * (relRaw / (indRaw + relRaw + 0.1)) : 3 * (1 - indRaw / (indRaw + relRaw + 0.1));
 
-    // ハイブリッド: 2択60% + 体験資本40%
-    const W_DIRECT = 0.6;
-    const W_CAPITAL = 0.4;
+    // ハイブリッド: 2択75% + 体験資本25%
+    const W_DIRECT = 0.75;
+    const W_CAPITAL = 0.25;
     const ieHybrid = W_DIRECT * typeScores.ie + W_CAPITAL * ieCapital;
     const ofHybrid = W_DIRECT * typeScores.of + W_CAPITAL * ofCapital;
     const smHybrid = W_DIRECT * typeScores.sm + W_CAPITAL * smCapital;
