@@ -311,6 +311,7 @@
             border: 2px solid #d0ccc6;
             border-radius: 10px;
             font-size: 0.82rem; color: #444;
+            background: #fff;
             cursor: pointer; transition: all 0.15s;
             font-family: 'Shippori Mincho', serif;
             -webkit-tap-highlight-color: transparent;
@@ -516,6 +517,8 @@
     <img id="revealImg" src="">
     <div class="r-name" id="revealName"></div>
     <div class="r-en" id="revealNameEn"></div>
+    <button class="r-btn" onclick="goToResult()">詳しく見る →</button>
+</div>
 
 <!-- 分析中オーバーレイ -->
 <div class="analyzing" id="analyzing">
@@ -527,8 +530,6 @@
         <div class="bloom bloom-5"></div>
     </div>
     <div class="analyzing-text">あなたの体験を読み解いています</div>
-</div>
-    <button class="r-btn" onclick="goToResult()">詳しく見る →</button>
 </div>
 
 <script>
