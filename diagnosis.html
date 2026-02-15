@@ -934,17 +934,11 @@ function sendToGoogleSheets(data) {
     const scores = data.capitalScores;
     const total = Object.values(scores).reduce((s,v)=>s+v,0);
     if (total===0) return;
-    const axes = Object.keys(scores);
-    const rawPct={}; axes.forEach(a=>rawPct[a]=(scores[a]/total)*100);
-    const floored={}; axes.forEach(a=>floored[a]=Math.floor(rawPct[a]));
-    let sum=axes.reduce((s,a)=>s+floored[a],0);
-    const rem=axes.map(a=>({a,r:rawPct[a]-floored[a]})).sort((a,b)=>b.r-a.r);
-    let i=0; while(sum<100&&i<rem.length){floored[rem[i].a]++;sum++;i++;}
     const ua=navigator.userAgent; let device='PC';
     if(/iPhone|iPad|iPod/i.test(ua))device='iOS'; else if(/Android/i.test(ua))device='Android';
     const payload = {characterName:data.typeName,typeKey:data.typeKey,gender:data.gender,ageGroup:data.ageGroup,
         nickname:demoData.nickname||'',
-        ...Object.fromEntries(axes.map(a=>[a,floored[a]])),device,elapsedSeconds:Math.round((Date.now()-diagnosisStartTime)/1000)};
+        ...Object.fromEntries(Object.entries(scores)),device,elapsedSeconds:Math.round((Date.now()-diagnosisStartTime)/1000)};
     const URL='https://script.google.com/macros/s/AKfycbwNOCM1DMMRMMexb-zHfryomi4wCFSgH8f5eISSTuo6ZwJitX-2C9u8mXbMNzguXSzUfA/exec';
     fetch(URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(e=>console.error('送信エラー:',e));
 }

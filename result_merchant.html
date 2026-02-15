@@ -296,10 +296,49 @@
             color: #999;
         }
 
+        
+        .score-dots { display: flex; gap: 4px; justify-content: center; margin-bottom: 4px; }
+        .score-dot { width: 8px; height: 8px; border-radius: 50%; background: #e8e4df; }
+        .score-dot.filled { }
         .score-level-text {
             font-size: 0.9rem;
             margin-top: 5px;
             font-weight: 500;
+        }
+
+        
+        .radar-wrap {
+            max-width: 400px;
+            margin: 0 auto 30px;
+            display: flex; justify-content: center;
+        }
+        #radarCanvas {
+            width: 100%; max-width: 380px; height: auto;
+        }
+        .radar-legend {
+            max-width: 600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 20px;
+            padding: 0 20px;
+        }
+        .radar-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .radar-legend-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .radar-legend-score {
+            color: #999;
+            font-size: 0.7rem;
+            margin-left: auto;
         }
 
         /* 詳細セクション */
@@ -536,11 +575,13 @@
         </div>
     </div>
 
-    <!-- 体験資本スコア -->
+    <!-- 体験資本レーダーチャート -->
     <div class="chart-section fade-in-section">
-        <h2 class="section-title">あなたの体験資本の構成</h2>
-        <p style="text-align: center; color: #999; font-size: 0.95rem; margin-bottom: 30px;">各項目が全体に占める割合</p>
-        <div class="scores-table" id="scores-table"></div>
+        <h2 class="section-title">あなたの体験資本のかたち</h2>
+        <div class="radar-wrap">
+            <canvas id="radarCanvas" width="380" height="380"></canvas>
+        </div>
+        <div class="radar-legend" id="radarLegend"></div>
     </div>
 
     <!-- 詳細情報 -->
@@ -663,90 +704,115 @@ if (nickname && hasParams) {
     });
 }
 
-// スコア表を生成
-const scoresTableEl = document.getElementById('scores-table');
-const capitalLabels = {
-    physical: '身体的体験',
-    intellectual: '知的体験',
-    creative: '創造的体験',
-    cultural: '文化的体験',
-    social: '社会的体験',
-    emotional: '感情的体験',
-    spiritual: '精神的体験',
-    temporal: '時間的体験',
-    spatial: '空間的体験',
-    serendipity: '偶然的体験',
-    natural: '自然的体験',
-    economic: '経済的体験'
+// レーダーチャート描画
+const radarLabels = {
+    physical: '身体的', intellectual: '知的', creative: '創造的',
+    cultural: '文化的', social: '社会的', emotional: '感情的',
+    spiritual: '精神的', temporal: '時間的', spatial: '空間的',
+    serendipity: '偶発的', natural: '自然的', economic: '経済的'
 };
+const radarKeys = Object.keys(radarLabels);
+const radarColors = [
+    '#E87070','#7AB8E0','#E8B860','#80C890','#B880D0','#E89050',
+    '#60B8B0','#D080A0','#7090D0','#C8A060','#70B870','#A0A0C0'
+];
 
-// スコアレベルの判定
-function getScoreLevel(score) {
-    if (score >= 5) return { text: '非常に豊富', color: '#4A5D7C' };
-    if (score >= 4) return { text: '豊富', color: '#5A7099' };
-    if (score >= 3) return { text: '平均的', color: '#8B9DC3' };
-    if (score >= 2) return { text: 'やや少ない', color: '#B0B8C8' };
-    if (score >= 1) return { text: '少ない', color: '#C8CDD6' };
-    return { text: 'ほぼなし', color: '#E0E3E8' };
-}
-
-// 各項目の説明
-const capitalDescriptions = {
-    physical: '身体を動かし、スポーツや運動を通じて得た体験',
-    intellectual: '学び、読書、思考を深めることで得た知的体験',
-    creative: '創作活動や表現を通じて得た創造的体験',
-    cultural: '芸術、音楽、文化に触れることで得た体験',
-    social: '人との交流やコミュニティ活動を通じた社会的体験',
-    emotional: '深い感情や心の動きを伴う情緒的体験',
-    spiritual: '信念、哲学、精神性を追求することで得た体験',
-    temporal: '時間の使い方や計画性に関わる時間的体験',
-    spatial: '場所や空間の移動、旅行などを通じた空間的体験',
-    serendipity: '予期せぬ出会いや偶然がもたらした体験',
-    natural: '自然との触れ合いや環境との関わりで得た体験',
-    economic: '経済活動や価値交換を通じて得た体験'
-};
-
-// 合計スコアを計算
-const totalScore = Object.values(capitalScores).reduce((a, b) => a + b, 0);
-
-// パーセンテージを計算（合計が100%になるように調整）
-const percentages = {};
-let sum = 0;
-const keys = Object.keys(capitalScores);
-
-keys.forEach((key, index) => {
-    const score = capitalScores[key];
-    if (index === keys.length - 1) {
-        // 最後の項目で調整して必ず100%にする
-        percentages[key] = 100 - sum;
-    } else {
-        const percentage = totalScore > 0 ? Math.round((score / totalScore) * 100) : 0;
-        percentages[key] = percentage;
-        sum += percentage;
-    }
-});
-
-Object.keys(capitalScores).forEach(key => {
-    const score = capitalScores[key];
-    const percentage = percentages[key];
-    const level = getScoreLevel(score);
+function drawRadar() {
+    const canvas = document.getElementById('radarCanvas');
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const size = 380;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
     
-    const item = document.createElement('div');
-    item.className = 'score-item';
-    item.innerHTML = `
-        <div class="score-left">
-            <div class="score-label">${capitalLabels[key]}</div>
-            <div class="score-description">${capitalDescriptions[key]}</div>
-            <div class="score-bar-container">
-                <div class="score-bar" style="width: ${percentage}%; background: ${level.color}"></div>
-            </div>
-        </div>
-        <div class="score-right">
-            <div class="score-value">${percentage}<span class="score-level">%</span></div>
-            <div class="score-level-text" style="color: ${level.color}">${level.text}</div>
-        </div>
-    `;
-    scoresTableEl.appendChild(item);
+    const cx = size / 2, cy = size / 2;
+    const maxR = 140;
+    const n = 12;
+    
+    // 6段階の同心円（グリッド）
+    for (let lv = 1; lv <= 6; lv++) {
+        const r = (lv / 6) * maxR;
+        ctx.beginPath();
+        for (let i = 0; i <= n; i++) {
+            const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+            const x = cx + r * Math.cos(angle);
+            const y = cy + r * Math.sin(angle);
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = lv === 6 ? '#ccc' : '#e8e4df';
+        ctx.lineWidth = lv === 6 ? 1.2 : 0.8;
+        ctx.stroke();
+    }
+    
+    // 軸線
+    for (let i = 0; i < n; i++) {
+        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + maxR * Math.cos(angle), cy + maxR * Math.sin(angle));
+        ctx.strokeStyle = '#e8e4df';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+    }
+    
+    // データ（塗り）
+    ctx.beginPath();
+    radarKeys.forEach((key, i) => {
+        const score = capitalScores[key] || 0;
+        const r = (score / 6) * maxR;
+        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(232,107,143,0.15)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(232,107,143,0.6)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // データ点
+    radarKeys.forEach((key, i) => {
+        const score = capitalScores[key] || 0;
+        const r = (score / 6) * maxR;
+        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = radarColors[i];
+        ctx.fill();
+    });
+    
+    // ラベル
+    ctx.font = '11px "Shippori Mincho", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    radarKeys.forEach((key, i) => {
+        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+        const lr = maxR + 22;
+        const x = cx + lr * Math.cos(angle);
+        const y = cy + lr * Math.sin(angle);
+        ctx.fillStyle = '#888';
+        ctx.fillText(radarLabels[key], x, y);
+    });
+}
+drawRadar();
+
+// 凡例
+const legendEl = document.getElementById('radarLegend');
+radarKeys.forEach((key, i) => {
+    const score = capitalScores[key] || 0;
+    const div = document.createElement('div');
+    div.className = 'radar-legend-item';
+    div.innerHTML = `<span class="radar-legend-dot" style="background:${radarColors[i]}"></span>${radarLabels[key]}<span class="radar-legend-score">${score} / 6</span>`;
+    legendEl.appendChild(div);
 });
 
 // スクロールアニメーション
