@@ -217,6 +217,91 @@
 
 
         
+        
+        /* 動的読み解きセクション */
+        .reading-section {
+            padding: 60px 30px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .reading-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #4A5D7C;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 0.05em;
+        }
+        .reading-block {
+            margin-bottom: 35px;
+            padding: 25px 28px;
+            background: #fff;
+            border-radius: 16px;
+            border-left: 4px solid #E8B4B8;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+        .reading-block.unexplored {
+            border-left-color: #B8D4E3;
+        }
+        .reading-block.balance {
+            border-left-color: #D1C4E9;
+        }
+        .reading-block-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #888;
+            margin-bottom: 12px;
+            letter-spacing: 0.08em;
+        }
+        .reading-block-title .rb-icon {
+            margin-right: 8px;
+        }
+        .reading-axes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .reading-axis-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .reading-axis-tag.high {
+            background: rgba(232,180,184,0.2);
+            color: #C85A7C;
+        }
+        .reading-axis-tag.low {
+            background: rgba(184,212,227,0.2);
+            color: #5A8AAC;
+        }
+        .reading-axis-tag .tag-score {
+            font-size: 0.65rem;
+            opacity: 0.7;
+        }
+        .reading-text {
+            font-size: 0.92rem;
+            line-height: 2.0;
+            color: #555;
+        }
+        .reading-summary {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(232,180,184,0.08), rgba(184,212,227,0.08));
+            border-radius: 16px;
+            margin-top: 10px;
+        }
+        .reading-summary-text {
+            font-size: 1.0rem;
+            line-height: 2.0;
+            color: #555;
+            font-weight: 500;
+        }
+
         .radar-wrap {
             max-width: 400px;
             margin: 0 auto 30px;
@@ -414,6 +499,10 @@
             .axis-value { font-size: 1rem; }
             
             .chart-section { padding: 40px 15px; }
+            .reading-section { padding: 40px 15px; }
+            .reading-block { padding: 20px 18px; }
+            .reading-title { font-size: 1.1rem; }
+
                 
             .detail-section { padding: 0; }
             .detail-content { padding: 40px 20px; }
@@ -488,6 +577,13 @@
             <canvas id="radarCanvas" width="380" height="380"></canvas>
         </div>
         <div class="radar-legend" id="radarLegend"></div>
+    </div>
+
+
+    <!-- 動的読み解き -->
+    <div class="reading-section fade-in-section" id="readingSection" style="display:none;">
+        <h2 class="reading-title" id="readingTitle">あなたの体験資本を読み解く</h2>
+        <div id="readingContent"></div>
     </div>
 
     <!-- 詳細情報 -->
@@ -720,6 +816,112 @@ radarKeys.forEach((key, i) => {
     div.innerHTML = `<span class="radar-legend-dot" style="background:${radarColors[i]}"></span>${radarLabels[key]}<span class="radar-legend-score">${score} / 6</span>`;
     legendEl.appendChild(div);
 });
+
+
+// ===== 動的読み解き =====
+const axisLabels = {
+    physical:'身体的体験', intellectual:'知的体験', creative:'創造的体験',
+    cultural:'文化的体験', social:'社会的体験', emotional:'感情的体験',
+    spiritual:'精神的体験', temporal:'時間的体験', spatial:'空間的体験',
+    serendipity:'偶発的体験', natural:'自然的体験', economic:'経済的体験'
+};
+const axisDescHigh = {
+    physical:'身体を動かし、五感を通じて世界を捉える力が豊かです。体験を「頭」ではなく「体」で記憶しているタイプ',
+    intellectual:'知識への飢えが強く、学び・思索を通じて世界を理解しようとする力に溢れています',
+    creative:'既存の枠にとらわれず、自分だけの表現や創造を通じて世界と関わってきた経験が豊富です',
+    cultural:'芸術・文化・歴史との深い接触があり、美的感性や文化的素養が体験として根付いています',
+    social:'人との関わりの中で多くを学び、コミュニティや対人関係を通じた体験が豊かです',
+    emotional:'喜怒哀楽を深く味わい、感情を通じて人生を豊かに経験してきました',
+    spiritual:'人生の意味や信念について深く向き合い、内面的な探求を重ねてきた経験があります',
+    temporal:'時間の使い方に対する意識が高く、過去・現在・未来を俯瞰する視点を持っています',
+    spatial:'場所の移動や新しい環境への適応を通じて、空間的な広がりのある体験を積んでいます',
+    serendipity:'予期せぬ出会いや偶然に身を委ね、計画外の体験を楽しむ力があります',
+    natural:'自然との関わりが深く、生態系や季節の移ろいを通じた体験が豊かです',
+    economic:'経済活動や価値交換の場で多くを経験し、実社会での実践力が備わっています'
+};
+const axisDescLow = {
+    physical:'身体を使った直接的な体験がまだ少なく、五感を通じた世界の味わい方に伸びしろがあります',
+    intellectual:'知的な探求に没頭する機会がまだ少なく、学びの深みに飛び込む余地があります',
+    creative:'創造的な表現の体験がまだ控えめで、自分だけのアウトプットに挑戦する余地があります',
+    cultural:'芸術や文化に触れる機会がまだ少なく、美的体験の世界が広がっています',
+    social:'人との深い関わりの体験がまだ発展途上で、他者を通じた自己発見の可能性があります',
+    emotional:'感情を深く味わう体験がまだ少なく、心が大きく揺さぶられる経験に出会う余地があります',
+    spiritual:'人生の意味や信念への探求がまだ浅く、内面を深く掘り下げる体験の可能性があります',
+    temporal:'時間感覚に関する意識的な体験がまだ少なく、時間との向き合い方を見直す機会があります',
+    spatial:'場所の移動や環境変化の体験がまだ少なく、新しい土地での発見が待っています',
+    serendipity:'計画外の偶然に身を委ねる体験がまだ少なく、予期せぬ出会いの豊かさが待っています',
+    natural:'自然との深い関わりがまだ少なく、自然の中に身を置く体験に大きな可能性があります',
+    economic:'経済的な実践の体験がまだ少なく、お金や価値の流れの中に飛び込む余地があります'
+};
+
+if (hasParams) {
+    const entries = Object.entries(capitalScores).sort((a,b) => b[1] - a[1]);
+    const top3 = entries.slice(0, 3);
+    const bottom3 = entries.slice(-3).reverse();
+    const total = entries.reduce((s,[,v]) => s+v, 0);
+    const avg = total / 12;
+    
+    const sec = document.getElementById('readingSection');
+    const content = document.getElementById('readingContent');
+    sec.style.display = 'block';
+    
+    // ニックネーム対応
+    if (nickname) {
+        document.getElementById('readingTitle').textContent = nickname + 'さんの体験資本を読み解く';
+    }
+    
+    let html = '';
+    
+    // 1. 豊かな体験
+    html += '<div class="reading-block"><div class="reading-block-title"><span class="rb-icon">◉</span>色濃い体験</div>';
+    html += '<div class="reading-axes">';
+    top3.forEach(([k,v]) => {
+        html += '<span class="reading-axis-tag high">' + axisLabels[k] + ' <span class="tag-score">' + v + '/6</span></span>';
+    });
+    html += '</div>';
+    html += '<p class="reading-text">' + axisDescHigh[top3[0][0]] + '。';
+    if (top3[1][1] >= 4) html += 'さらに、' + axisDescHigh[top3[1][0]].split('、')[0] + 'という側面も持ち合わせています。';
+    html += '</p></div>';
+    
+    // 2. 未開拓の体験
+    html += '<div class="reading-block unexplored"><div class="reading-block-title"><span class="rb-icon">○</span>まだ白いキャンバス</div>';
+    html += '<div class="reading-axes">';
+    bottom3.forEach(([k,v]) => {
+        html += '<span class="reading-axis-tag low">' + axisLabels[k] + ' <span class="tag-score">' + v + '/6</span></span>';
+    });
+    html += '</div>';
+    html += '<p class="reading-text">' + axisDescLow[bottom3[0][0]] + '。';
+    html += 'ここに新しい一歩を踏み出すことで、あなたの体験のかたちは大きく変わるかもしれません。</p></div>';
+    
+    // 3. バランス分析
+    const maxScore = top3[0][1];
+    const minScore = bottom3[0][1];
+    const gap = maxScore - minScore;
+    let balanceText = '';
+    if (gap <= 2) {
+        balanceText = 'あなたの体験は比較的バランスが取れています。突出した軸は少ないものの、幅広い体験が人生の土台を支えています。さらに深みを出すなら、特に気になる領域にとことん没頭してみるのも一つです。';
+    } else if (gap <= 4) {
+        balanceText = 'あなたの体験には、はっきりとした「色」があります。' + axisLabels[top3[0][0]] + 'を中心に独自の世界を築いてきた一方で、' + axisLabels[bottom3[0][0]] + 'はまだ手つかずの領域。この対比こそが、あなたらしさを生み出しています。';
+    } else {
+        balanceText = 'あなたの体験は、極めて尖った形をしています。' + axisLabels[top3[0][0]] + 'に圧倒的な深みがある一方、' + axisLabels[bottom3[0][0]] + 'はほぼ未体験の世界。この振り切った偏りは、唯一無二の強みであると同時に、未知の体験に踏み出した時に大きな化学反応を起こす可能性を秘めています。';
+    }
+    html += '<div class="reading-block balance"><div class="reading-block-title"><span class="rb-icon">◎</span>体験のバランス</div>';
+    html += '<p class="reading-text">' + balanceText + '</p></div>';
+    
+    // 4. まとめ
+    let summaryText = '';
+    if (avg >= 4) {
+        summaryText = 'あなたは人生を通じて豊かな体験を積み重ねてきました。そのキャンバスはすでに多くの色で彩られています。次のステージは、この体験をどう活かし、誰と分かち合うかです。';
+    } else if (avg >= 2.5) {
+        summaryText = 'あなたのキャンバスには、すでにいくつかの鮮やかな色が置かれています。まだ白い部分も多いですが、それは「可能性」そのものです。一歩踏み出すたびに、新しい色が加わっていきます。';
+    } else {
+        summaryText = 'あなたのキャンバスは、まだ多くの余白を残しています。でもそれは「足りない」のではなく、「これから描ける」ということ。どんな体験も、最初の一筆から始まります。';
+    }
+    html += '<div class="reading-summary"><p class="reading-summary-text">' + summaryText + '</p></div>';
+    
+    content.innerHTML = html;
+}
+
 
 // スクロールアニメーション
 const fadeInSections = document.querySelectorAll('.fade-in-section');
