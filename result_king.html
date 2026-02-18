@@ -216,40 +216,114 @@
         }
 
 
+
+
+
         
         .radar-wrap {
             max-width: 400px;
             margin: 0 auto 30px;
             display: flex; justify-content: center;
         }
-        #radarCanvas {
-            width: 100%; max-width: 380px; height: auto;
+        #radarCanvas { width: 100%; max-width: 380px; height: auto; }
+        .reading-section {
+            padding: 60px 30px; max-width: 700px; margin: 0 auto;
         }
-        .radar-legend {
-            max-width: 600px;
+        .reading-title {
+            font-size: 1.3rem; font-weight: 700; color: #4A5D7C;
+            text-align: center; margin-bottom: 40px; letter-spacing: 0.05em;
+        }
+        .reading-block {
+            margin-bottom: 35px; padding: 25px 28px; background: #fff;
+            border-radius: 16px; border-left: 4px solid #E8B4B8;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+        .reading-block.unexplored { border-left-color: #B8D4E3; }
+        .reading-block.balance { border-left-color: #D1C4E9; }
+        .reading-axes {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+        }
+        .reading-axis-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+        }
+        .reading-axis-tag.high { background: rgba(232,180,184,0.2); color: #C85A7C; }
+        .reading-axis-tag.low { background: rgba(184,212,227,0.2); color: #5A8AAC; }
+        .reading-text { font-size: 0.92rem; line-height: 2.0; color: #555; }
+        .reading-summary {
+            text-align: center; padding: 30px;
+            background: linear-gradient(135deg, rgba(232,180,184,0.08), rgba(184,212,227,0.08));
+            border-radius: 16px; margin-top: 10px;
+        }
+        .reading-summary-text { font-size: 1.0rem; line-height: 2.0; color: #555; font-weight: 500; }
+        
+        /* 相性キャラ */
+        .compat-section {
+            padding: 60px 30px;
+            max-width: 700px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 20px;
-            padding: 0 20px;
         }
-        .radar-legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            color: #666;
+        .compat-title {
+            font-size: 1.3rem; font-weight: 700; color: #4A5D7C;
+            text-align: center; margin-bottom: 40px; letter-spacing: 0.05em;
         }
-        .radar-legend-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            flex-shrink: 0;
+        .compat-cards {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
         }
-        .radar-legend-score {
-            color: #999;
-            font-size: 0.7rem;
-            margin-left: auto;
+        .compat-card {
+            background: #fff; border-radius: 16px; padding: 28px 20px;
+            text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            transition: transform 0.3s; cursor: pointer; text-decoration: none;
+            display: block;
         }
+        .compat-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+        .compat-label {
+            font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+            margin-bottom: 16px; padding: 4px 12px; border-radius: 12px;
+            display: inline-block;
+        }
+        .compat-label.good { background: rgba(232,180,184,0.15); color: #C85A7C; font-size: 0.65rem; }
+        .compat-label.opposite { background: rgba(184,212,227,0.15); color: #5A8AAC; font-size: 0.65rem; }
+        .compat-img {
+            width: 100px; height: 100px; object-fit: contain; margin: 0 auto 12px;
+            display: block;
+            filter: drop-shadow(0 4px 12px rgba(200,90,124,0.15));
+        }
+        .compat-name {
+            font-size: 0.95rem; font-weight: 700; color: #333; margin-bottom: 4px;
+        }
+        .compat-name-en {
+            font-size: 0.65rem; color: #aaa; letter-spacing: 0.08em;
+        }
+        .compat-desc {
+            font-size: 0.78rem; color: #888; line-height: 1.7; margin-top: 12px;
+        }
+
+        .share-card-section {
+            padding: 60px 20px; text-align: center;
+            background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+        }
+        .share-card-title {
+            font-size: 1.1rem; color: #888; margin-bottom: 30px; letter-spacing: 0.08em;
+        }
+        .share-card-preview {
+            display: inline-block; border-radius: 16px; overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.12); margin-bottom: 30px;
+        }
+        #shareCanvas { display: block; width: 320px; height: 525px; }
+        .share-buttons {
+            display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+        }
+        .share-btn {
+            padding: 14px 32px; border-radius: 100px; font-size: 0.9rem;
+            font-weight: 600; cursor: pointer; transition: all 0.3s;
+            text-decoration: none; border: none;
+            font-family: 'Shippori Mincho', serif; letter-spacing: 0.05em;
+        }
+        .share-btn-download { background: var(--primary); color: #fff; }
+        .share-btn-download:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74,93,124,0.3); }
+        .share-btn-x { background: #000; color: #fff; }
+        .share-btn-x:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
 
         /* 詳細セクション */
         .detail-section {
@@ -414,6 +488,54 @@
             .axis-value { font-size: 1rem; }
             
             .chart-section { padding: 40px 15px; }
+            .reading-section { padding: 40px 15px; }
+            .reading-block { padding: 20px 18px; }
+            .reading-title { font-size: 1.1rem; }
+            
+        /* 相性キャラ */
+        .compat-section {
+            padding: 60px 30px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .compat-title {
+            font-size: 1.3rem; font-weight: 700; color: #4A5D7C;
+            text-align: center; margin-bottom: 40px; letter-spacing: 0.05em;
+        }
+        .compat-cards {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        .compat-card {
+            background: #fff; border-radius: 16px; padding: 28px 20px;
+            text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            transition: transform 0.3s; cursor: pointer; text-decoration: none;
+            display: block;
+        }
+        .compat-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+        .compat-label {
+            font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+            margin-bottom: 16px; padding: 4px 12px; border-radius: 12px;
+            display: inline-block;
+        }
+        .compat-label.good { background: rgba(232,180,184,0.15); color: #C85A7C; font-size: 0.65rem; }
+        .compat-label.opposite { background: rgba(184,212,227,0.15); color: #5A8AAC; font-size: 0.65rem; }
+        .compat-img {
+            width: 100px; height: 100px; object-fit: contain; margin: 0 auto 12px;
+            display: block;
+            filter: drop-shadow(0 4px 12px rgba(200,90,124,0.15));
+        }
+        .compat-name {
+            font-size: 0.95rem; font-weight: 700; color: #333; margin-bottom: 4px;
+        }
+        .compat-name-en {
+            font-size: 0.65rem; color: #aaa; letter-spacing: 0.08em;
+        }
+        .compat-desc {
+            font-size: 0.78rem; color: #888; line-height: 1.7; margin-top: 12px;
+        }
+
+        .share-card-section { padding: 40px 15px; }
+
                 
             .detail-section { padding: 0; }
             .detail-content { padding: 40px 20px; }
@@ -458,7 +580,7 @@
 
     <!-- キャラクター画像 -->
     <div class="character-visual fade-in-section">
-        <img class="character-img" src="8.png" alt="暴食の王">
+        <img class="character-img" crossorigin="anonymous" src="8.png" alt="暴食の王">
         <p class="tagline">「今」の快楽が全て。我慢や節制は人生の浪費であり、<br>欲しいものは力ずくでも手に入れ、味わい尽くさないと気が済まない。</p>
     </div>
 
@@ -487,9 +609,15 @@
         <div class="radar-wrap">
             <canvas id="radarCanvas" width="380" height="380"></canvas>
         </div>
-        <div class="radar-legend" id="radarLegend"></div>
+        
     </div>
 
+
+    <!-- 動的読み解き -->
+    <div class="reading-section fade-in-section" id="readingSection">
+        <h2 class="reading-title" id="readingTitle">あなたの体験資本を読み解く</h2>
+        <div id="readingContent"></div>
+    </div>
     <!-- 詳細情報 -->
     <div class="detail-section">
         <!-- フルワイド画像（100%幅の王の別表情・背景画像） -->
@@ -537,9 +665,28 @@
         </div>
     </div>
 
-    <!-- シェアボタン -->
+
+
+    <!-- 相性キャラ -->
+    <div class="compat-section fade-in-section" id="compatSection">
+        <h2 class="compat-title" id="compatTitle">体験が近い・遠いタイプ</h2>
+        <div class="compat-cards" id="compatCards"></div>
+    </div>
+
+    <!-- シェアカード -->
+    <div class="share-card-section fade-in-section">
+        <div class="share-card-title">あなたの結果をシェア</div>
+        <div class="share-card-preview">
+            <canvas id="shareCanvas" width="640" height="1050"></canvas>
+        </div>
+        <div class="share-buttons">
+            <button class="share-btn share-btn-download" onclick="downloadCard()">画像を保存</button>
+            <button class="share-btn share-btn-x" onclick="shareX()">Xでシェア</button>
+        </div>
+    </div>
+
+    <!-- その他リンク -->
     <div class="share-section fade-in-section">
-        <button class="btn-share" onclick="shareResult()">結果をシェアする</button>
         <a href="result_experience_capital.html" class="btn-share btn-stats">みんなの体験資本を見る</a>
         <a href="/" class="btn-share btn-restart">もう一度診断する</a>
     </div>
@@ -612,114 +759,280 @@ if (nickname && hasParams) {
 
 // レーダーチャート描画
 const radarLabels = {
-    physical: '身体的', intellectual: '知的', creative: '創造的',
-    cultural: '文化的', social: '社会的', emotional: '感情的',
-    spiritual: '精神的', temporal: '時間的', spatial: '空間的',
-    serendipity: '偶発的', natural: '自然的', economic: '経済的'
+    physical:'身体的',intellectual:'知的',creative:'創造的',cultural:'文化的',
+    social:'社会的',emotional:'感情的',spiritual:'精神的',temporal:'時間的',
+    spatial:'空間的',serendipity:'偶発的',natural:'自然的',economic:'経済的'
 };
 const radarKeys = Object.keys(radarLabels);
-const radarColors = [
-    '#E87070','#7AB8E0','#E8B860','#80C890','#B880D0','#E89050',
-    '#60B8B0','#D080A0','#7090D0','#C8A060','#70B870','#A0A0C0'
-];
+const radarColors = ['#E87070','#7AB8E0','#E8B860','#80C890','#B880D0','#E89050','#60B8B0','#D080A0','#7090D0','#C8A060','#70B870','#A0A0C0'];
 
 function drawRadar() {
     const canvas = document.getElementById('radarCanvas');
     if (!canvas) return;
     const dpr = window.devicePixelRatio || 1;
     const size = 380;
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-    canvas.style.width = size + 'px';
-    canvas.style.height = size + 'px';
+    canvas.width = size * dpr; canvas.height = size * dpr;
+    canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
-    
-    const cx = size / 2, cy = size / 2;
-    const maxR = 140;
-    const n = 12;
-    
-    // 6段階の同心円（グリッド）
+    const cx = size/2, cy = size/2, maxR = 140, n = 12;
     for (let lv = 1; lv <= 6; lv++) {
-        const r = (lv / 6) * maxR;
+        const r = (lv/6)*maxR;
         ctx.beginPath();
         for (let i = 0; i <= n; i++) {
-            const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-            const x = cx + r * Math.cos(angle);
-            const y = cy + r * Math.sin(angle);
-            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            const a = (Math.PI*2*i/n)-Math.PI/2;
+            i===0 ? ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a)) : ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
         }
-        ctx.closePath();
-        ctx.strokeStyle = lv === 6 ? '#ccc' : '#e8e4df';
-        ctx.lineWidth = lv === 6 ? 1.2 : 0.8;
-        ctx.stroke();
+        ctx.closePath(); ctx.strokeStyle = lv===6?'#ccc':'#e8e4df'; ctx.lineWidth = lv===6?1.2:0.8; ctx.stroke();
     }
-    
-    // 軸線
     for (let i = 0; i < n; i++) {
-        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + maxR * Math.cos(angle), cy + maxR * Math.sin(angle));
-        ctx.strokeStyle = '#e8e4df';
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
+        const a = (Math.PI*2*i/n)-Math.PI/2;
+        ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+maxR*Math.cos(a),cy+maxR*Math.sin(a));
+        ctx.strokeStyle='#e8e4df'; ctx.lineWidth=0.8; ctx.stroke();
     }
-    
-    // データ（塗り）
     ctx.beginPath();
-    radarKeys.forEach((key, i) => {
-        const score = capitalScores[key] || 0;
-        const r = (score / 6) * maxR;
-        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-        const x = cx + r * Math.cos(angle);
-        const y = cy + r * Math.sin(angle);
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    radarKeys.forEach((key,i) => {
+        const r = ((capitalScores[key]||0)/6)*maxR;
+        const a = (Math.PI*2*i/n)-Math.PI/2;
+        i===0 ? ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a)) : ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
     });
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(232,107,143,0.15)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(232,107,143,0.6)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    
-    // データ点
-    radarKeys.forEach((key, i) => {
-        const score = capitalScores[key] || 0;
-        const r = (score / 6) * maxR;
-        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-        const x = cx + r * Math.cos(angle);
-        const y = cy + r * Math.sin(angle);
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = radarColors[i];
-        ctx.fill();
+    ctx.closePath(); ctx.fillStyle='rgba(232,107,143,0.15)'; ctx.fill();
+    ctx.strokeStyle='rgba(232,107,143,0.6)'; ctx.lineWidth=2; ctx.stroke();
+    radarKeys.forEach((key,i) => {
+        const r = ((capitalScores[key]||0)/6)*maxR;
+        const a = (Math.PI*2*i/n)-Math.PI/2;
+        ctx.beginPath(); ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),4,0,Math.PI*2);
+        ctx.fillStyle=radarColors[i]; ctx.fill();
     });
-    
-    // ラベル
-    ctx.font = '11px "Shippori Mincho", serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    radarKeys.forEach((key, i) => {
-        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-        const lr = maxR + 22;
-        const x = cx + lr * Math.cos(angle);
-        const y = cy + lr * Math.sin(angle);
-        ctx.fillStyle = '#888';
-        ctx.fillText(radarLabels[key], x, y);
+    ctx.font = '11px "Shippori Mincho", serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    radarKeys.forEach((key,i) => {
+        const a = (Math.PI*2*i/n)-Math.PI/2;
+        ctx.fillStyle='#888';
+        ctx.fillText(radarLabels[key], cx+(maxR+22)*Math.cos(a), cy+(maxR+22)*Math.sin(a));
     });
 }
 drawRadar();
 
-// 凡例
-const legendEl = document.getElementById('radarLegend');
-radarKeys.forEach((key, i) => {
-    const score = capitalScores[key] || 0;
-    const div = document.createElement('div');
-    div.className = 'radar-legend-item';
-    div.innerHTML = `<span class="radar-legend-dot" style="background:${radarColors[i]}"></span>${radarLabels[key]}<span class="radar-legend-score">${score} / 6</span>`;
-    legendEl.appendChild(div);
-});
+
+
+// ===== 動的読み解き =====
+const axisLabels = {
+    physical:'身体的体験',intellectual:'知的体験',creative:'創造的体験',cultural:'文化的体験',
+    social:'社会的体験',emotional:'感情的体験',spiritual:'精神的体験',temporal:'時間的体験',
+    spatial:'空間的体験',serendipity:'偶発的体験',natural:'自然的体験',economic:'経済的体験'
+};
+const axisDescHigh = {
+    physical:'身体を動かし、五感を通じて世界を捉える力が豊かです。体験を「頭」ではなく「体」で記憶しているタイプ',
+    intellectual:'知識への飢えが強く、学び・思索を通じて世界を理解しようとする力に溢れています',
+    creative:'既存の枠にとらわれず、自分だけの表現や創造を通じて世界と関わってきた経験が豊富です',
+    cultural:'芸術・文化・歴史との深い接触があり、美的感性や文化的素養が体験として根付いています',
+    social:'人との関わりの中で多くを学び、コミュニティや対人関係を通じた体験が豊かです',
+    emotional:'喜怒哀楽を深く味わい、感情を通じて人生を豊かに経験してきました',
+    spiritual:'人生の意味や信念について深く向き合い、内面的な探求を重ねてきた経験があります',
+    temporal:'時間の使い方に対する意識が高く、過去・現在・未来を俯瞰する視点を持っています',
+    spatial:'場所の移動や新しい環境への適応を通じて、空間的な広がりのある体験を積んでいます',
+    serendipity:'予期せぬ出会いや偶然に身を委ね、計画外の体験を楽しむ力があります',
+    natural:'自然との関わりが深く、生態系や季節の移ろいを通じた体験が豊かです',
+    economic:'経済活動や価値交換の場で多くを経験し、実社会での実践力が備わっています'
+};
+const axisDescLow = {
+    physical:'身体を使った直接的な体験がまだ少なく、五感を通じた世界の味わい方に伸びしろがあります',
+    intellectual:'知的な探求に没頭する機会がまだ少なく、学びの深みに飛び込む余地があります',
+    creative:'創造的な表現の体験がまだ控えめで、自分だけのアウトプットに挑戦する余地があります',
+    cultural:'芸術や文化に触れる機会がまだ少なく、美的体験の世界が広がっています',
+    social:'人との深い関わりの体験がまだ発展途上で、他者を通じた自己発見の可能性があります',
+    emotional:'感情を深く味わう体験がまだ少なく、心が大きく揺さぶられる経験に出会う余地があります',
+    spiritual:'人生の意味や信念への探求がまだ浅く、内面を深く掘り下げる体験の可能性があります',
+    temporal:'時間感覚に関する意識的な体験がまだ少なく、時間との向き合い方を見直す機会があります',
+    spatial:'場所の移動や環境変化の体験がまだ少なく、新しい土地での発見が待っています',
+    serendipity:'計画外の偶然に身を委ねる体験がまだ少なく、予期せぬ出会いの豊かさが待っています',
+    natural:'自然との深い関わりがまだ少なく、自然の中に身を置く体験に大きな可能性があります',
+    economic:'経済的な実践の体験がまだ少なく、お金や価値の流れの中に飛び込む余地があります'
+};
+
+{
+    const entries = Object.entries(capitalScores).sort((a,b) => b[1] - a[1]);
+    const top3 = entries.slice(0, 3);
+    const bottom3 = entries.slice(-3).reverse();
+    const total = entries.reduce((s,[,v]) => s+v, 0);
+    const avg = total / 12;
+    const sec = document.getElementById('readingSection');
+    const content = document.getElementById('readingContent');
+    if (nickname) document.getElementById('readingTitle').textContent = nickname + 'さんの体験資本を読み解く';
+    let html = '';
+    html += '<div class="reading-block"><div class="reading-axes">';
+    top3.forEach(([k,v]) => { html += '<span class="reading-axis-tag high">' + axisLabels[k] + '</span>'; });
+    html += '</div><p class="reading-text">' + axisDescHigh[top3[0][0]] + '。';
+    if (top3[1][1] >= 4) html += 'さらに、' + axisDescHigh[top3[1][0]].split('、')[0] + 'という側面も持ち合わせています。';
+    html += '</p></div>';
+    html += '<div class="reading-block unexplored"><div class="reading-axes">';
+    bottom3.forEach(([k,v]) => { html += '<span class="reading-axis-tag low">' + axisLabels[k] + '</span>'; });
+    html += '</div><p class="reading-text">' + axisDescLow[bottom3[0][0]] + '。';
+    html += 'ここに新しい一歩を踏み出すことで、あなたの体験のかたちは大きく変わるかもしれません。</p></div>';
+    const maxScore = top3[0][1], minScore = bottom3[0][1], gap = maxScore - minScore;
+    let balanceText = '';
+    if (gap <= 2) balanceText = 'あなたの体験は比較的バランスが取れています。突出した軸は少ないものの、幅広い体験が人生の土台を支えています。さらに深みを出すなら、特に気になる領域にとことん没頭してみるのも一つです。';
+    else if (gap <= 4) balanceText = 'あなたの体験には、はっきりとした「色」があります。' + axisLabels[top3[0][0]] + 'を中心に独自の世界を築いてきた一方で、' + axisLabels[bottom3[0][0]] + 'はまだ手つかずの領域。この対比こそが、あなたらしさを生み出しています。';
+    else balanceText = 'あなたの体験は、極めて尖った形をしています。' + axisLabels[top3[0][0]] + 'に圧倒的な深みがある一方、' + axisLabels[bottom3[0][0]] + 'はほぼ未体験の世界。この振り切った偏りは、唯一無二の強みであると同時に、未知の体験に踏み出した時に大きな化学反応を起こす可能性を秘めています。';
+    html += '<div class="reading-block balance"><p class="reading-text">' + balanceText + '</p></div>';
+    let summaryText = '';
+    if (avg >= 4) summaryText = 'あなたは人生を通じて豊かな体験を積み重ねてきました。そのキャンバスはすでに多くの色で彩られています。次のステージは、この体験をどう活かし、誰と分かち合うかです。';
+    else if (avg >= 2.5) summaryText = 'あなたのキャンバスには、すでにいくつかの鮮やかな色が置かれています。まだ白い部分も多いですが、それは「可能性」そのものです。一歩踏み出すたびに、新しい色が加わっていきます。';
+    else summaryText = 'あなたのキャンバスは、まだ多くの余白を残しています。でもそれは「足りない」のではなく、「これから描ける」ということ。どんな体験も、最初の一筆から始まります。';
+    html += '<div class="reading-summary"><p class="reading-summary-text">' + summaryText + '</p></div>';
+    content.innerHTML = html;
+}
+
+
+// ===== 相性キャラ =====
+const compatData = {
+    good: {page:'result_jester.html',name:'仮面の道化師',nameEn:'The Masked Jester',img:'16.png',desc:'自由・協調・現実を共有する愉快な相棒。貪欲に味わうあなたと、笑いで彩る道化師は、最高の宴を作れる'},
+    opposite: {page:'result_guardian.html',name:'誓いの守護者',nameEn:'The Sworn Guardian',img:'9.png',desc:'外向・秩序・独立・精神——あなたの享楽とは対極の、崇高な使命に生きる存在'}
+};
+{
+    const cc = document.getElementById('compatCards');
+    if (nickname) document.getElementById('compatTitle').textContent = nickname + 'さんと体験が近い・遠いタイプ';
+    ['good','opposite'].forEach(type => {
+        const d = compatData[type];
+        const a = document.createElement('a');
+        a.className = 'compat-card';
+        a.href = d.page;
+        a.innerHTML = '<div class="compat-label ' + type + '">' + (type==='good'?'似た体験の持ち主':'正反対の体験の持ち主') + '</div>'
+            + '<img class="compat-img" src="' + d.img + '" alt="' + d.name + '">'
+            + '<div class="compat-name">' + d.name + '</div>'
+            + '<div class="compat-name-en">' + d.nameEn + '</div>'
+            + '<div class="compat-desc">' + d.desc + '</div>';
+        cc.appendChild(a);
+    });
+}
+
+// ===== シェアカード生成 =====
+function generateShareCard() {
+    const canvas = document.getElementById('shareCanvas');
+    if (!canvas) return;
+    const W = 640, H = 1050, dpr = 2;
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    canvas.style.width = '320px'; canvas.style.height = '525px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    // 背景
+    const bg = ctx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,'#FFF5F7'); bg.addColorStop(0.5,'#FFFFFF'); bg.addColorStop(1,'#F5F0FF');
+    ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+    [{x:80,y:120,r:120,c:'rgba(232,180,184,0.08)'},{x:520,y:300,r:100,c:'rgba(184,212,227,0.08)'},{x:150,y:800,r:90,c:'rgba(209,196,233,0.06)'}].forEach(b => {
+        ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fillStyle=b.c; ctx.fill();
+    });
+    // ロゴ
+    ctx.font='600 18px "Cormorant Garamond",serif'; ctx.fillStyle='#C85A7C'; ctx.textAlign='center';
+    ctx.fillText('ExC CANVAS',W/2,40);
+    ctx.font='300 10px "Cormorant Garamond",serif'; ctx.fillStyle='#C89AA8';
+    ctx.fillText('Experience Capital',W/2,56);
+    // キャラ画像
+    const charImg = document.querySelector('.character-img');
+    if (charImg && charImg.complete) {
+        const s=180, ix=(W-s)/2, iy=72;
+        ctx.save(); ctx.beginPath(); ctx.arc(ix+s/2,iy+s/2,s/2,0,Math.PI*2); ctx.clip();
+        ctx.drawImage(charImg,ix,iy,s,s); ctx.restore();
+        ctx.beginPath(); ctx.arc(ix+s/2,iy+s/2,s/2,0,Math.PI*2);
+        ctx.strokeStyle='rgba(200,90,124,0.12)'; ctx.lineWidth=1.5; ctx.stroke();
+    }
+    // キャラ名
+    ctx.font='700 26px "Shippori Mincho",serif'; ctx.fillStyle='#333'; ctx.textAlign='center';
+    ctx.fillText(characterName,W/2,282);
+    ctx.font='300 12px "Cormorant Garamond",serif'; ctx.fillStyle='#999';
+    ctx.fillText(characterNameEn,W/2,300);
+    // ミニレーダー
+    const rcx=W/2, rcy=430, mR=100, n=12;
+    const rk=['physical','intellectual','creative','cultural','social','emotional','spiritual','temporal','spatial','serendipity','natural','economic'];
+    const rc2=['#E87070','#7AB8E0','#E8B860','#80C890','#B880D0','#E89050','#60B8B0','#D080A0','#7090D0','#C8A060','#70B870','#A0A0C0'];
+    for(let lv=1;lv<=6;lv++){const r=(lv/6)*mR;ctx.beginPath();for(let i=0;i<=n;i++){const a=(Math.PI*2*i/n)-Math.PI/2;i===0?ctx.moveTo(rcx+r*Math.cos(a),rcy+r*Math.sin(a)):ctx.lineTo(rcx+r*Math.cos(a),rcy+r*Math.sin(a));}ctx.closePath();ctx.strokeStyle=lv===6?'#ddd':'#eee';ctx.lineWidth=0.6;ctx.stroke();}
+    ctx.beginPath();rk.forEach((k,i)=>{const r=((capitalScores[k]||0)/6)*mR;const a=(Math.PI*2*i/n)-Math.PI/2;i===0?ctx.moveTo(rcx+r*Math.cos(a),rcy+r*Math.sin(a)):ctx.lineTo(rcx+r*Math.cos(a),rcy+r*Math.sin(a));});
+    ctx.closePath();ctx.fillStyle='rgba(232,107,143,0.18)';ctx.fill();ctx.strokeStyle='rgba(232,107,143,0.6)';ctx.lineWidth=1.5;ctx.stroke();
+    rk.forEach((k,i)=>{const r=((capitalScores[k]||0)/6)*mR;const a=(Math.PI*2*i/n)-Math.PI/2;ctx.beginPath();ctx.arc(rcx+r*Math.cos(a),rcy+r*Math.sin(a),2.5,0,Math.PI*2);ctx.fillStyle=rc2[i];ctx.fill();});
+    const rl=['身体','知的','創造','文化','社会','感情','精神','時間','空間','偶発','自然','経済'];
+    ctx.font='500 9px "Shippori Mincho",serif';
+    rk.forEach((k,i)=>{const a=(Math.PI*2*i/n)-Math.PI/2;ctx.fillStyle='#aaa';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(rl[i],rcx+(mR+16)*Math.cos(a),rcy+(mR+16)*Math.sin(a));});
+    ctx.font='400 11px "Shippori Mincho",serif'; ctx.fillStyle='#bbb'; ctx.textAlign='center';
+    ctx.fillText('体験資本のかたち',W/2,328);
+    // 読み解きサマリー
+    const entries = Object.entries(capitalScores).sort((a,b)=>b[1]-a[1]);
+    const t3 = entries.slice(0,3).map(e=>radarLabels[e[0]]||e[0]);
+    const b3 = entries.slice(-3).map(e=>radarLabels[e[0]]||e[0]);
+    ctx.fillStyle='#C85A7C'; ctx.font='600 11px "Shippori Mincho",serif';
+    ctx.fillText('◉ '+t3.join('・'),W/2,560);
+    ctx.fillStyle='#5A8AAC';
+    ctx.fillText('○ '+b3.join('・'),W/2,580);
+    // 区切り線
+    ctx.beginPath();ctx.moveTo(W*0.15,600);ctx.lineTo(W*0.85,600);ctx.strokeStyle='#eee';ctx.lineWidth=0.8;ctx.stroke();
+    // アドバイス（折り返し描画）
+    const adviceEl = document.querySelector('.detail-item:last-of-type p') || document.querySelector('.detail-content .detail-item:last-child p');
+    let adviceText = '';
+    document.querySelectorAll('.detail-item h3').forEach((h,i,arr) => {
+        if (h.textContent.includes('アドバイス')) {
+            const p = h.nextElementSibling || h.parentElement.querySelector('p');
+            if (p) adviceText = p.textContent;
+        }
+    });
+    if (adviceText) {
+        adviceText = adviceText.substring(0,120) + (adviceText.length>120?'…':'');
+        ctx.font='400 11px "Shippori Mincho",serif'; ctx.fillStyle='#777'; ctx.textAlign='left';
+        const maxW = W - 80, lineH = 20;
+        let words = adviceText, lines = [], line = '';
+        for (let ch of words) {
+            if (ctx.measureText(line+ch).width > maxW) { lines.push(line); line = ch; }
+            else line += ch;
+        }
+        if (line) lines.push(line);
+        const startY = 620;
+        lines.forEach((l,i) => { if(i<5) ctx.fillText(l, 40, startY + i*lineH); });
+    }
+    // フッター
+    ctx.beginPath();ctx.moveTo(W*0.3,H-50);ctx.lineTo(W*0.7,H-50);ctx.strokeStyle='#e8e4df';ctx.lineWidth=0.8;ctx.stroke();
+    ctx.font='300 11px "Cormorant Garamond",serif';ctx.fillStyle='#C89AA8';ctx.textAlign='center';
+    ctx.fillText('exc-canvas.com',W/2,H-28);
+}
+
+
+function downloadCard(){
+    const c=document.getElementById('shareCanvas');
+    try{
+        c.toBlob(function(blob){
+            if(!blob)throw new Error('no blob');
+            const url=URL.createObjectURL(blob);
+            const a=document.createElement('a');
+            a.href=url;
+            a.download='ExC_CANVAS_'+characterName+'.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(()=>URL.revokeObjectURL(url),1000);
+        },'image/png');
+    }catch(e){
+        // iOS Safari fallback: open image in new tab
+        try{
+            const dataUrl=c.toDataURL('image/png');
+            const w=window.open('about:blank','_blank');
+            if(w){
+                w.document.write('<html><head><title>長押しで画像を保存</title></head><body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f5f5f5"><img src="'+dataUrl+'" style="max-width:100%;box-shadow:0 4px 20px rgba(0,0,0,0.1);border-radius:12px"></body></html>');
+                w.document.close();
+            }
+        }catch(e2){alert('画像の保存に失敗しました。スクリーンショットをご利用ください。');}
+    }
+}
+function shareX(){
+    const t='わたしの体験資本のかたちは「'+characterName+'」でした\n\n#ExCCANVAS #体験資本';
+    const u='https://exc-canvas.com';
+    const url='https://twitter.com/intent/tweet?text='+encodeURIComponent(t)+'&url='+encodeURIComponent(u);
+    // Use link click for better mobile support
+    const a=document.createElement('a');
+    a.href=url;
+    a.target='_blank';
+    a.rel='noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+window.addEventListener('load',()=>{setTimeout(generateShareCard,500);});
 
 // スクロールアニメーション
 const fadeInSections = document.querySelectorAll('.fade-in-section');
@@ -747,16 +1060,7 @@ document.querySelectorAll('.detail-item').forEach(item => {
 });
 
 // シェア機能
-function shareResult() {
-    const characterName = '暴食の王';
-    const characterNameEn = 'The Gluttonous King';
-    const shareText = `ExC CANVAS診断結果: ${characterName} (${characterNameEn})`;
-    const shareUrl = window.location.href;
-    
-    // X（Twitter）でシェア
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-    window.open(twitterUrl, '_blank', 'width=550,height=420');
-}
+// share moved to generateShareCard above
 
 window.addEventListener('load', () => {
     const firstSection = document.querySelector('.character-visual');
