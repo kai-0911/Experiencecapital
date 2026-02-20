@@ -216,9 +216,6 @@
         }
 
 
-
-
-
         
         .radar-wrap {
             max-width: 400px;
@@ -299,31 +296,6 @@
             font-size: 0.78rem; color: #888; line-height: 1.7; margin-top: 12px;
         }
 
-        .share-card-section {
-            padding: 60px 20px; text-align: center;
-            background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
-        }
-        .share-card-title {
-            font-size: 1.1rem; color: #888; margin-bottom: 30px; letter-spacing: 0.08em;
-        }
-        .share-card-preview {
-            display: inline-block; border-radius: 16px; overflow: hidden;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.12); margin-bottom: 30px;
-        }
-        #shareCanvas { display: block; width: 320px; height: 480px; }
-        .share-buttons {
-            display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
-        }
-        .share-btn {
-            padding: 14px 32px; border-radius: 100px; font-size: 0.9rem;
-            font-weight: 600; cursor: pointer; transition: all 0.3s;
-            text-decoration: none; border: none;
-            font-family: 'Shippori Mincho', serif; letter-spacing: 0.05em;
-        }
-        .share-btn-download { background: var(--primary); color: #fff; }
-        .share-btn-download:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74,93,124,0.3); }
-        .share-btn-x { background: #000; color: #fff; }
-        .share-btn-x:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
 
         /* 詳細セクション */
         .detail-section {
@@ -402,6 +374,45 @@
         }
 
         /* シェアボタン */
+
+                /* シェアカード */
+        .share-card-section {
+            padding: 60px 20px; text-align: center;
+            background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+        }
+        .share-card-title { font-size: 1.1rem; color: #888; margin-bottom: 12px; letter-spacing: 0.08em; }
+        .share-card-hint { font-size: 0.75rem; color: #bbb; margin-bottom: 20px; }
+        .share-card {
+            display: inline-block; width: 320px; text-align: center;
+            background: linear-gradient(135deg, #FFFAF8 0%, #FFF 50%, #F8F5FF 100%);
+            border-radius: 16px; padding: 28px 24px 20px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+        }
+        .sc-logo { font-family:'Cormorant Garamond',serif; font-size:14px; font-weight:600; color:#C85A7C; }
+        .sc-logo-sub { font-family:'Cormorant Garamond',serif; font-size:9px; color:#C89AA8; margin-bottom:12px; }
+        .sc-line { height:1px; background:#f0e8eb; margin:10px 0; }
+        .sc-name { font-size:22px; font-weight:700; color:#333; margin:8px 0 2px; }
+        .sc-name-en { font-family:'Cormorant Garamond',serif; font-size:11px; color:#aaa; font-style:italic; margin-bottom:4px; }
+        .sc-subtitle { font-size:9px; color:#ccc; margin-bottom:8px; }
+        #shareRadar { margin: 0 auto 4px; display:block; }
+        .sc-axes { text-align:left; margin: 8px 0; }
+        .sc-axis-row { display:flex; align-items:flex-start; gap:6px; margin-bottom:6px; }
+        .sc-axis-icon { font-size:10px; flex-shrink:0; margin-top:2px; }
+        .sc-axis-icon.high { color:#C85A7C; }
+        .sc-axis-icon.low { color:#5A8AAC; }
+        .sc-axis-icon.bal { color:#8B7EC8; }
+        .sc-axis-names { font-size:10px; font-weight:600; color:#555; }
+        .sc-axis-desc { font-size:8.5px; color:#999; line-height:1.5; margin-top:2px; }
+        .sc-advice-label { font-size:8px; font-weight:700; color:#C89AA8; letter-spacing:0.1em; text-align:left; margin-top:8px; }
+        .sc-advice { font-size:8.5px; color:#777; line-height:1.6; text-align:left; margin-top:4px; }
+        .sc-summary { font-family:'Cormorant Garamond',serif; font-size:11px; color:#C89AA8; font-style:italic; margin-top:12px; }
+        .sc-footer { font-family:'Cormorant Garamond',serif; font-size:10px; color:#C89AA8; margin-top:10px; }
+        .share-buttons { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:24px; }
+        .share-btn-x { display:inline-block; padding:14px 28px; border-radius:100px; font-size:0.85rem; font-weight:600; background:#000; color:#fff; text-decoration:none; font-family:'Shippori Mincho',serif; letter-spacing:0.05em; transition:all 0.3s; }
+        .share-btn-dl { display:inline-block; padding:14px 28px; border-radius:100px; font-size:0.85rem; font-weight:600; background:#C85A7C; color:#fff; border:none; cursor:pointer; font-family:'Shippori Mincho',serif; letter-spacing:0.05em; transition:all 0.3s; }
+        .share-btn-dl:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(200,90,124,0.3); }
+        .share-btn-x:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.3); }
+
         .share-section {
             padding: 80px 40px;
             text-align: center;
@@ -534,7 +545,6 @@
             font-size: 0.78rem; color: #888; line-height: 1.7; margin-top: 12px;
         }
 
-        .share-card-section { padding: 40px 15px; }
 
                 
             .detail-section { padding: 0; }
@@ -545,7 +555,8 @@
             
             .fullwidth-image-section img { width: 100%; height: auto; }
             
-            .share-section { padding: 40px 20px; }
+    
+                .share-section { padding: 40px 20px; }
             .btn-share { padding: 14px 30px; font-size: 0.85rem; width: 100%; max-width: 300px; }
             
             .footer { font-size: 0.7rem; padding: 30px 15px; }
@@ -558,6 +569,14 @@
             .axes-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
         }
 
+
+        /* Fallback: show content even if JS fails */
+        @keyframes fallbackShow {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-section {
+            animation: fallbackShow 0.5s ease-out 2s forwards;
+        }
     </style>
 </head>
 <body>
@@ -666,7 +685,6 @@
     </div>
 
 
-
     <!-- 相性キャラ -->
     <div class="compat-section fade-in-section" id="compatSection">
         <h2 class="compat-title" id="compatTitle">体験が近い・遠いタイプ</h2>
@@ -676,12 +694,30 @@
     <!-- シェアカード -->
     <div class="share-card-section fade-in-section">
         <div class="share-card-title">あなたの結果をシェア</div>
-        <div class="share-card-preview">
-            <canvas id="shareCanvas" width="640" height="960"></canvas>
+        <div class="share-card-hint"></div>
+        <div class="share-card" id="shareCardInner">
+            <div class="sc-logo">ExC CANVAS</div>
+            <div class="sc-logo-sub">Experience Capital</div>
+            <div class="sc-line"></div>
+            <div class="sc-name" id="shareCharName"></div>
+            <div class="sc-name-en" id="shareCharNameEn"></div>
+            <div class="sc-subtitle">体験資本のかたち</div>
+            <canvas id="shareRadar" width="240" height="240"></canvas>
+            <div class="sc-axes">
+                <div class="sc-axis-row"><span class="sc-axis-icon high">◉</span><div><div class="sc-axis-names" id="shareTop3"></div><div class="sc-axis-desc" id="shareHighDesc"></div></div></div>
+                <div class="sc-axis-row"><span class="sc-axis-icon low">○</span><div><div class="sc-axis-names" id="shareBot3"></div><div class="sc-axis-desc" id="shareLowDesc"></div></div></div>
+                <div class="sc-axis-row"><span class="sc-axis-icon bal" id="shareBalance"></span></div>
+            </div>
+            <div class="sc-line"></div>
+            <div class="sc-advice-label">ADVICE</div>
+            <div class="sc-advice" id="shareAdvice"></div>
+            <div class="sc-summary" id="shareSummary"></div>
+            <div class="sc-line"></div>
+            <div class="sc-footer">exc-canvas.com</div>
         </div>
         <div class="share-buttons">
-            <button class="share-btn share-btn-download" onclick="downloadCard()">画像を保存</button>
-            <button class="share-btn share-btn-x" onclick="shareX()">Xでシェア</button>
+            <button class="share-btn-dl" onclick="saveCard()">画像を保存</button>
+            <a class="share-btn-x" id="shareXBtn" href="https://twitter.com/intent/tweet?text=%E3%82%8F%E3%81%9F%E3%81%97%E3%81%AE%E4%BD%93%E9%A8%93%E8%B3%87%E6%9C%AC%E3%81%AE%E3%81%8B%E3%81%9F%E3%81%A1%E3%81%AF%E3%80%8C%E6%B6%99%E3%81%AE%E5%90%9F%E9%81%8A%E8%A9%A9%E4%BA%BA%E3%80%8D%E3%81%A7%E3%81%97%E3%81%9F%0A%0A%23ExCCANVAS%20%23%E4%BD%93%E9%A8%93%E8%B3%87%E6%9C%AC&url=https%3A%2F%2Fexc-canvas.com" target="_blank" rel="noopener noreferrer">Xでシェア</a>
         </div>
     </div>
 
@@ -751,6 +787,8 @@ if (!hasParams) {
 
 // ニックネーム表示
 const nickname = params.get("nickname");
+const characterName = '涙の吟遊詩人';
+const characterNameEn = 'The Bard of Tears';
 if (nickname && hasParams) {
     document.querySelectorAll(".section-title").forEach(el => {
         el.textContent = el.textContent.replace("あなたの", nickname + "さんの");
@@ -812,7 +850,6 @@ function drawRadar() {
     });
 }
 drawRadar();
-
 
 
 // ===== 動的読み解き =====
@@ -906,245 +943,115 @@ const compatData = {
     });
 }
 
-// ===== シェアカード生成 =====
-function generateShareCard() {
-    var canvas = document.getElementById('shareCanvas');
-    if (!canvas) return;
-    
-    var go = function() {
-        var W = 640, H = 960, dpr = window.devicePixelRatio || 2;
-        canvas.width = W * dpr;
-        canvas.height = H * dpr;
-        canvas.style.width = W/2 + 'px';
-        canvas.style.height = H/2 + 'px';
-        var ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
 
-        // 背景
-        ctx.fillStyle = '#FFFAF8';
-        ctx.fillRect(0, 0, W, H);
-        var bg = ctx.createLinearGradient(0, 0, W, H);
-        bg.addColorStop(0, 'rgba(232,180,184,0.06)');
-        bg.addColorStop(0.5, 'rgba(255,255,255,0)');
-        bg.addColorStop(1, 'rgba(184,212,227,0.06)');
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, W, H);
 
-        // 装飾
-        [[80,100,130,'rgba(232,180,184,0.06)'],[540,350,110,'rgba(184,212,227,0.06)'],[150,750,90,'rgba(209,196,233,0.04)']].forEach(function(b){
-            ctx.beginPath(); ctx.arc(b[0],b[1],b[2],0,Math.PI*2); ctx.fillStyle=b[3]; ctx.fill();
-        });
 
-        // ロゴ
-        ctx.font = '600 17px serif';
-        ctx.fillStyle = '#C85A7C';
-        ctx.textAlign = 'center';
-        ctx.fillText('ExC CANVAS', W/2, 38);
-        ctx.font = '300 10px serif';
-        ctx.fillStyle = '#C89AA8';
-        ctx.fillText('Experience Capital', W/2, 54);
 
-        // 線
-        ctx.beginPath(); ctx.moveTo(W*0.3,68); ctx.lineTo(W*0.7,68);
-        ctx.strokeStyle = '#f0e8eb'; ctx.lineWidth = 0.8; ctx.stroke();
-
-        // キャラ名
-        ctx.font = 'bold 30px serif';
-        ctx.fillStyle = '#333';
-        ctx.fillText(characterName, W/2, 108);
-        ctx.font = '300 13px serif';
-        ctx.fillStyle = '#aaa';
-        ctx.fillText(characterNameEn, W/2, 128);
-
-        // 小見出し
-        ctx.font = '400 11px sans-serif';
-        ctx.fillStyle = '#ccc';
-        ctx.fillText('\u4f53\u9a13\u8cc7\u672c\u306e\u304b\u305f\u3061', W/2, 152);
-
-        // ===== レーダーチャート =====
-        var rcx = W/2, rcy = 278, mR = 112, n = 12;
-        var rk = ['physical','intellectual','creative','cultural','social','emotional','spiritual','temporal','spatial','serendipity','natural','economic'];
-        var clrs = ['#E87070','#7AB8E0','#E8B860','#80C890','#B880D0','#E89050','#60B8B0','#D080A0','#7090D0','#C8A060','#70B870','#A0A0C0'];
-        var lbls = ['\u8eab\u4f53','\u77e5\u7684','\u5275\u9020','\u6587\u5316','\u793e\u4f1a','\u611f\u60c5','\u7cbe\u795e','\u6642\u9593','\u7a7a\u9593','\u5076\u767a','\u81ea\u7136','\u7d4c\u6e08'];
-
-        for (var lv = 1; lv <= 6; lv++) {
-            var r = (lv/6) * mR;
-            ctx.beginPath();
-            for (var i = 0; i <= n; i++) {
-                var a = (Math.PI*2*i/n) - Math.PI/2;
-                if (i===0) ctx.moveTo(rcx+r*Math.cos(a), rcy+r*Math.sin(a));
-                else ctx.lineTo(rcx+r*Math.cos(a), rcy+r*Math.sin(a));
-            }
-            ctx.closePath();
-            ctx.strokeStyle = lv===6 ? '#ddd' : '#eee';
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-        }
-        for (var i = 0; i < n; i++) {
-            var a = (Math.PI*2*i/n) - Math.PI/2;
-            ctx.beginPath(); ctx.moveTo(rcx, rcy);
-            ctx.lineTo(rcx+mR*Math.cos(a), rcy+mR*Math.sin(a));
-            ctx.strokeStyle = '#eee'; ctx.lineWidth = 0.4; ctx.stroke();
-        }
-        ctx.beginPath();
-        rk.forEach(function(k, i) {
-            var r = ((capitalScores[k]||0)/6) * mR;
-            var a = (Math.PI*2*i/n) - Math.PI/2;
-            if (i===0) ctx.moveTo(rcx+r*Math.cos(a), rcy+r*Math.sin(a));
-            else ctx.lineTo(rcx+r*Math.cos(a), rcy+r*Math.sin(a));
-        });
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(232,107,143,0.18)';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(232,107,143,0.55)';
-        ctx.lineWidth = 1.8;
-        ctx.stroke();
-        rk.forEach(function(k, i) {
-            var r = ((capitalScores[k]||0)/6) * mR;
-            var a = (Math.PI*2*i/n) - Math.PI/2;
-            ctx.beginPath();
-            ctx.arc(rcx+r*Math.cos(a), rcy+r*Math.sin(a), 3, 0, Math.PI*2);
-            ctx.fillStyle = clrs[i]; ctx.fill();
-        });
-        ctx.font = '500 9px sans-serif';
-        rk.forEach(function(k, i) {
-            var a = (Math.PI*2*i/n) - Math.PI/2;
-            ctx.fillStyle = '#999'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(lbls[i], rcx+(mR+17)*Math.cos(a), rcy+(mR+17)*Math.sin(a));
-        });
-
-        // ===== 区切り =====
-        ctx.beginPath(); ctx.moveTo(50,420); ctx.lineTo(W-50,420);
-        ctx.strokeStyle='#f0eded'; ctx.lineWidth=0.6; ctx.stroke();
-
-        // ===== 読み解き =====
-        var entries = Object.entries(capitalScores).sort(function(a,b){return b[1]-a[1]});
-        var t3 = entries.slice(0,3);
-        var b3 = entries.slice(-3);
-
-        ctx.textAlign = 'left';
-        ctx.font = 'bold 11px sans-serif'; ctx.fillStyle = '#C85A7C';
-        ctx.fillText('\u25c9  ' + t3.map(function(e){return axisLabels[e[0]]}).join('  /  '), 50, 448);
-
-        var highDesc = axisDescHigh[t3[0][0]];
-        if (highDesc) {
-            highDesc = highDesc.substring(0,80) + (highDesc.length>80?'\u2026':'');
-            ctx.font = '400 10px sans-serif'; ctx.fillStyle = '#888';
-            drawWrappedText(ctx, highDesc, 50, 468, W-100, 16);
-        }
-
-        var yLow = 516;
-        ctx.font = 'bold 11px sans-serif'; ctx.fillStyle = '#5A8AAC';
-        ctx.fillText('\u25cb  ' + b3.map(function(e){return axisLabels[e[0]]}).join('  /  '), 50, yLow);
-
-        var lowDesc = axisDescLow[b3[0][0]];
-        if (lowDesc) {
-            lowDesc = lowDesc.substring(0,80) + (lowDesc.length>80?'\u2026':'');
-            ctx.font = '400 10px sans-serif'; ctx.fillStyle = '#888';
-            drawWrappedText(ctx, lowDesc, 50, yLow+20, W-100, 16);
-        }
-
-        // バランス
-        var gap = t3[0][1] - b3[0][1];
-        var balTxt = gap<=2 ? '\u30d0\u30e9\u30f3\u30b9\u306e\u53d6\u308c\u305f\u4f53\u9a13\u3092\u7a4d\u3093\u3067\u3044\u307e\u3059' : gap<=4 ? '\u306f\u3063\u304d\u308a\u3068\u3057\u305f\u300c\u8272\u300d\u306e\u3042\u308b\u4f53\u9a13\u3092\u3057\u3066\u3044\u307e\u3059' : '\u6975\u3081\u3066\u5c16\u3063\u305f\u3001\u552f\u4e00\u7121\u4e8c\u306e\u4f53\u9a13\u306e\u304b\u305f\u3061\u3067\u3059';
-        ctx.font = 'bold 11px sans-serif'; ctx.fillStyle = '#8B7EC8';
-        ctx.fillText('\u25ce  ' + balTxt, 50, 575);
-
-        // 区切り
-        ctx.beginPath(); ctx.moveTo(50,596); ctx.lineTo(W-50,596);
-        ctx.strokeStyle='#f0eded'; ctx.lineWidth=0.6; ctx.stroke();
-
-        // アドバイス
-        var adviceText = '';
-        document.querySelectorAll('.detail-item h3').forEach(function(h) {
-            if (h.textContent.indexOf('\u30a2\u30c9\u30d0\u30a4\u30b9') >= 0) {
-                var p = h.nextElementSibling;
-                if (p) adviceText = p.textContent;
-            }
-        });
-        if (adviceText) {
-            adviceText = adviceText.substring(0,200) + (adviceText.length>200?'\u2026':'');
-            ctx.font = 'bold 10px sans-serif'; ctx.fillStyle = '#C89AA8';
-            ctx.fillText('ADVICE', 50, 618);
-            ctx.font = '400 10.5px sans-serif'; ctx.fillStyle = '#666';
-            drawWrappedText(ctx, adviceText, 50, 640, W-100, 17);
-        }
-
-        // まとめ
-        var avg = entries.reduce(function(s,e){return s+e[1]},0)/12;
-        var sumTxt = avg>=4 ? '\u8c4a\u304b\u306a\u4f53\u9a13\u306b\u5f69\u3089\u308c\u305f\u30ad\u30e3\u30f3\u30d0\u30b9' : avg>=2.5 ? '\u9bae\u3084\u304b\u306a\u8272\u3068\u53ef\u80fd\u6027\u306b\u6e80\u3061\u305f\u30ad\u30e3\u30f3\u30d0\u30b9' : '\u3053\u308c\u304b\u3089\u63cf\u304b\u308c\u308b\u3001\u4f59\u767d\u3068\u3044\u3046\u540d\u306e\u53ef\u80fd\u6027';
-        ctx.font = 'italic 12px serif'; ctx.fillStyle = '#C89AA8'; ctx.textAlign = 'center';
-        ctx.fillText('\u2014 ' + sumTxt + ' \u2014', W/2, H-80);
-
-        // フッター
-        ctx.beginPath(); ctx.moveTo(W*0.3,H-52); ctx.lineTo(W*0.7,H-52);
-        ctx.strokeStyle='#e8e4df'; ctx.lineWidth=0.6; ctx.stroke();
-        ctx.font = '300 11px serif'; ctx.fillStyle = '#C89AA8';
-        ctx.fillText('exc-canvas.com', W/2, H-32);
-    };
-
-    if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(go);
-    } else {
-        setTimeout(go, 800);
-    }
-}
-
-function drawWrappedText(ctx, text, x, y, maxW, lineH) {
-    var line = '';
-    var cy = y;
-    for (var i = 0; i < text.length; i++) {
-        var ch = text[i];
-        if (ctx.measureText(line + ch).width > maxW) {
-            ctx.fillText(line, x, cy);
-            line = ch;
-            cy += lineH;
-        } else {
-            line += ch;
-        }
-    }
-    if (line) ctx.fillText(line, x, cy);
-    return cy + lineH;
-}
-
-function downloadCard() {
-    var canvas = document.getElementById('shareCanvas');
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    
-    if (isIOS || isSafari) {
-        var dataUrl = canvas.toDataURL('image/png');
-        var w = window.open('');
-        if (w) {
-            w.document.write('<html><head><meta name="viewport" content="width=device-width"><title>\u753b\u50cf\u3092\u4fdd\u5b58</title><style>body{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f9f7f5;font-family:sans-serif}img{max-width:90%;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.1)}p{color:#999;margin-top:20px;font-size:14px}</style></head><body><img src="' + dataUrl + '"><p>\u753b\u50cf\u3092\u9577\u62bc\u3057\u3057\u3066\u4fdd\u5b58\u3057\u3066\u304f\u3060\u3055\u3044</p></body></html>');
-            w.document.close();
-        }
-    } else {
-        canvas.toBlob(function(blob) {
-            var url = URL.createObjectURL(blob);
+// 画像保存
+function saveCard() {
+    var card = document.getElementById('shareCardInner');
+    if (!card) return;
+    // Use canvas to capture the HTML card
+    var rect = card.getBoundingClientRect();
+    var w = Math.ceil(rect.width * 2);
+    var h = Math.ceil(rect.height * 2);
+    var cvs = document.createElement('canvas');
+    cvs.width = w; cvs.height = h;
+    var ctx = cvs.getContext('2d');
+    ctx.scale(2, 2);
+    ctx.fillStyle = '#FFFAF8';
+    ctx.fillRect(0, 0, rect.width, rect.height);
+    // SVG foreignObject approach
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+rect.width+'" height="'+rect.height+'">'
+        + '<foreignObject width="100%" height="100%">'
+        + '<div xmlns="http://www.w3.org/1999/xhtml">' + card.outerHTML + '</div>'
+        + '</foreignObject></svg>';
+    var blob = new Blob([svg], {type: 'image/svg+xml'});
+    var url = URL.createObjectURL(blob);
+    var img = new Image();
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        try {
             var a = document.createElement('a');
-            a.href = url;
             a.download = 'ExC_CANVAS_' + characterName + '.png';
+            a.href = cvs.toDataURL('image/png');
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            setTimeout(function() { URL.revokeObjectURL(url); }, 3000);
-        }, 'image/png');
-    }
+        } catch(e) {
+            alert('スクリーンショットで保存してください');
+        }
+    };
+    img.onerror = function() {
+        alert('スクリーンショットで保存してください');
+    };
+    img.src = url;
 }
 
-function shareX() {
-    var text = '\u308f\u305f\u3057\u306e\u4f53\u9a13\u8cc7\u672c\u306e\u304b\u305f\u3061\u306f\u300c' + characterName + '\u300d\u3067\u3057\u305f\n\n#ExCCANVAS #\u4f53\u9a13\u8cc7\u672c';
-    var url = 'https://exc-canvas.com';
-    var intentUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url);
-    var w = window.open(intentUrl, '_blank');
-    if (!w || w.closed || typeof w.closed === 'undefined') {
-        window.location.href = intentUrl;
+// シェアカード初期化
+try {
+var _scn = document.getElementById('shareCharName');
+var _sce = document.getElementById('shareCharNameEn');
+if (_scn) _scn.textContent = characterName;
+if (_sce) _sce.textContent = characterNameEn;
+// X link is hardcoded in HTML
+} catch(e) { console.error('Share card init error:', e); }
+
+// ===== シェアカード =====
+function buildShareCard() {
+    var sec = document.getElementById('shareCardInner');
+    if (!sec) return;
+    
+    var entries = Object.entries(capitalScores).sort(function(a,b){return b[1]-a[1]});
+    var t3 = entries.slice(0,3);
+    var b3 = entries.slice(-3);
+    var gap = t3[0][1] - b3[0][1];
+    var avg = entries.reduce(function(s,e){return s+e[1]},0)/12;
+    
+    var balTxt = gap<=2 ? 'バランスの取れた体験' : gap<=4 ? 'はっきりとした色のある体験' : '極めて尖った唯一無二の体験';
+    var sumTxt = avg>=4 ? '豊かな体験に彩られたキャンバス' : avg>=2.5 ? '鮮やかな色と可能性のキャンバス' : 'これから描かれる可能性のキャンバス';
+    
+    // アドバイス取得
+    var adviceText = '';
+    document.querySelectorAll('.detail-item h3').forEach(function(h) {
+        if (h.textContent.indexOf('アドバイス') >= 0) {
+            var p = h.nextElementSibling;
+            if (p) adviceText = p.textContent.substring(0,120) + (p.textContent.length>120 ? '…' : '');
+        }
+    });
+    
+    // カード内レーダーチャート描画
+    var cvs = document.getElementById('shareRadar');
+    if (cvs) {
+        var W=240,H=240,dpr=2;
+        cvs.width=W*dpr;cvs.height=H*dpr;
+        cvs.style.width=W+'px';cvs.style.height=H+'px';
+        var ctx=cvs.getContext('2d');
+        ctx.scale(dpr,dpr);
+        var cx=W/2,cy=W/2,mR=80,n=12;
+        var rk=['physical','intellectual','creative','cultural','social','emotional','spiritual','temporal','spatial','serendipity','natural','economic'];
+        var rc=['#E87070','#7AB8E0','#E8B860','#80C890','#B880D0','#E89050','#60B8B0','#D080A0','#7090D0','#C8A060','#70B870','#A0A0C0'];
+        var lb=['\u8eab\u4f53','\u77e5\u7684','\u5275\u9020','\u6587\u5316','\u793e\u4f1a','\u611f\u60c5','\u7cbe\u795e','\u6642\u9593','\u7a7a\u9593','\u5076\u767a','\u81ea\u7136','\u7d4c\u6e08'];
+        for(var lv=1;lv<=6;lv++){var r=(lv/6)*mR;ctx.beginPath();for(var i=0;i<=n;i++){var a=(Math.PI*2*i/n)-Math.PI/2;if(i===0)ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a));else ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));}ctx.closePath();ctx.strokeStyle=lv===6?'#ddd':'#eee';ctx.lineWidth=0.5;ctx.stroke();}
+        ctx.beginPath();rk.forEach(function(k,i){var r=((capitalScores[k]||0)/6)*mR;var a=(Math.PI*2*i/n)-Math.PI/2;if(i===0)ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a));else ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));});
+        ctx.closePath();ctx.fillStyle='rgba(232,107,143,0.2)';ctx.fill();ctx.strokeStyle='rgba(232,107,143,0.6)';ctx.lineWidth=1.5;ctx.stroke();
+        rk.forEach(function(k,i){var r=((capitalScores[k]||0)/6)*mR;var a=(Math.PI*2*i/n)-Math.PI/2;ctx.beginPath();ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),2.5,0,Math.PI*2);ctx.fillStyle=rc[i];ctx.fill();});
+        ctx.font='500 8px sans-serif';rk.forEach(function(k,i){var a=(Math.PI*2*i/n)-Math.PI/2;ctx.fillStyle='#999';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(lb[i],cx+(mR+14)*Math.cos(a),cy+(mR+14)*Math.sin(a));});
     }
+    
+    // テキスト部分
+    document.getElementById('shareTop3').textContent = t3.map(function(e){return axisLabels[e[0]]}).join(' / ');
+    document.getElementById('shareBot3').textContent = b3.map(function(e){return axisLabels[e[0]]}).join(' / ');
+    document.getElementById('shareHighDesc').textContent = axisDescHigh[t3[0][0]].substring(0,60) + '…';
+    document.getElementById('shareLowDesc').textContent = axisDescLow[b3[0][0]].substring(0,60) + '…';
+    document.getElementById('shareBalance').textContent = '◎ ' + balTxt;
+    if (adviceText) document.getElementById('shareAdvice').textContent = adviceText;
+    document.getElementById('shareSummary').textContent = '— ' + sumTxt + ' —';
 }
 
 window.addEventListener('load', function() {
-    setTimeout(generateShareCard, 600);
+    try { setTimeout(buildShareCard, 400); } catch(e) { console.error(e); }
 });
 
 
