@@ -986,8 +986,7 @@ const compatData = {
 // ===== シェアカード生成（フルカラー背景版） =====
 const themeColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
 const taglineEl = document.querySelector('.tagline');
-const charTagline = taglineEl ? taglineEl.textContent.split('
-')[0].trim() : '';
+const charTagline = taglineEl ? taglineEl.textContent.split('\n')[0].trim() : '';
 const axisBadges = Array.from(document.querySelectorAll('.axis-value')).map(el => el.textContent.trim()).slice(0, 4);
 
 function hexToRgb(hex) {
@@ -1202,9 +1201,7 @@ function downloadCard(){
     }
 }
 function shareX(){
-    var t = 'わたしの体験資本のかたちは「'+characterName+'」でした
-
-#ExCCANVAS #体験資本';
+    var t = 'わたしの体験資本のかたちは「'+characterName+'」でした\n\n#ExCCANVAS #体験資本';
     var u = 'https://exc-canvas.com';
     var url = 'https://twitter.com/intent/tweet?text='+encodeURIComponent(t)+'&url='+encodeURIComponent(u);
     var a = document.createElement('a');
@@ -1285,11 +1282,19 @@ document.querySelectorAll('.detail-item').forEach(item => {
 
 window.addEventListener('load', () => {
     const firstSection = document.querySelector('.character-visual');
-    if (firstSection) {
-        setTimeout(() => {
-            firstSection.classList.add('is-visible');
-        }, 300);
+    const spectrum = document.querySelector('.axes-spectrum');
+    if (spectrum) {
+        setTimeout(() => { spectrum.classList.add('is-visible'); }, 100);
     }
+    if (firstSection) {
+        setTimeout(() => { firstSection.classList.add('is-visible'); }, 300);
+    }
+    // フォールバック: 2秒後に全セクションを強制表示
+    setTimeout(() => {
+        document.querySelectorAll('.fade-in-section, .detail-item').forEach(el => {
+            el.classList.add('is-visible');
+        });
+    }, 2000);
 });
 </script>
 

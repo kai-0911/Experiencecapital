@@ -1285,11 +1285,19 @@ document.querySelectorAll('.detail-item').forEach(item => {
 
 window.addEventListener('load', () => {
     const firstSection = document.querySelector('.character-visual');
-    if (firstSection) {
-        setTimeout(() => {
-            firstSection.classList.add('is-visible');
-        }, 300);
+    const spectrum = document.querySelector('.axes-spectrum');
+    if (spectrum) {
+        setTimeout(() => { spectrum.classList.add('is-visible'); }, 100);
     }
+    if (firstSection) {
+        setTimeout(() => { firstSection.classList.add('is-visible'); }, 300);
+    }
+    // フォールバック: 2秒後に全セクションを強制表示
+    setTimeout(() => {
+        document.querySelectorAll('.fade-in-section, .detail-item').forEach(el => {
+            el.classList.add('is-visible');
+        });
+    }, 2000);
 });
 </script>
 
