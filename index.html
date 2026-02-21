@@ -651,11 +651,15 @@
         characters.forEach((imgSrc, i) => {
             const el = document.createElement('div');
             el.className = 'carousel-item'; 
-            el.innerHTML = `<img src="${imgSrc}" alt="Character ${i+1}">`;
-            
+            const img = document.createElement('img');
+            img.alt = 'Character ' + (i+1);
+            img.onload = function() { this.classList.add('loaded'); };
             const itemAngle = theta * i;
             el.style.transform = `rotateY(${itemAngle}deg) translateZ(${radius}px)`;
+            el.appendChild(img);
             carousel.appendChild(el);
+            if (i < 4) { img.src = imgSrc; }
+            else { setTimeout(() => { img.src = imgSrc; }, 200 + (i - 4) * 100); }
         });
     }
 
@@ -851,5 +855,7 @@ document.querySelectorAll('.intro-chunk').forEach(chunk => {
 })()
 </script>
 
+
+<div style="padding:30px;text-align:center;color:#999;font-size:0.82rem;">© 2026 ExC CANVAS<br><a href="https://forms.gle/Q7pZL3DfSZDCaCgW7" target="_blank" style="color:#aaa;text-decoration:underline;">お問い合わせ・フィードバック</a></div>
 </body>
 </html>

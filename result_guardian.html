@@ -401,6 +401,22 @@
             transform: translateY(0);
         }
 
+
+        /* 体験資本マップ */
+        .radar-recap {
+            text-align: center;
+            padding: 50px 20px 40px;
+            background: #fafbfc;
+        }
+        .radar-recap-title {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 20px;
+            letter-spacing: 0.08em;
+        }
+        #radarCanvas2 { width: 100%; max-width: 340px; height: auto; }
+
         /* シェアボタン */
         .share-section {
             padding: 80px 40px;
@@ -603,15 +619,12 @@
         </div>
     </div>
 
-    <!-- 体験資本レーダーチャート -->
-    <div class="chart-section fade-in-section">
-        <h2 class="section-title">あなたの体験資本のかたち</h2>
-        <div class="radar-wrap">
-            <canvas id="radarCanvas" width="380" height="380"></canvas>
-        </div>
-        
-    </div>
 
+    <!-- 体験資本マップ -->
+    <div class="radar-recap fade-in-section">
+        <div class="radar-recap-title">あなたの体験資本のかたち</div>
+        <canvas id="radarCanvas2" width="340" height="340"></canvas>
+    </div>
 
     <!-- 動的読み解き -->
     <div class="reading-section fade-in-section" id="readingSection">
@@ -693,7 +706,8 @@
 
     <!-- フッター -->
     <div class="footer">
-        © 2026 ExC CANVAS - Experience Capital Assessment
+        © 2026 ExC CANVAS - Experience Capital Assessment<br>
+        <a href="https://forms.gle/Q7pZL3DfSZDCaCgW7" target="_blank" style="color:#aaa;text-decoration:underline;font-size:0.82rem;">お問い合わせ・フィードバック</a>
     </div>
 </div>
 
@@ -811,7 +825,6 @@ function drawRadar() {
         ctx.fillText(radarLabels[key], cx+(maxR+22)*Math.cos(a), cy+(maxR+22)*Math.sin(a));
     });
 }
-drawRadar();
 
 
 
@@ -875,11 +888,7 @@ const axisDescLow = {
     else if (gap <= 4) balanceText = 'あなたの体験には、はっきりとした「色」があります。' + axisLabels[top3[0][0]] + 'を中心に独自の世界を築いてきた一方で、' + axisLabels[bottom3[0][0]] + 'はまだ手つかずの領域。この対比こそが、あなたらしさを生み出しています。';
     else balanceText = 'あなたの体験は、極めて尖った形をしています。' + axisLabels[top3[0][0]] + 'に圧倒的な深みがある一方、' + axisLabels[bottom3[0][0]] + 'はほぼ未体験の世界。この振り切った偏りは、唯一無二の強みであると同時に、未知の体験に踏み出した時に大きな化学反応を起こす可能性を秘めています。';
     html += '<div class="reading-block balance"><p class="reading-text">' + balanceText + '</p></div>';
-    let summaryText = '';
-    if (avg >= 4) summaryText = 'あなたは人生を通じて豊かな体験を積み重ねてきました。そのキャンバスはすでに多くの色で彩られています。次のステージは、この体験をどう活かし、誰と分かち合うかです。';
-    else if (avg >= 2.5) summaryText = 'あなたのキャンバスには、すでにいくつかの鮮やかな色が置かれています。まだ白い部分も多いですが、それは「可能性」そのものです。一歩踏み出すたびに、新しい色が加わっていきます。';
-    else summaryText = 'あなたのキャンバスは、まだ多くの余白を残しています。でもそれは「足りない」のではなく、「これから描ける」ということ。どんな体験も、最初の一筆から始まります。';
-    html += '<div class="reading-summary"><p class="reading-summary-text">' + summaryText + '</p></div>';
+    // summaryテキスト削除済み
     content.innerHTML = html;
 }
 
@@ -917,13 +926,13 @@ function generateShareCard() {
     ctx.scale(dpr, dpr);
     // 背景
     const bg = ctx.createLinearGradient(0,0,W,H);
-    bg.addColorStop(0,'#FFF5F7'); bg.addColorStop(0.5,'#FFFFFF'); bg.addColorStop(1,'#F5F0FF');
+    bg.addColorStop(0,'#EDF5EF'); bg.addColorStop(0.5,'#FFFFFF'); bg.addColorStop(1,'#E8F2EB');
     ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
     [{x:80,y:120,r:120,c:'rgba(232,180,184,0.08)'},{x:520,y:300,r:100,c:'rgba(184,212,227,0.08)'},{x:150,y:800,r:90,c:'rgba(209,196,233,0.06)'}].forEach(b => {
         ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fillStyle=b.c; ctx.fill();
     });
     // ロゴ
-    ctx.font='600 18px "Cormorant Garamond",serif'; ctx.fillStyle='#C85A7C'; ctx.textAlign='center';
+    ctx.font='600 18px "Cormorant Garamond",serif'; ctx.fillStyle='#2D6B3F'; ctx.textAlign='center';
     ctx.fillText('ExC CANVAS',W/2,40);
     ctx.font='300 10px "Cormorant Garamond",serif'; ctx.fillStyle='#C89AA8';
     ctx.fillText('Experience Capital',W/2,56);
@@ -958,7 +967,7 @@ function generateShareCard() {
     const entries = Object.entries(capitalScores).sort((a,b)=>b[1]-a[1]);
     const t3 = entries.slice(0,3).map(e=>radarLabels[e[0]]||e[0]);
     const b3 = entries.slice(-3).map(e=>radarLabels[e[0]]||e[0]);
-    ctx.fillStyle='#C85A7C'; ctx.font='600 11px "Shippori Mincho",serif';
+    ctx.fillStyle='#2D6B3F'; ctx.font='600 11px "Shippori Mincho",serif';
     ctx.fillText('◉ '+t3.join('・'),W/2,560);
     ctx.fillStyle='#5A8AAC';
     ctx.fillText('○ '+b3.join('・'),W/2,580);
@@ -974,7 +983,7 @@ function generateShareCard() {
         }
     });
     if (adviceText) {
-        adviceText = adviceText.substring(0,120) + (adviceText.length>120?'…':'');
+        adviceText = adviceText.substring(0,300) + (adviceText.length>300?'…':'');
         ctx.font='400 11px "Shippori Mincho",serif'; ctx.fillStyle='#777'; ctx.textAlign='left';
         const maxW = W - 80, lineH = 20;
         let words = adviceText, lines = [], line = '';
@@ -984,7 +993,7 @@ function generateShareCard() {
         }
         if (line) lines.push(line);
         const startY = 620;
-        lines.forEach((l,i) => { if(i<5) ctx.fillText(l, 40, startY + i*lineH); });
+        lines.forEach((l,i) => { if(i<12) ctx.fillText(l, 40, startY + i*lineH); });
     }
     // フッター
     ctx.beginPath();ctx.moveTo(W*0.3,H-50);ctx.lineTo(W*0.7,H-50);ctx.strokeStyle='#e8e4df';ctx.lineWidth=0.8;ctx.stroke();
@@ -1033,6 +1042,48 @@ function shareX(){
     document.body.removeChild(a);
 }
 window.addEventListener('load',()=>{setTimeout(generateShareCard,500);});
+
+
+// 体験資本マップ（読み解き前レーダー）
+function drawRadar2() {
+    var canvas = document.getElementById('radarCanvas2');
+    if (!canvas) return;
+    var size = 340, dpr = window.devicePixelRatio || 1;
+    canvas.width = size * dpr; canvas.height = size * dpr;
+    canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    var cx = size/2, cy = size/2, maxR = 120, n = 12;
+    for (var lv = 1; lv <= 6; lv++) {
+        var r = (lv/6) * maxR;
+        ctx.beginPath();
+        for (var i = 0; i <= n; i++) {
+            var a = (Math.PI*2*i/n) - Math.PI/2;
+            if (i===0) ctx.moveTo(cx+r*Math.cos(a), cy+r*Math.sin(a));
+            else ctx.lineTo(cx+r*Math.cos(a), cy+r*Math.sin(a));
+        }
+        ctx.closePath(); ctx.strokeStyle = lv===6 ? '#ddd' : '#eee'; ctx.lineWidth = 0.5; ctx.stroke();
+    }
+    ctx.beginPath();
+    radarKeys.forEach(function(key, i) {
+        var r = ((capitalScores[key]||0)/6) * maxR;
+        var a = (Math.PI*2*i/n) - Math.PI/2;
+        if (i===0) ctx.moveTo(cx+r*Math.cos(a), cy+r*Math.sin(a));
+        else ctx.lineTo(cx+r*Math.cos(a), cy+r*Math.sin(a));
+    });
+    ctx.closePath(); ctx.fillStyle = 'rgba(232,107,143,0.15)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(232,107,143,0.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+    radarKeys.forEach(function(key, i) {
+        var r = ((capitalScores[key]||0)/6) * maxR;
+        var a = (Math.PI*2*i/n) - Math.PI/2;
+        ctx.beginPath(); ctx.arc(cx+r*Math.cos(a), cy+r*Math.sin(a), 3, 0, Math.PI*2);
+        ctx.fillStyle = radarColors[i]; ctx.fill();
+        ctx.font = '500 10px sans-serif'; ctx.fillStyle = '#999';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(radarLabels[key], cx+(maxR+18)*Math.cos(a), cy+(maxR+18)*Math.sin(a));
+    });
+}
+drawRadar2();
 
 // スクロールアニメーション
 const fadeInSections = document.querySelectorAll('.fade-in-section');
