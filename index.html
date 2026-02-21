@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ExC CANVAS</title>
-    <link rel="preload" href="1.png" as="image">
-    <link rel="preload" href="2.png" as="image">
-    <link rel="preload" href="16.png" as="image">
+    <!-- v6 larger chars -->
     <style>
         /* =========================================
            1. 共通設定 & ベーススタイル
@@ -25,10 +23,18 @@
 
         * { box-sizing: border-box; }
 
+        html {
+            overflow-x: clip;
+            max-width: 100vw;
+        }
+
+        #screen-top { overflow: hidden; width: 100%; max-width: 100vw; }
+
         body {
             background-color: var(--bg-canvas);
             font-family: 'Shippori Mincho', serif; margin: 0; color: var(--text-main);
-            overflow-x: hidden; overflow-y: auto; position: relative; min-height: 100vh;
+            overflow-x: clip; overflow-y: auto; position: relative; min-height: 100vh;
+            max-width: 100vw; width: 100%;
         }
 
         /* 水彩ペイント背景キャンバス */
@@ -41,9 +47,12 @@
             z-index: -2;
         }
 
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(255, 255, 255, 0.55); pointer-events: none; z-index: -1;
+        body::before { display: none; }
+        #whiteOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #fff; pointer-events: none; z-index: -1;
+            opacity: 0.75;
+            transition: opacity 0.3s ease;
         }
 
         @keyframes fadeIn { 
@@ -52,90 +61,191 @@
         }
 
         /* ヘッダー */
-        header { position: absolute; top: 0; width: 100%; padding: 30px 20px 40px; text-align: center; z-index: 100; }
+        header { 
+            position: fixed; top: 0; left: 0; right: 0; width: 100%;
+            padding: 12px 20px;
+            z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(200,90,124,0.08);
+            display: flex; align-items: center; justify-content: space-between;
+        }
         .logo-main { 
             font-family: 'Cormorant Garamond', serif; 
-            font-size: 4.5rem; 
+            font-size: 1.2rem; 
             color: var(--gold); 
-            letter-spacing: 0.15em; 
+            letter-spacing: 0.12em; 
             font-weight: 600; 
-            cursor: pointer; 
-            margin-bottom: 2px;
-        }
-        .logo-subtitle {
-            font-family: 'Cinzel', serif;
-            font-size: 1.2rem;
-            letter-spacing: 0.2em;
-            font-weight: 400;
             cursor: pointer;
-            margin-top: 5px;
+            flex-shrink: 0;
         }
-        .logo-subtitle .highlight {
-            color: var(--gold);
-            font-weight: 700;
+        .logo-subtitle { display: none; }
+        .header-links {
+            display: flex; gap: 18px; align-items: center;
         }
-        .logo-subtitle .normal {
-            color: #333333;
+        .header-link {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 0.7rem; color: #777;
+            text-decoration: none; white-space: nowrap;
+            transition: color 0.2s;
+        }
+        .header-link:hover { color: var(--gold); }
+        .header-link.primary {
+            color: #fff;
+            background: var(--gold);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.65rem;
         }
 
+        /* ハンバーガーボタン（モバイルのみ） */
+        .hamburger {
+            display: none;
+            background: none; border: none; cursor: pointer;
+            padding: 8px 4px; z-index: 201;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hamburger span {
+            display: block; width: 20px; height: 2px;
+            background: var(--gold); margin: 4px 0;
+            border-radius: 1px; transition: all 0.3s;
+        }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+        /* スライドメニュー */
+        .slide-menu {
+            position: fixed; top: 0; right: -280px;
+            width: 260px; height: 100vh;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            z-index: 200;
+            padding: 80px 30px 40px;
+            transition: right 0.3s ease;
+        }
+        .slide-menu.open { right: 0; box-shadow: -5px 0 30px rgba(0,0,0,0.1); }
+        .slide-menu a {
+            display: block; padding: 18px 0;
+            font-family: 'Shippori Mincho', serif;
+            font-size: 0.9rem; color: #555;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            transition: color 0.2s;
+        }
+        .slide-menu a:hover { color: var(--gold); }
+        .slide-menu a.menu-cta {
+            display: inline-block; margin-top: 20px;
+            background: linear-gradient(135deg, #F06292, #D05A7C);
+            color: #fff; font-weight: 700;
+            padding: 14px 30px; border-radius: 30px;
+            border-bottom: none; text-align: center;
+            font-size: 0.85rem; letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(232,107,143,0.3);
+        }
+        .menu-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.15);
+            z-index: 199;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .menu-overlay.open { opacity: 1; pointer-events: auto; }
+
         /* 背景演出：ペイントダブ */
-        .paint-dabs-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .paint-dabs-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; opacity: 0; transition: opacity 3s ease; }
         .paint-dab {
             position: absolute; border-radius: 50%; background: radial-gradient(circle, currentColor 0%, transparent 80%);
             opacity: 0; transform: scale(0); filter: blur(5px); animation: bubbleFloat 10s infinite ease-in-out;
         }
         @keyframes bubbleFloat {
             0% { opacity: 0; transform: scale(0.5); } 
-            15% { opacity: 0.7; transform: scale(1); }
-            35% { opacity: 0.5; transform: scale(1.1); } 
-            50% { opacity: 0; transform: scale(1.15); }
-            65% { opacity: 0.6; transform: scale(1.1); }
-            85% { opacity: 0.4; transform: scale(1.05); } 
+            15% { opacity: 0.85; transform: scale(1); }
+            35% { opacity: 0.65; transform: scale(1.1); } 
+            50% { opacity: 0.1; transform: scale(1.15); }
+            65% { opacity: 0.75; transform: scale(1.1); }
+            85% { opacity: 0.5; transform: scale(1.05); } 
             100% { opacity: 0; transform: scale(1); }
         }
-        .dab1 { top: 10%; left: 5%; width: 180px; height: 180px; color: #FFD1DC; animation-duration: 14s; }
-        .dab2 { top: 60%; right: 10%; width: 200px; height: 200px; color: #FFDAB9; animation-delay: 5s; animation-duration: 16s; }
-        .dab3 { bottom: 5%; left: 20%; width: 120px; height: 120px; color: #B0E0E6; animation-delay: 2s; animation-duration: 12s; }
-        .dab4 { top: 25%; right: 20%; width: 100px; height: 100px; color: #DDA0DD; animation-delay: 7s; animation-duration: 13s; }
-        .dab5 { top: 75%; left: 50%; width: 150px; height: 150px; color: #FFE4B5; animation-delay: 3s; animation-duration: 15s; }
-        .dab6 { bottom: 20%; right: 30%; width: 90px; height: 90px; color: #E0BBE4; animation-delay: 9s; animation-duration: 14s; }
-        .dab7 { top: 50%; right: 5%; width: 130px; height: 130px; color: #C7CEEA; animation-delay: 1s; animation-duration: 15s; filter: blur(3px); }
-        .dab8 { top: 35%; left: 15%; width: 110px; height: 110px; color: #FADADD; animation-delay: 6s; animation-duration: 17s; }
+        .dab1 { top: 10%; left: 5%; width: 220px; height: 220px; color: #FF9AB5; animation-duration: 14s; }
+        .dab2 { top: 60%; right: 10%; width: 240px; height: 240px; color: #FFB88C; animation-delay: 5s; animation-duration: 16s; }
+        .dab3 { bottom: 5%; left: 20%; width: 160px; height: 160px; color: #87CEEB; animation-delay: 2s; animation-duration: 12s; }
+        .dab4 { top: 25%; right: 20%; width: 140px; height: 140px; color: #DDA0DD; animation-delay: 7s; animation-duration: 13s; }
+        .dab5 { top: 75%; left: 50%; width: 180px; height: 180px; color: #FFD700; animation-delay: 3s; animation-duration: 15s; }
+        .dab6 { bottom: 20%; right: 30%; width: 120px; height: 120px; color: #E8A4C8; animation-delay: 9s; animation-duration: 14s; }
+        .dab7 { top: 50%; right: 5%; width: 160px; height: 160px; color: #A8C8F0; animation-delay: 1s; animation-duration: 15s; filter: blur(3px); }
+        .dab8 { top: 35%; left: 15%; width: 140px; height: 140px; color: #FFB6C1; animation-delay: 6s; animation-duration: 17s; }
+
+        /* ヒーロータイトル */
+        .hero-title-wrap {
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1.2s ease-out 0.1s forwards;
+        }
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--gold);
+            letter-spacing: 0.12em;
+            margin: 0;
+        }
+        .hero-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.9rem;
+            color: var(--gold-dark);
+            letter-spacing: 0.18em;
+            margin-top: 6px;
+            font-weight: 300;
+            opacity: 0.6;
+        }
 
         /* ヒーローセクション */
         .hero-section {
             min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding-top: 160px; padding-bottom: 60px; z-index: 5; position: relative;
+            padding-top: 80px; padding-bottom: 60px; z-index: 5; position: relative;
+            overflow: hidden; width: 100%;
         }
         
-        /* カルーセル */
+        /* カルーセル（PC: 3D回転） */
         .scene {
-            position: relative; width: 160px; height: 240px; perspective: 1200px; transform-style: preserve-3d;
-            margin-bottom: 120px; margin-top: 40px; cursor: pointer; opacity: 0; animation: fadeIn 1.2s ease-out 0.3s forwards;
+            position: relative; width: 280px; height: 370px; perspective: 1200px; transform-style: preserve-3d;
+            margin-bottom: 120px; margin-top: 20px; cursor: pointer; opacity: 0; animation: fadeIn 1.2s ease-out 0.3s forwards;
         }
         .carousel { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .carousel-item {
-            position: absolute; width: 140px; height: 210px; left: 10px; top: 15px; background: transparent;
+            position: absolute; width: 250px; height: 340px; left: 15px; top: 15px; background: transparent;
             display: flex; align-items: center; justify-content: center; backface-visibility: hidden; overflow: hidden;
         }
         .carousel-item img { 
             width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; 
-            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15)); 
-            background: white; 
+            filter: drop-shadow(0 15px 30px rgba(200, 90, 124, 0.25)); 
+            background: transparent; 
             border-radius: 10px;
             padding: 10px;
-            opacity: 0;
-            transition: opacity 0.4s ease;
         }
-        .carousel-item img.loaded {
-            opacity: 1;
+
+        /* モバイル: シンプル単体画像 */
+        .mobile-char {
+            display: none;
+            width: 180px; height: 230px;
+            margin: 15px auto 20px;
+            opacity: 0; animation: fadeIn 0.8s ease-out 0.3s forwards;
+            position: relative;
+        }
+        .mobile-char img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 25px rgba(200,90,124,0.2));
+            transition: opacity 0.5s ease;
         }
 
         /* キャッチコピー */
         .main-catch-wrapper { margin-bottom: 40px; text-align: center; position: relative; }
         .paint-stroke {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 320px;
-            background: radial-gradient(circle, rgba(220, 20, 60, 0.15) 0%, transparent 70%); border-radius: 50%;
+            background: radial-gradient(circle, rgba(232, 107, 143, 0.2) 0%, rgba(255, 180, 100, 0.1) 40%, transparent 70%); border-radius: 50%;
             z-index: -1; filter: blur(20px); opacity: 0; animation: fadeIn 1.5s ease-out 0.5s forwards;
         }
         .main-catch {
@@ -146,7 +256,7 @@
         /* ボタン */
         .controls { position: relative; text-align: center; z-index: 20; margin-bottom: 80px; opacity: 0; animation: fadeIn 1.0s ease-out 0.9s forwards; }
         .btn-start {
-            background: linear-gradient(135deg, #E86B8F 0%, #D05A7C 100%);
+            background: linear-gradient(135deg, #F06292 0%, #E84880 50%, #D05A7C 100%);
             border: none;
             color: #ffffff;
             padding: 28px 80px;
@@ -203,6 +313,12 @@
         .btn-start:active {
             transform: translateY(-1px) scale(1);
         }
+        
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 12px 30px rgba(232, 107, 143, 0.5); }
+            50% { box-shadow: 0 12px 45px rgba(232, 107, 143, 0.7), 0 0 20px rgba(232, 107, 143, 0.3); }
+        }
+        .btn-start { animation: fadeIn 1.0s ease-out 0.9s forwards, btnPulse 2.5s ease-in-out 2s infinite; }
 
         /* 紹介文 */
         .intro-box {
@@ -231,7 +347,7 @@
         }
 
         /* ステップ紹介 */
-        .mechanism-section { width: 100%; background: rgba(220, 20, 60, 0.05); padding: 80px 20px 120px; display: flex; flex-direction: column; align-items: center; }
+        .mechanism-section { width: 100%; background: linear-gradient(180deg, rgba(232, 107, 143, 0.06) 0%, rgba(232, 107, 143, 0.12) 50%, rgba(255, 200, 150, 0.08) 100%); padding: 80px 20px 120px; display: flex; flex-direction: column; align-items: center; }
         .section-title-ja { font-family: 'Shippori Mincho', serif; color: var(--text-main); font-size: 1.4rem; font-weight: 700; margin-bottom: 60px; position: relative; letter-spacing: 0.1em; }
         .section-title-ja::after { content: ""; display: block; width: 60px; height: 2px; background: var(--gold); margin: 20px auto 0; border-radius: 2px; }
         .steps-container { 
@@ -263,14 +379,14 @@
         }
         
         .step-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 245, 248, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 245, 248, 0.97) 100%);
             width: 100%; 
             max-width: 650px; 
             padding: 45px 50px;
             border-radius: 20px; 
-            box-shadow: 0 10px 40px rgba(200, 90, 124, 0.15); 
+            box-shadow: 0 10px 40px rgba(200, 90, 124, 0.18); 
             text-align: left;
-            border: 2px solid rgba(200, 90, 124, 0.2);
+            border: 2px solid rgba(200, 90, 124, 0.25);
             position: relative; 
             transition: all 0.4s ease;
             opacity: 0;
@@ -322,11 +438,84 @@
         .step-desc { font-size: 1.3rem; color: var(--text-desc); line-height: 2.0; text-align: left; position: relative; z-index: 1; }
 
         @media (max-width: 600px) {
-            .hero-section { padding-top: 100px; }
-            .scene { transform: scale(0.9); margin-bottom: 50px; }
-            .intro-desc { font-size: 0.85rem; line-height: 2.0; text-align: left; }
-            .main-catch { font-size: 1.3rem; }
-            .step-card { min-width: 100%; margin-bottom: 10px; }
+            /* 全体 - iOS Safari対応の横スクロール完全防止 */
+            html { overflow-x: clip !important; max-width: 100vw !important; }
+            body { overflow-x: clip !important; max-width: 100vw !important; }
+            #screen-top { overflow: hidden !important; max-width: 100vw !important; }
+
+
+            /* ヒーロー */
+            .hero-title { font-size: 1.6rem; }
+            .hero-subtitle { font-size: 0.7rem; }
+            .hero-section {
+                min-height: auto;
+                padding-top: 50px;
+                padding-bottom: 20px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            /* カルーセル - モバイルサイズ調整 */
+            .scene {
+                width: 260px; height: 350px;
+                margin-top: 20px; margin-bottom: 30px;
+            }
+            .carousel-item { width: 230px; height: 320px; left: 15px; top: 15px; }
+            .carousel-item img { padding: 8px; border-radius: 10px; }
+            .mobile-char { display: none !important; }
+
+            /* キャッチ */
+            .main-catch-wrapper { margin-bottom: 18px; padding: 0 10px; }
+            .main-catch { font-size: 1.05rem; line-height: 1.8; letter-spacing: 0.04em; }
+            .paint-stroke { width: 180px; height: 180px; }
+
+            /* CTAボタン */
+            .controls { margin-bottom: 20px; }
+            .btn-start {
+                padding: 14px 32px;
+                font-size: 0.75rem;
+                letter-spacing: 0.1em;
+                border-radius: 40px;
+                box-shadow: 0 8px 20px rgba(232,107,143,0.4);
+            }
+            .btn-start span { font-size: 0.6rem; margin-top: 4px; }
+
+            /* 紹介文 */
+            .intro-box {
+                padding: 0 18px;
+                padding-top: 35px;
+                margin-bottom: 30px;
+            }
+            .intro-title { font-size: 1rem; margin-bottom: 18px; }
+            .intro-desc { font-size: 0.78rem; line-height: 1.9; }
+            .intro-chunk { font-size: 0.78rem; line-height: 1.9; margin-bottom: 1.2em; }
+
+            /* ステップセクション */
+            .mechanism-section { padding: 40px 15px 60px; overflow: hidden; }
+            .section-title-ja { font-size: 0.95rem; margin-bottom: 30px; letter-spacing: 0.05em; }
+            .section-title-ja::after { width: 40px; margin-top: 12px; }
+            .steps-container { gap: 45px; padding: 30px 0; }
+            .steps-container::before { top: 50px; bottom: 50px; }
+            .step-card {
+                padding: 28px 20px 22px;
+                border-radius: 14px;
+                max-width: 100%;
+                box-shadow: 0 5px 20px rgba(200,90,124,0.12);
+                border-width: 1.5px;
+            }
+            .step-card::before { width: 14px; height: 14px; top: -28px; transform: translateX(-7px); }
+            .step-num { font-size: 1.6rem; top: -10px; left: 18px; padding: 0 6px; }
+            .step-title { font-size: 0.9rem; margin: 5px 0 10px; }
+            .step-desc { font-size: 0.75rem; line-height: 1.8; }
+
+            /* 装飾 */
+            .paint-dab { transform: scale(0.35) !important; }
+
+            /* ヘッダー → ハンバーガーメニュー */
+            header { padding: 10px 15px; }
+            .logo-main { font-size: 1rem; letter-spacing: 0.08em; }
+            .header-links { display: none !important; }
+            .hamburger { display: block !important; }
         }
     </style>
 </head>
@@ -334,6 +523,7 @@
 
 <!-- 水彩ペイント背景 -->
 <canvas id="paintCanvas"></canvas>
+<div id="whiteOverlay"></div>
 
 <div class="paint-dabs-container">
     <div class="paint-dab dab1"></div><div class="paint-dab dab2"></div>
@@ -344,20 +534,41 @@
 
 <header>
     <div class="logo-main" onclick="location.reload()">ExC CANVAS</div>
-    <div class="logo-subtitle" onclick="location.reload()">
-        <span class="highlight">Ex</span><span class="normal">perience </span><span class="highlight">C</span><span class="normal">apital</span>
-    </div>
+    <nav class="header-links">
+        <a href="characters.html" class="header-link">体験のかたち</a>
+        <a href="result_experience_capital.html" class="header-link">みんなの体験資本</a>
+        <a href="diagnosis.html" class="header-link primary">診断する</a>
+    </nav>
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+    </button>
 </header>
+
+<div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+<div class="slide-menu" id="slideMenu">
+    <a href="characters.html">体験のかたち</a>
+    <a href="result_experience_capital.html">みんなの体験資本</a>
+    <a href="diagnosis.html" class="menu-cta">診断する</a>
+</div>
 
 <div id="screen-top">
     <section class="hero-section">
+        <div class="hero-title-wrap">
+            <h1 class="hero-title">ExC CANVAS</h1>
+            <p class="hero-subtitle">Experience Capital</p>
+        </div>
+        <!-- PC: 3Dカルーセル -->
         <div class="scene" id="carousel-scene">
             <div class="carousel" id="carousel"></div>
+        </div>
+        <!-- モバイル: シンプル画像切替 -->
+        <div class="mobile-char" id="mobileChar" onclick="nextMobileChar()">
+            <img id="mobileCharImg" src="1.png" alt="Character">
         </div>
         
         <div class="main-catch-wrapper">
             <div class="paint-stroke"></div>
-            <h1 class="main-catch">あなたの「体験」を<br>「資本」として可視化します</h1>
+            <h2 class="main-catch">あなたの「体験」を<br>「資本」として可視化します</h2>
         </div>
 
         <div class="controls">
@@ -413,6 +624,13 @@
 </div>
 
 <script>
+    /* --- ハンバーガーメニュー --- */
+    function toggleMenu() {
+        document.getElementById('hamburgerBtn').classList.toggle('open');
+        document.getElementById('slideMenu').classList.toggle('open');
+        document.getElementById('menuOverlay').classList.toggle('open');
+    }
+
     /* --- カルーセル初期化と回転 --- */
     const characters = [
         "1.png", "2.png", "3.png", "4.png", 
@@ -423,7 +641,8 @@
     
     const carousel = document.getElementById('carousel');
     const carouselScene = document.getElementById('carousel-scene');
-    const radius = 380; 
+    const isMobile = window.innerWidth <= 600;
+    const radius = isMobile ? 340 : 420; 
     let theta = 360 / characters.length;
     let currentAngle = 0;
     let autoRotateTimer = null;
@@ -432,22 +651,11 @@
         characters.forEach((imgSrc, i) => {
             const el = document.createElement('div');
             el.className = 'carousel-item'; 
-            
-            const img = document.createElement('img');
-            img.alt = 'Character ' + (i+1);
-            img.onload = function() { this.classList.add('loaded'); };
+            el.innerHTML = `<img src="${imgSrc}" alt="Character ${i+1}">`;
             
             const itemAngle = theta * i;
             el.style.transform = `rotateY(${itemAngle}deg) translateZ(${radius}px)`;
-            el.appendChild(img);
             carousel.appendChild(el);
-            
-            // 最初の4枚は即読み込み、残りは遅延
-            if (i < 4) {
-                img.src = imgSrc;
-            } else {
-                setTimeout(() => { img.src = imgSrc; }, 200 + (i - 4) * 100);
-            }
         });
     }
 
@@ -474,82 +682,79 @@
 
     initCarousel();
     resetAutoRotate(); // 初回の自動回転開始（5秒後に自動で回転）
+
+    /* --- モバイル用シンプル画像切替 --- */
+    let mobileCharIndex = 0;
+    function nextMobileChar() {
+        mobileCharIndex = (mobileCharIndex + 1) % characters.length;
+        const img = document.getElementById('mobileCharImg');
+        if (img) {
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.src = characters[mobileCharIndex];
+                img.style.opacity = '1';
+            }, 250);
+        }
+    }
+    // モバイル自動切替
+    if (window.innerWidth <= 600) {
+        setInterval(nextMobileChar, 3000);
+    }
 </script>
 <script>
-// 水彩ペイント背景の描画
+// 水彩ペイント背景の描画 - 1秒ごとに丸が増える
 const canvas = document.getElementById('paintCanvas');
 const ctx = canvas.getContext('2d');
 
-// キャンバスサイズを設定
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// 4色パレット（紫・オレンジ・青・緑）
 const colors = [
-    ['#9b7dd4', '#b8a0e0', '#d4c2ed'],  // 紫系
-    ['#d4a87d', '#e0c2a0', '#edddc2'],  // オレンジ系
-    ['#7daad4', '#a0c5e0', '#c2dded'],  // 青系
-    ['#7dd4a8', '#a0e0c2', '#c2eddd']   // 緑系
+    ['#a06ee0', '#c490f0', '#ddb8f8'],
+    ['#e0985a', '#f0b880', '#f8d8b0'],
+    ['#5a9ae0', '#80b8f0', '#b0d8f8'],
+    ['#5ae098', '#80f0b8', '#b0f8d8']
 ];
-
-// すべての色を平坦化
 const allColors = colors.flat();
-
-// 水彩の配列（管理用）
 const paintObjects = [];
 
-// 水彩オブジェクトの構造
 class PaintCircle {
     constructor() {
         this.color = allColors[Math.floor(Math.random() * allColors.length)];
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = 150 + Math.random() * 250;
+        this.size = 100 + Math.random() * 200;
         this.alpha = 0;
-        this.targetAlpha = 0.15 + Math.random() * 0.15;
-        this.fadeIn = true;
+        this.targetAlpha = 0.15 + Math.random() * 0.2;
         this.lifeTime = 0;
-        this.maxLifeTime = 8000 + Math.random() * 4000; // 8-12秒
-        
-        // 飛沫
+        this.maxLifeTime = 10000 + Math.random() * 6000;
         this.splashes = [];
         for (let i = 0; i < 3; i++) {
             this.splashes.push({
                 offsetX: (Math.random() - 0.5) * 180,
                 offsetY: (Math.random() - 0.5) * 180,
-                size: 50 + Math.random() * 100,
-                alpha: 0.1 + Math.random() * 0.1
+                size: 40 + Math.random() * 80,
+                alpha: 0.08 + Math.random() * 0.08
             });
         }
     }
-    
     update(deltaTime) {
         this.lifeTime += deltaTime;
-        
-        // フェードイン・アウト
-        if (this.lifeTime < 1000) {
-            // フェードイン（最初の1秒）
-            this.alpha = (this.lifeTime / 1000) * this.targetAlpha;
+        if (this.lifeTime < 1500) {
+            this.alpha = (this.lifeTime / 1500) * this.targetAlpha;
         } else if (this.lifeTime > this.maxLifeTime - 2000) {
-            // フェードアウト（最後の2秒）
-            const fadeProgress = (this.maxLifeTime - this.lifeTime) / 2000;
-            this.alpha = fadeProgress * this.targetAlpha;
+            this.alpha = Math.max(0, ((this.maxLifeTime - this.lifeTime) / 2000) * this.targetAlpha);
         } else {
             this.alpha = this.targetAlpha;
         }
-        
         return this.lifeTime < this.maxLifeTime;
     }
-    
     draw() {
-        // メイン円
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
-        
-        // 飛沫
         this.splashes.forEach(splash => {
             ctx.globalAlpha = this.alpha * (splash.alpha / this.targetAlpha);
             ctx.beginPath();
@@ -559,41 +764,39 @@ class PaintCircle {
     }
 }
 
-// 初期水彩を生成（少なめに）
-for (let i = 0; i < 15; i++) {
-    paintObjects.push(new PaintCircle());
-}
+// 最初は0個 → 1秒ごとに1個追加、最大20個
+let addCount = 0;
+const maxCircles = 20;
+const addInterval = setInterval(() => {
+    if (addCount < maxCircles) {
+        paintObjects.push(new PaintCircle());
+        addCount++;
+    }
+    // 20個以降も消えたら補充
+    if (paintObjects.length < 12 && addCount >= maxCircles) {
+        paintObjects.push(new PaintCircle());
+    }
+}, 1000);
 
-// アニメーションループ
 let lastTime = Date.now();
-
 function animate() {
     const currentTime = Date.now();
     const deltaTime = currentTime - lastTime;
     lastTime = currentTime;
     
-    // キャンバスをクリア
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 全ての水彩を更新・描画
     for (let i = paintObjects.length - 1; i >= 0; i--) {
         const alive = paintObjects[i].update(deltaTime);
         if (alive) {
             paintObjects[i].draw();
         } else {
-            // 寿命が尽きたら削除
             paintObjects.splice(i, 1);
         }
     }
     
-    // 新しい水彩を追加（最大20個まで）
-    if (paintObjects.length < 20 && Math.random() < 0.01) {
-        paintObjects.push(new PaintCircle());
-    }
-    
     requestAnimationFrame(animate);
 }
-
 animate();
 
 // ウィンドウリサイズ対応
@@ -627,12 +830,26 @@ document.querySelectorAll('.step-card').forEach(card => {
 document.querySelectorAll('.intro-chunk').forEach(chunk => {
     observer.observe(chunk);
 });
-</script>
 
-<div style="padding: 30px; text-align: center; color: #999; font-size: 0.82rem;">
-    © 2026 ExC CANVAS - Experience Capital Assessment<br>
-    <a href="https://forms.gle/Q7pZL3DfSZDCaCgW7" target="_blank" style="color: #aaa; text-decoration: underline;">お問い合わせ・フィードバック</a>
-</div>
+// ===== 時間経過で徐々に色づくエフェクト =====
+(function timeColorReveal() {
+    const whiteOverlay = document.getElementById('whiteOverlay');
+    const dabsContainer = document.querySelector('.paint-dabs-container');
+    let elapsed = 0;
+    const totalDuration = 15000;
+    
+    // 5秒後にCSS色玉もフェードイン
+    setTimeout(() => { dabsContainer.style.opacity = '1'; }, 5000);
+    
+    function tick() {
+        elapsed += 200;
+        const progress = Math.min(elapsed / totalDuration, 1);
+        whiteOverlay.style.opacity = (0.75 - progress * 0.70).toFixed(3);
+        if (progress < 1) setTimeout(tick, 200);
+    }
+    tick();
+})()
+</script>
 
 </body>
 </html>
