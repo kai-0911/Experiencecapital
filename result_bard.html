@@ -373,6 +373,22 @@
             transform: translateY(0);
         }
 
+
+        /* 読み解き後レーダー */
+        .radar-recap {
+            text-align: center;
+            padding: 50px 20px 40px;
+            background: #fafbfc;
+        }
+        .radar-recap-title {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 20px;
+            letter-spacing: 0.08em;
+        }
+        #radarCanvas2 { width: 100%; max-width: 340px; height: auto; }
+
         /* シェアボタン */
 
                 /* シェアカード */
@@ -384,11 +400,17 @@
         .share-card-hint { font-size: 0.75rem; color: #bbb; margin-bottom: 20px; }
         .share-card {
             display: inline-block; width: 320px; text-align: center;
-            background: linear-gradient(135deg, #FFFAF8 0%, #FFF 50%, #F8F5FF 100%);
+            background: linear-gradient(135deg, #F5F0FA 0%, #FFFFFF 50%, #F0EAF6 100%);
             border-radius: 16px; padding: 28px 24px 20px;
             box-shadow: 0 8px 40px rgba(0,0,0,0.1);
         }
-        .sc-logo { font-family:'Cormorant Garamond',serif; font-size:14px; font-weight:600; color:#C85A7C; }
+        .sc-char-img {
+            width: 80px; height: 80px; border-radius: 50%;
+            object-fit: cover; margin: 8px auto;
+            border: 2px solid rgba(200,90,124,0.15);
+            display: block;
+        }
+        .sc-logo { font-family:'Cormorant Garamond',serif; font-size:14px; font-weight:600; color:#7B5EA7; }
         .sc-logo-sub { font-family:'Cormorant Garamond',serif; font-size:9px; color:#C89AA8; margin-bottom:12px; }
         .sc-line { height:1px; background:#f0e8eb; margin:10px 0; }
         .sc-name { font-size:22px; font-weight:700; color:#333; margin:8px 0 2px; }
@@ -405,7 +427,7 @@
         .sc-axis-desc { font-size:8.5px; color:#999; line-height:1.5; margin-top:2px; }
         .sc-advice-label { font-size:8px; font-weight:700; color:#C89AA8; letter-spacing:0.1em; text-align:left; margin-top:8px; }
         .sc-advice { font-size:8.5px; color:#777; line-height:1.6; text-align:left; margin-top:4px; }
-        .sc-summary { font-family:'Cormorant Garamond',serif; font-size:11px; color:#C89AA8; font-style:italic; margin-top:12px; }
+        .sc-summary { display:none; }
         .sc-footer { font-family:'Cormorant Garamond',serif; font-size:10px; color:#C89AA8; margin-top:10px; }
         .share-buttons { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:24px; }
         .share-btn-x { display:inline-block; padding:14px 28px; border-radius:100px; font-size:0.85rem; font-weight:600; background:#000; color:#fff; text-decoration:none; font-family:'Shippori Mincho',serif; letter-spacing:0.05em; transition:all 0.3s; }
@@ -569,14 +591,6 @@
             .axes-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
         }
 
-
-        /* Fallback: show content even if JS fails */
-        @keyframes fallbackShow {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in-section {
-            animation: fallbackShow 0.5s ease-out 2s forwards;
-        }
     </style>
 </head>
 <body>
@@ -622,21 +636,22 @@
         </div>
     </div>
 
-    <!-- 体験資本レーダーチャート -->
-    <div class="chart-section fade-in-section">
-        <h2 class="section-title">あなたの体験資本のかたち</h2>
-        <div class="radar-wrap">
-            <canvas id="radarCanvas" width="380" height="380"></canvas>
-        </div>
-        
-    </div>
 
+
+
+
+    <!-- 読み解き後レーダー -->
+    <div class="radar-recap fade-in-section">
+        <div class="radar-recap-title">あなたの体験資本のかたち</div>
+        <canvas id="radarCanvas2" width="340" height="340"></canvas>
+    </div>
 
     <!-- 動的読み解き -->
     <div class="reading-section fade-in-section" id="readingSection">
         <h2 class="reading-title" id="readingTitle">あなたの体験資本を読み解く</h2>
         <div id="readingContent"></div>
     </div>
+
     <!-- 詳細情報 -->
     <div class="detail-section">
         <!-- フルワイド画像（100%幅の吟遊詩人の別表情・背景画像） -->
@@ -685,6 +700,7 @@
     </div>
 
 
+
     <!-- 相性キャラ -->
     <div class="compat-section fade-in-section" id="compatSection">
         <h2 class="compat-title" id="compatTitle">体験が近い・遠いタイプ</h2>
@@ -699,6 +715,7 @@
             <div class="sc-logo">ExC CANVAS</div>
             <div class="sc-logo-sub">Experience Capital</div>
             <div class="sc-line"></div>
+            <img class="sc-char-img" src="13.png" alt="涙の吟遊詩人">
             <div class="sc-name" id="shareCharName"></div>
             <div class="sc-name-en" id="shareCharNameEn"></div>
             <div class="sc-subtitle">体験資本のかたち</div>
@@ -706,7 +723,7 @@
             <div class="sc-axes">
                 <div class="sc-axis-row"><span class="sc-axis-icon high">◉</span><div><div class="sc-axis-names" id="shareTop3"></div><div class="sc-axis-desc" id="shareHighDesc"></div></div></div>
                 <div class="sc-axis-row"><span class="sc-axis-icon low">○</span><div><div class="sc-axis-names" id="shareBot3"></div><div class="sc-axis-desc" id="shareLowDesc"></div></div></div>
-                <div class="sc-axis-row"><span class="sc-axis-icon bal" id="shareBalance"></span></div>
+
             </div>
             <div class="sc-line"></div>
             <div class="sc-advice-label">ADVICE</div>
@@ -729,7 +746,8 @@
 
     <!-- フッター -->
     <div class="footer">
-        © 2026 ExC CANVAS - Experience Capital Assessment
+        © 2026 ExC CANVAS - Experience Capital Assessment<br>
+        <a href="https://forms.gle/Q7pZL3DfSZDCaCgW7" target="_blank" style="color:#aaa;text-decoration:underline;font-size:0.82rem;">お問い合わせ・フィードバック</a>
     </div>
 </div>
 
@@ -849,7 +867,6 @@ function drawRadar() {
         ctx.fillText(radarLabels[key], cx+(maxR+22)*Math.cos(a), cy+(maxR+22)*Math.sin(a));
     });
 }
-drawRadar();
 
 
 // ===== 動的読み解き =====
@@ -912,11 +929,7 @@ const axisDescLow = {
     else if (gap <= 4) balanceText = 'あなたの体験には、はっきりとした「色」があります。' + axisLabels[top3[0][0]] + 'を中心に独自の世界を築いてきた一方で、' + axisLabels[bottom3[0][0]] + 'はまだ手つかずの領域。この対比こそが、あなたらしさを生み出しています。';
     else balanceText = 'あなたの体験は、極めて尖った形をしています。' + axisLabels[top3[0][0]] + 'に圧倒的な深みがある一方、' + axisLabels[bottom3[0][0]] + 'はほぼ未体験の世界。この振り切った偏りは、唯一無二の強みであると同時に、未知の体験に踏み出した時に大きな化学反応を起こす可能性を秘めています。';
     html += '<div class="reading-block balance"><p class="reading-text">' + balanceText + '</p></div>';
-    let summaryText = '';
-    if (avg >= 4) summaryText = 'あなたは人生を通じて豊かな体験を積み重ねてきました。そのキャンバスはすでに多くの色で彩られています。次のステージは、この体験をどう活かし、誰と分かち合うかです。';
-    else if (avg >= 2.5) summaryText = 'あなたのキャンバスには、すでにいくつかの鮮やかな色が置かれています。まだ白い部分も多いですが、それは「可能性」そのものです。一歩踏み出すたびに、新しい色が加わっていきます。';
-    else summaryText = 'あなたのキャンバスは、まだ多くの余白を残しています。でもそれは「足りない」のではなく、「これから描ける」ということ。どんな体験も、最初の一筆から始まります。';
-    html += '<div class="reading-summary"><p class="reading-summary-text">' + summaryText + '</p></div>';
+    // summaryテキスト削除済み
     content.innerHTML = html;
 }
 
@@ -948,55 +961,354 @@ const compatData = {
 
 
 // 画像保存
+// === Pure Canvas Card Save ===
+// Draws card content directly on canvas (no SVG foreignObject)
+
 function saveCard() {
-    var card = document.getElementById('shareCardInner');
-    if (!card) return;
-    // Use canvas to capture the HTML card
-    var rect = card.getBoundingClientRect();
-    var w = Math.ceil(rect.width * 2);
-    var h = Math.ceil(rect.height * 2);
-    var cvs = document.createElement('canvas');
-    cvs.width = w; cvs.height = h;
-    var ctx = cvs.getContext('2d');
-    ctx.scale(2, 2);
-    ctx.fillStyle = '#FFFAF8';
-    ctx.fillRect(0, 0, rect.width, rect.height);
-    // SVG foreignObject approach
-    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+rect.width+'" height="'+rect.height+'">'
-        + '<foreignObject width="100%" height="100%">'
-        + '<div xmlns="http://www.w3.org/1999/xhtml">' + card.outerHTML + '</div>'
-        + '</foreignObject></svg>';
-    var blob = new Blob([svg], {type: 'image/svg+xml'});
-    var url = URL.createObjectURL(blob);
-    var img = new Image();
-    img.onload = function() {
-        ctx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
+    var W = 640, dpr = 2;
+    var tempCvs = document.createElement('canvas');
+    var tempCtx = tempCvs.getContext('2d');
+    
+    // Gather data from the share card DOM
+    var charName = (document.getElementById('shareCharName') || {}).textContent || '';
+    var charNameEn = (document.getElementById('shareCharNameEn') || {}).textContent || '';
+    var top3Text = (document.getElementById('shareTop3') || {}).textContent || '';
+    var bot3Text = (document.getElementById('shareBot3') || {}).textContent || '';
+    var highDesc = (document.getElementById('shareHighDesc') || {}).textContent || '';
+    var lowDesc = (document.getElementById('shareLowDesc') || {}).textContent || '';
+
+    var adviceText = (document.getElementById('shareAdvice') || {}).textContent || '';
+    var summaryText = (document.getElementById('shareSummary') || {}).textContent || '';
+    
+    // Radar data
+    var rk = ['physical','intellectual','creative','cultural','social','emotional','spiritual','temporal','spatial','serendipity','natural','economic'];
+    var rc = ['#E87070','#7AB8E0','#E8B860','#80C890','#B880D0','#E89050','#60B8B0','#D080A0','#7090D0','#C8A060','#70B870','#A0A0C0'];
+    var lb = ['身体','知的','創造','文化','社会','感情','精神','時間','空間','偶発','自然','経済'];
+    
+    function wrapText(ctx, text, x, maxW, lineH) {
+        var words = text.split('');
+        var line = '';
+        var y = 0;
+        var lines = [];
+        for (var i = 0; i < words.length; i++) {
+            var test = line + words[i];
+            if (ctx.measureText(test).width > maxW && line.length > 0) {
+                lines.push(line);
+                line = words[i];
+            } else {
+                line = test;
+            }
+        }
+        if (line) lines.push(line);
+        return lines;
+    }
+    
+    function drawCard(charImg) {
+        // First pass: calculate height
+        tempCvs.width = W;
+        tempCvs.height = 2000;
+        tempCtx.scale(1, 1);
+        
+        var pad = 48;
+        var cw = W - pad * 2; // content width
+        var y = 40;
+        
+        // Measure all text heights
+        tempCtx.font = '600 22px "Cormorant Garamond", serif';
+        y += 28; // logo
+        tempCtx.font = '14px "Cormorant Garamond", serif';
+        y += 20; // subtitle
+        y += 20; // line + spacing
+        
+        // Char image
+        y += 130; // image (100px) + margins
+        
+        // Char name
+        tempCtx.font = '700 36px "Shippori Mincho", serif';
+        y += 44;
+        tempCtx.font = 'italic 18px "Cormorant Garamond", serif';
+        y += 24;
+        tempCtx.font = '14px sans-serif';
+        y += 24; // subtitle
+        
+        // Radar
+        var radarR = 110;
+        y += radarR * 2 + 50;
+        
+        // Top3/Bot3/Balance
+        tempCtx.font = '600 16px sans-serif';
+        y += 26;
+        tempCtx.font = '13px sans-serif';
+        var highLines = wrapText(tempCtx, highDesc, 0, cw - 30, 18);
+        y += highLines.length * 18 + 12;
+        tempCtx.font = '600 16px sans-serif';
+        y += 26;
+        tempCtx.font = '13px sans-serif';
+        var lowLines = wrapText(tempCtx, lowDesc, 0, cw - 30, 18);
+        y += lowLines.length * 18 + 12;
+        y += 26; // balance
+        
+        y += 20; // line
+        
+        // Advice
+        tempCtx.font = '13px sans-serif';
+        y += 22; // label
+        var advLines = wrapText(tempCtx, adviceText, 0, cw, 19);
+        y += advLines.length * 19 + 16;
+        
+        // Summary + footer
+        y += 28;
+        y += 20; // line
+        y += 28; // url
+        y += 40; // bottom padding
+        
+        var H = y;
+        
+        // === Actual drawing ===
+        var cvs = document.createElement('canvas');
+        cvs.width = W * dpr;
+        cvs.height = H * dpr;
+        var ctx = cvs.getContext('2d');
+        ctx.scale(dpr, dpr);
+        
+        // Background gradient
+        var grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#F5F0FA');
+        grad.addColorStop(0.5, '#FFFFFF');
+        grad.addColorStop(1, '#F0EAF6');
+        ctx.fillStyle = grad;
+        // Rounded rect
+        var r = 24;
+        ctx.beginPath();
+        ctx.moveTo(r, 0); ctx.lineTo(W-r, 0); ctx.quadraticCurveTo(W, 0, W, r);
+        ctx.lineTo(W, H-r); ctx.quadraticCurveTo(W, H, W-r, H);
+        ctx.lineTo(r, H); ctx.quadraticCurveTo(0, H, 0, H-r);
+        ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Subtle shadow border
+        ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+        y = 40;
+        var cx = W / 2;
+        
+        // Logo
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#7B5EA7';
+        ctx.font = '600 22px "Cormorant Garamond", serif';
+        ctx.fillText('ExC CANVAS', cx, y);
+        y += 20;
+        ctx.fillStyle = '#C89AA8';
+        ctx.font = '14px "Cormorant Garamond", serif';
+        ctx.fillText('Experience Capital', cx, y);
+        y += 16;
+        
+        // Line
+        ctx.beginPath();
+        ctx.moveTo(pad, y); ctx.lineTo(W - pad, y);
+        ctx.strokeStyle = '#f0e8eb'; ctx.lineWidth = 1; ctx.stroke();
+        y += 20;
+        
+        // Character image
+        if (charImg) {
+            var imgSize = 100;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, y + imgSize/2, imgSize/2, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(charImg, cx - imgSize/2, y, imgSize, imgSize);
+            ctx.restore();
+            // Border
+            ctx.beginPath();
+            ctx.arc(cx, y + imgSize/2, imgSize/2, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(200,90,124,0.15)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            y += imgSize + 16;
+        }
+        
+        // Character name
+        ctx.fillStyle = '#333';
+        ctx.font = '700 36px "Shippori Mincho", serif';
+        ctx.fillText(charName, cx, y);
+        y += 8;
+        ctx.fillStyle = '#aaa';
+        ctx.font = 'italic 18px "Cormorant Garamond", serif';
+        ctx.fillText(charNameEn, cx, y + 16);
+        y += 28;
+        ctx.fillStyle = '#ccc';
+        ctx.font = '14px sans-serif';
+        ctx.fillText('体験資本のかたち', cx, y + 8);
+        y += 24;
+        
+        // Mini Radar Chart
+        var rcx = cx, rcy = y + radarR + 10;
+        var mR = radarR;
+        var n = 12;
+        
+        // Grid
+        for (var lv = 1; lv <= 6; lv++) {
+            var gr = (lv / 6) * mR;
+            ctx.beginPath();
+            for (var i = 0; i <= n; i++) {
+                var a = (Math.PI * 2 * i / n) - Math.PI / 2;
+                if (i === 0) ctx.moveTo(rcx + gr * Math.cos(a), rcy + gr * Math.sin(a));
+                else ctx.lineTo(rcx + gr * Math.cos(a), rcy + gr * Math.sin(a));
+            }
+            ctx.closePath();
+            ctx.strokeStyle = lv === 6 ? '#ddd' : '#eee';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+        }
+        
+        // Data polygon
+        ctx.beginPath();
+        rk.forEach(function(k, i) {
+            var rv = ((capitalScores[k] || 0) / 6) * mR;
+            var a = (Math.PI * 2 * i / n) - Math.PI / 2;
+            if (i === 0) ctx.moveTo(rcx + rv * Math.cos(a), rcy + rv * Math.sin(a));
+            else ctx.lineTo(rcx + rv * Math.cos(a), rcy + rv * Math.sin(a));
+        });
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(232,107,143,0.2)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(232,107,143,0.6)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        // Dots + labels
+        rk.forEach(function(k, i) {
+            var rv = ((capitalScores[k] || 0) / 6) * mR;
+            var a = (Math.PI * 2 * i / n) - Math.PI / 2;
+            ctx.beginPath();
+            ctx.arc(rcx + rv * Math.cos(a), rcy + rv * Math.sin(a), 3, 0, Math.PI * 2);
+            ctx.fillStyle = rc[i]; ctx.fill();
+            ctx.font = '500 12px sans-serif';
+            ctx.fillStyle = '#999';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(lb[i], rcx + (mR + 20) * Math.cos(a), rcy + (mR + 20) * Math.sin(a));
+        });
+        
+        y = rcy + mR + 36;
+        ctx.textAlign = 'left';
+        
+        // Top 3
+        ctx.fillStyle = '#7B5EA7';
+        ctx.font = '16px sans-serif';
+        ctx.fillText('◉', pad, y);
+        ctx.fillStyle = '#555';
+        ctx.font = '600 15px sans-serif';
+        ctx.fillText(top3Text, pad + 22, y);
+        y += 6;
+        ctx.fillStyle = '#999';
+        ctx.font = '12px sans-serif';
+        highLines.forEach(function(line) {
+            y += 17;
+            ctx.fillText(line, pad + 22, y);
+        });
+        y += 16;
+        
+        // Bottom 3
+        ctx.fillStyle = '#5A8AAC';
+        ctx.font = '16px sans-serif';
+        ctx.fillText('○', pad, y);
+        ctx.fillStyle = '#555';
+        ctx.font = '600 15px sans-serif';
+        ctx.fillText(bot3Text, pad + 22, y);
+        y += 6;
+        ctx.fillStyle = '#999';
+        ctx.font = '12px sans-serif';
+        lowLines.forEach(function(line) {
+            y += 17;
+            ctx.fillText(line, pad + 22, y);
+        });
+        y += 16;
+        
+        // Balance removed
+        
+        // Line
+        ctx.beginPath();
+        ctx.moveTo(pad, y); ctx.lineTo(W - pad, y);
+        ctx.strokeStyle = '#f0e8eb'; ctx.lineWidth = 1; ctx.stroke();
+        y += 16;
+        
+        // Advice label
+        ctx.fillStyle = '#C89AA8';
+        ctx.font = '700 12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('ADVICE', pad, y);
+        y += 8;
+        
+        // Advice text
+        ctx.fillStyle = '#777';
+        ctx.font = '13px sans-serif';
+        advLines.forEach(function(line) {
+            y += 19;
+            ctx.fillText(line, pad, y);
+        });
+        y += 20;
+        
+        // Summary removed
+        
+        // Line
+        ctx.beginPath();
+        ctx.moveTo(pad, y); ctx.lineTo(W - pad, y);
+        ctx.strokeStyle = '#f0e8eb'; ctx.lineWidth = 1; ctx.stroke();
+        y += 16;
+        
+        // URL
+        ctx.fillStyle = '#C89AA8';
+        ctx.font = '14px "Cormorant Garamond", serif';
+        ctx.fillText('exc-canvas.com', cx, y);
+        
+        // Download
         try {
             var a = document.createElement('a');
-            a.download = 'ExC_CANVAS_' + characterName + '.png';
+            a.download = 'ExC_CANVAS_' + (typeof characterName !== 'undefined' ? characterName : 'result') + '.png';
             a.href = cvs.toDataURL('image/png');
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
         } catch(e) {
-            alert('スクリーンショットで保存してください');
+            // Fallback: open in new tab
+            var dataUrl = cvs.toDataURL('image/png');
+            var win = window.open();
+            if (win) {
+                win.document.write('<img src="' + dataUrl + '" style="max-width:100%"><p>長押しまたは右クリックで保存</p>');
+            }
         }
-    };
-    img.onerror = function() {
-        alert('スクリーンショットで保存してください');
-    };
-    img.src = url;
+    }
+    
+    // Load char image then draw
+    if (charImageBase64) {
+        var img = new Image();
+        img.onload = function() { drawCard(img); };
+        img.onerror = function() { drawCard(null); };
+        img.src = charImageBase64;
+    } else {
+        // Try loading from src directly
+        var scImg = document.querySelector('.sc-char-img');
+        if (scImg && scImg.src) {
+            var img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function() { drawCard(img); };
+            img.onerror = function() { drawCard(null); };
+            img.src = scImg.src;
+        } else {
+            drawCard(null);
+        }
+    }
 }
 
-// シェアカード初期化
-try {
-var _scn = document.getElementById('shareCharName');
-var _sce = document.getElementById('shareCharNameEn');
-if (_scn) _scn.textContent = characterName;
-if (_sce) _sce.textContent = characterNameEn;
+
+// シェアカード初期化// シェアカード初期化
+document.getElementById('shareCharName').textContent = characterName;
+document.getElementById('shareCharNameEn').textContent = characterNameEn;
 // X link is hardcoded in HTML
-} catch(e) { console.error('Share card init error:', e); }
 
 // ===== シェアカード =====
 function buildShareCard() {
@@ -1017,7 +1329,7 @@ function buildShareCard() {
     document.querySelectorAll('.detail-item h3').forEach(function(h) {
         if (h.textContent.indexOf('アドバイス') >= 0) {
             var p = h.nextElementSibling;
-            if (p) adviceText = p.textContent.substring(0,120) + (p.textContent.length>120 ? '…' : '');
+            if (p) adviceText = p.textContent.substring(0,300) + (p.textContent.length>300 ? '…' : '');
         }
     });
     
@@ -1045,15 +1357,72 @@ function buildShareCard() {
     document.getElementById('shareBot3').textContent = b3.map(function(e){return axisLabels[e[0]]}).join(' / ');
     document.getElementById('shareHighDesc').textContent = axisDescHigh[t3[0][0]].substring(0,60) + '…';
     document.getElementById('shareLowDesc').textContent = axisDescLow[b3[0][0]].substring(0,60) + '…';
-    document.getElementById('shareBalance').textContent = '◎ ' + balTxt;
+    // balance削除済み
     if (adviceText) document.getElementById('shareAdvice').textContent = adviceText;
-    document.getElementById('shareSummary').textContent = '— ' + sumTxt + ' —';
+    // summaryテキスト削除
 }
 
 window.addEventListener('load', function() {
-    try { setTimeout(buildShareCard, 400); } catch(e) { console.error(e); }
+    setTimeout(buildShareCard, 400);
 });
 
+
+
+// 読み解き後レーダー描画
+function drawRadar2() {
+    var canvas = document.getElementById('radarCanvas2');
+    if (!canvas) return;
+    var size = 340;
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = size * dpr; canvas.height = size * dpr;
+    canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    var cx = size/2, cy = size/2, maxR = 120, n = 12;
+    // Grid
+    for (var lv = 1; lv <= 6; lv++) {
+        var r = (lv/6) * maxR;
+        ctx.beginPath();
+        for (var i = 0; i <= n; i++) {
+            var a = (Math.PI*2*i/n) - Math.PI/2;
+            if (i===0) ctx.moveTo(cx+r*Math.cos(a), cy+r*Math.sin(a));
+            else ctx.lineTo(cx+r*Math.cos(a), cy+r*Math.sin(a));
+        }
+        ctx.closePath();
+        ctx.strokeStyle = lv===6 ? '#ddd' : '#eee';
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+    }
+    // Data polygon
+    ctx.beginPath();
+    radarKeys.forEach(function(key, i) {
+        var r = ((capitalScores[key]||0)/6) * maxR;
+        var a = (Math.PI*2*i/n) - Math.PI/2;
+        if (i===0) ctx.moveTo(cx+r*Math.cos(a), cy+r*Math.sin(a));
+        else ctx.lineTo(cx+r*Math.cos(a), cy+r*Math.sin(a));
+    });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(232,107,143,0.15)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(232,107,143,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Dots + labels
+    radarKeys.forEach(function(key, i) {
+        var r = ((capitalScores[key]||0)/6) * maxR;
+        var a = (Math.PI*2*i/n) - Math.PI/2;
+        ctx.beginPath();
+        ctx.arc(cx+r*Math.cos(a), cy+r*Math.sin(a), 3, 0, Math.PI*2);
+        ctx.fillStyle = radarColors[i];
+        ctx.fill();
+        ctx.font = '500 10px sans-serif';
+        ctx.fillStyle = '#999';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(radarLabels[key], cx+(maxR+18)*Math.cos(a), cy+(maxR+18)*Math.sin(a));
+    });
+}
+drawRadar2();
 
 // スクロールアニメーション
 const fadeInSections = document.querySelectorAll('.fade-in-section');
