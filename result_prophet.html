@@ -158,6 +158,51 @@
             display: block;
         }
 
+        /* 4軸スペクトラム表示 */
+        .axes-spectrum {
+            padding: 40px 20px 10px;
+            background: #fff;
+            text-align: center;
+        }
+        .axes-spectrum-grid {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            max-width: 700px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+        .axis-row {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        .axis-pole {
+            font-size: 0.95rem;
+            padding: 10px 18px;
+            border-radius: 100px;
+            letter-spacing: 0.08em;
+            font-weight: 400;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .axis-pole.active {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+        .axis-pole.inactive {
+            background: transparent;
+            color: #ccc;
+        }
+        .axis-divider {
+            width: 16px;
+            height: 1px;
+            background: #ddd;
+            flex-shrink: 0;
+        }
+
         /* 4軸表示 */
         .axes-section {
             padding: 60px 40px;
@@ -594,6 +639,32 @@
         <p class="character-name-en-hero">The Bell Prophet</p>
     </div>
 
+    <!-- 4軸スペクトラム -->
+    <div class="axes-spectrum fade-in-section">
+        <div class="axes-spectrum-grid">
+            <div class="axis-row">
+                <span class="axis-pole inactive">内向</span>
+                <span class="axis-divider"></span>
+                <span class="axis-pole active">外向</span>
+            </div>
+            <div class="axis-row">
+                <span class="axis-pole active">秩序</span>
+                <span class="axis-divider"></span>
+                <span class="axis-pole inactive">自由</span>
+            </div>
+            <div class="axis-row">
+                <span class="axis-pole inactive">独立</span>
+                <span class="axis-divider"></span>
+                <span class="axis-pole active">関係</span>
+            </div>
+            <div class="axis-row">
+                <span class="axis-pole active">精神</span>
+                <span class="axis-divider"></span>
+                <span class="axis-pole inactive">物質</span>
+            </div>
+        </div>
+    </div>
+
     <!-- キャラクター画像 -->
     <div class="character-visual fade-in-section">
         <img class="character-img" crossorigin="anonymous" src="11.png" alt="鐘を鳴らす予言者">
@@ -885,12 +956,6 @@ const axisDescLow = {
     bottom3.forEach(([k,v]) => { html += '<span class="reading-axis-tag low">' + axisLabels[k] + '</span>'; });
     html += '</div><p class="reading-text">' + axisDescLow[bottom3[0][0]] + '。';
     html += 'ここに新しい一歩を踏み出すことで、あなたの体験のかたちは大きく変わるかもしれません。</p></div>';
-    const maxScore = top3[0][1], minScore = bottom3[0][1], gap = maxScore - minScore;
-    let balanceText = '';
-    if (gap <= 2) balanceText = 'あなたの体験は比較的バランスが取れています。突出した軸は少ないものの、幅広い体験が人生の土台を支えています。さらに深みを出すなら、特に気になる領域にとことん没頭してみるのも一つです。';
-    else if (gap <= 4) balanceText = 'あなたの体験には、はっきりとした「色」があります。' + axisLabels[top3[0][0]] + 'を中心に独自の世界を築いてきた一方で、' + axisLabels[bottom3[0][0]] + 'はまだ手つかずの領域。この対比こそが、あなたらしさを生み出しています。';
-    else balanceText = 'あなたの体験は、極めて尖った形をしています。' + axisLabels[top3[0][0]] + 'に圧倒的な深みがある一方、' + axisLabels[bottom3[0][0]] + 'はほぼ未体験の世界。この振り切った偏りは、唯一無二の強みであると同時に、未知の体験に踏み出した時に大きな化学反応を起こす可能性を秘めています。';
-    html += '<div class="reading-block balance"><p class="reading-text">' + balanceText + '</p></div>';
     // summaryテキスト削除済み
     content.innerHTML = html;
 }
@@ -950,123 +1015,135 @@ function generateShareCard() {
     ctx.scale(dpr, dpr);
 
     var tc = hexToRgb(themeColor || '#4A5D7C');
-    var tcD = {r:Math.max(0,tc.r-30),g:Math.max(0,tc.g-30),b:Math.max(0,tc.b-30)};
-    var tcDD = {r:Math.max(0,tc.r-55),g:Math.max(0,tc.g-55),b:Math.max(0,tc.b-55)};
 
-    // ===== 背景: テーマカラーグラデーション =====
-    var bg = ctx.createLinearGradient(0,0,0,H);
-    bg.addColorStop(0, 'rgb('+tc.r+','+tc.g+','+tc.b+')');
-    bg.addColorStop(0.5, 'rgb('+tcD.r+','+tcD.g+','+tcD.b+')');
-    bg.addColorStop(1, 'rgb('+tcDD.r+','+tcDD.g+','+tcDD.b+')');
-    ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+    // ===== 背景: ほぼ白 =====
+    ctx.fillStyle = '#fefefe'; ctx.fillRect(0, 0, W, H);
+    // 上下にごく薄いテーマカラーの染み
+    var topG = ctx.createLinearGradient(0, 0, 0, 80);
+    topG.addColorStop(0, 'rgba('+tc.r+','+tc.g+','+tc.b+',0.04)');
+    topG.addColorStop(1, 'rgba('+tc.r+','+tc.g+','+tc.b+',0)');
+    ctx.fillStyle = topG; ctx.fillRect(0, 0, W, 80);
+    var btmG = ctx.createLinearGradient(0, H-60, 0, H);
+    btmG.addColorStop(0, 'rgba(200,154,168,0)');
+    btmG.addColorStop(1, 'rgba(200,154,168,0.04)');
+    ctx.fillStyle = btmG; ctx.fillRect(0, H-60, W, 60);
 
-    // テクスチャ
-    ctx.globalAlpha = 0.025;
-    for (var y = 0; y < H; y += 3) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.strokeStyle='#fff'; ctx.lineWidth=0.5; ctx.stroke(); }
-    ctx.globalAlpha = 1;
+    // 左右にテーマカラーの細アクセント
+    ctx.fillStyle = 'rgba('+tc.r+','+tc.g+','+tc.b+',0.1)';
+    ctx.fillRect(0, 0, 3, H);
+    ctx.fillRect(W-3, 0, 3, H);
 
     // ===== ロゴ =====
-    ctx.font='600 16px "Cormorant Garamond",serif'; ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.textAlign='center';
-    ctx.fillText('ExC CANVAS', W/2, 38);
-    ctx.font='300 9px "Cormorant Garamond",serif'; ctx.fillStyle='rgba(255,255,255,0.35)';
-    ctx.fillText('Experience Capital', W/2, 52);
+    ctx.font = '600 20px "Cormorant Garamond",serif';
+    ctx.fillStyle = '#C85A7C';
+    ctx.textAlign = 'center';
+    ctx.fillText('ExC CANVAS', W/2, 40);
+    ctx.font = '300 10px "Cormorant Garamond",serif';
+    ctx.fillStyle = '#C89AA8';
+    ctx.fillText('Experience Capital', W/2, 56);
 
     // 装飾ライン
-    ctx.beginPath(); ctx.moveTo(W*0.2, 64); ctx.lineTo(W*0.8, 64);
-    var lg = ctx.createLinearGradient(W*0.2,0,W*0.8,0);
-    lg.addColorStop(0,'rgba(255,255,255,0)'); lg.addColorStop(0.5,'rgba(255,255,255,0.2)'); lg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.beginPath(); ctx.moveTo(W*0.2, 68); ctx.lineTo(W*0.8, 68);
+    var lg = ctx.createLinearGradient(W*0.2, 0, W*0.8, 0);
+    lg.addColorStop(0, 'rgba(200,154,168,0)'); lg.addColorStop(0.5, 'rgba(200,154,168,0.25)'); lg.addColorStop(1, 'rgba(200,154,168,0)');
     ctx.strokeStyle = lg; ctx.lineWidth = 0.8; ctx.stroke();
 
-    // ===== キャラ画像 =====
-    var imgS = 140, imgX = (W-imgS)/2, imgY = 80;
+    // ===== キャラ画像（大きめ 220px） =====
+    var imgS = 220, imgX = (W-imgS)/2, imgY = 78;
     var charImg = document.querySelector('.character-img');
     ctx.save();
     ctx.beginPath(); ctx.arc(imgX+imgS/2, imgY+imgS/2, imgS/2, 0, Math.PI*2); ctx.clip();
     if (charImg && charImg.complete && charImg.naturalWidth > 0) {
         ctx.drawImage(charImg, imgX, imgY, imgS, imgS);
     } else {
-        ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fillRect(imgX, imgY, imgS, imgS);
+        ctx.fillStyle = 'rgba('+tc.r+','+tc.g+','+tc.b+',0.05)'; ctx.fillRect(imgX, imgY, imgS, imgS);
+        ctx.font = '400 14px "Shippori Mincho",serif'; ctx.fillStyle = 'rgba('+tc.r+','+tc.g+','+tc.b+',0.25)'; ctx.textAlign='center';
+        ctx.fillText('キャラ画像', imgX+imgS/2, imgY+imgS/2+5);
     }
     ctx.restore();
     ctx.beginPath(); ctx.arc(imgX+imgS/2, imgY+imgS/2, imgS/2+2, 0, Math.PI*2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.strokeStyle = 'rgba('+tc.r+','+tc.g+','+tc.b+',0.12)'; ctx.lineWidth = 1.5; ctx.stroke();
 
-    // ===== キャラ名 =====
-    var nameY = imgY + imgS + 30;
-    ctx.font='700 28px "Shippori Mincho",serif'; ctx.fillStyle='#fff'; ctx.textAlign='center';
+    // ===== キャラ名（カラフル・大きめ） =====
+    var nameY = imgY + imgS + 36;
+    ctx.font = '700 36px "Shippori Mincho",serif';
+    ctx.fillStyle = 'rgb('+tc.r+','+tc.g+','+tc.b+')';
+    ctx.textAlign = 'center';
     ctx.fillText(characterName, W/2, nameY);
-    ctx.font='400 12px "Cormorant Garamond",serif'; ctx.fillStyle='rgba(255,255,255,0.5)';
-    ctx.fillText(characterNameEn, W/2, nameY + 20);
+    ctx.font = '400 15px "Cormorant Garamond",serif';
+    ctx.fillStyle = '#C85A7C';
+    ctx.fillText(characterNameEn, W/2, nameY + 26);
 
     // ===== タグライン =====
-    var tagY = nameY + 42;
-    ctx.font='400 11px "Shippori Mincho",serif'; ctx.fillStyle='rgba(255,255,255,0.55)';
-    var tagLines = wrapTextCanvas(ctx, charTagline, W - 120);
+    var tagY = nameY + 52;
+    ctx.font = '400 13px "Shippori Mincho",serif'; ctx.fillStyle = '#888';
+    var tagLines = wrapTextCanvas(ctx, charTagline, W - 100);
     for (var ti = 0; ti < Math.min(tagLines.length, 2); ti++) {
-        ctx.fillText(tagLines[ti], W/2, tagY + ti * 17);
+        ctx.fillText(tagLines[ti], W/2, tagY + ti * 20);
     }
 
-    // ===== 4軸バッジ =====
-    var badgeY = tagY + Math.min(tagLines.length, 2) * 17 + 10;
-    var badgeH = 24, badgeGap = 8;
-    ctx.font='500 10px "Shippori Mincho",serif';
-    var bws = axisBadges.map(function(l) { return ctx.measureText(l).width + 22; });
+    // ===== 4軸バッジ（カラフル） =====
+    var axisColors = ['#5A8AAC','#D4761A','#6B8E5A','#9B6BA6'];
+    var badgeY = tagY + Math.min(tagLines.length, 2) * 20 + 14;
+    var badgeH = 28, badgeGap = 8;
+    ctx.font = '600 12px "Shippori Mincho",serif';
+    var bws = axisBadges.map(function(l) { return ctx.measureText(l).width + 28; });
     var tbw = bws.reduce(function(s,w){return s+w;}, 0) + badgeGap * (axisBadges.length - 1);
     var bx = (W - tbw) / 2;
     for (var bi = 0; bi < axisBadges.length; bi++) {
         var bw = bws[bi];
-        ctx.beginPath(); ctx.roundRect(bx, badgeY, bw, badgeH, 12);
-        ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.fill();
-        ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=0.8; ctx.stroke();
-        ctx.font='500 10px "Shippori Mincho",serif'; ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.textAlign='center';
-        ctx.fillText(axisBadges[bi], bx + bw/2, badgeY + 16);
+        var ac = hexToRgb(axisColors[bi]);
+        ctx.beginPath(); ctx.roundRect(bx, badgeY, bw, badgeH, 14);
+        ctx.fillStyle = 'rgba('+ac.r+','+ac.g+','+ac.b+',0.08)'; ctx.fill();
+        ctx.strokeStyle = 'rgba('+ac.r+','+ac.g+','+ac.b+',0.35)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.font = '600 12px "Shippori Mincho",serif';
+        ctx.fillStyle = axisColors[bi]; ctx.textAlign = 'center';
+        ctx.fillText(axisBadges[bi], bx + bw/2, badgeY + 19);
         bx += bw + badgeGap;
     }
 
     // ===== サブタイトル =====
-    var subY = badgeY + badgeH + 24;
-    ctx.font='400 9px "Shippori Mincho",serif'; ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.textAlign='center';
+    var subY = badgeY + badgeH + 28;
+    ctx.font = '400 11px "Shippori Mincho",serif'; ctx.fillStyle = '#ccc'; ctx.textAlign = 'center';
     ctx.fillText('体験資本のかたち', W/2, subY);
 
     // ===== レーダーチャート =====
-    var rcx = W/2, rcy = subY + 130, maxR = 105, n = 12;
+    var rcx = W/2, rcy = subY + 120, maxR = 100, n = 12;
     var rk = ['physical','intellectual','creative','cultural','social','emotional','spiritual','temporal','spatial','serendipity','natural','economic'];
     var rl = ['身体','知的','創造','文化','社会','感情','精神','時間','空間','偶発','自然','経済'];
+    var rc = ['#E87070','#7AB8E0','#E8B860','#80C890','#B880D0','#E89050','#60B8B0','#D080A0','#7090D0','#C8A060','#70B870','#A0A0C0'];
 
     for (var lv = 1; lv <= 6; lv++) {
         var r = (lv/6)*maxR;
         ctx.beginPath();
         for (var i = 0; i <= n; i++) { var a = (Math.PI*2*i/n)-Math.PI/2; if(i===0) ctx.moveTo(rcx+r*Math.cos(a),rcy+r*Math.sin(a)); else ctx.lineTo(rcx+r*Math.cos(a),rcy+r*Math.sin(a)); }
-        ctx.closePath(); ctx.strokeStyle = lv===6 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)'; ctx.lineWidth=0.5; ctx.stroke();
+        ctx.closePath(); ctx.strokeStyle = lv===6 ? '#ddd' : '#eee'; ctx.lineWidth = 0.5; ctx.stroke();
     }
     ctx.beginPath();
     for (var i = 0; i < n; i++) { var rv = ((capitalScores[rk[i]]||0)/6)*maxR; var a = (Math.PI*2*i/n)-Math.PI/2; if(i===0) ctx.moveTo(rcx+rv*Math.cos(a),rcy+rv*Math.sin(a)); else ctx.lineTo(rcx+rv*Math.cos(a),rcy+rv*Math.sin(a)); }
-    ctx.closePath(); ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,0.7)'; ctx.lineWidth=1.5; ctx.stroke();
-    for (var i = 0; i < n; i++) { var rv = ((capitalScores[rk[i]]||0)/6)*maxR; var a = (Math.PI*2*i/n)-Math.PI/2; ctx.beginPath(); ctx.arc(rcx+rv*Math.cos(a),rcy+rv*Math.sin(a),3,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.shadowColor='rgba(255,255,255,0.6)'; ctx.shadowBlur=6; ctx.fill(); ctx.shadowBlur=0; }
-    ctx.font='500 9px "Shippori Mincho",serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    for (var i = 0; i < n; i++) { var a = (Math.PI*2*i/n)-Math.PI/2; ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.fillText(rl[i], rcx+(maxR+16)*Math.cos(a), rcy+(maxR+16)*Math.sin(a)); }
-    ctx.textBaseline='alphabetic';
+    ctx.closePath();
+    ctx.fillStyle = 'rgba('+tc.r+','+tc.g+','+tc.b+',0.12)'; ctx.fill();
+    ctx.strokeStyle = 'rgba('+tc.r+','+tc.g+','+tc.b+',0.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+    // カラフルなドット
+    for (var i = 0; i < n; i++) { var rv = ((capitalScores[rk[i]]||0)/6)*maxR; var a = (Math.PI*2*i/n)-Math.PI/2; ctx.beginPath(); ctx.arc(rcx+rv*Math.cos(a),rcy+rv*Math.sin(a),3.5,0,Math.PI*2); ctx.fillStyle=rc[i]; ctx.fill(); }
+    // カラフルなラベル
+    ctx.font = '500 10px "Shippori Mincho",serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (var i = 0; i < n; i++) { var a = (Math.PI*2*i/n)-Math.PI/2; ctx.fillStyle = rc[i]; ctx.fillText(rl[i], rcx+(maxR+18)*Math.cos(a), rcy+(maxR+18)*Math.sin(a)); }
+    ctx.textBaseline = 'alphabetic';
 
-    // ===== TOP3 / LOW3 =====
+    // ===== TOP3 / LOW3（カラフル） =====
     var entries = Object.entries(capitalScores).sort(function(a,b){return b[1]-a[1];});
     var t3 = entries.slice(0,3).map(function(e){return radarLabels[e[0]]||e[0];});
     var b3 = entries.slice(-3).map(function(e){return radarLabels[e[0]]||e[0];});
     var tlY = rcy + maxR + 36;
-    ctx.font='600 11px "Shippori Mincho",serif'; ctx.textAlign='center';
-    ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.fillText('◉ ' + t3.join(' · '), W/2, tlY);
-    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.fillText('○ ' + b3.join(' · '), W/2, tlY + 20);
-
-    // バランス
-    var gap = entries[0][1] - entries[entries.length-1][1];
-    var balText = gap<=2 ? '◎ バランスの取れた体験' : gap<=4 ? '◎ はっきりとした色のある体験' : '◎ 極めて尖った唯一無二の体験';
-    ctx.font='400 10px "Shippori Mincho",serif'; ctx.fillStyle='rgba(255,255,255,0.4)';
-    ctx.fillText(balText, W/2, tlY + 44);
+    ctx.font = '600 13px "Shippori Mincho",serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgb('+tc.r+','+tc.g+','+tc.b+')'; ctx.fillText('◉ ' + t3.join(' · '), W/2, tlY);
+    ctx.fillStyle = '#bbb'; ctx.fillText('○ ' + b3.join(' · '), W/2, tlY + 22);
 
     // ===== 区切り線 =====
-    var line2Y = tlY + 60;
+    var line2Y = tlY + 40;
     ctx.beginPath(); ctx.moveTo(W*0.15, line2Y); ctx.lineTo(W*0.85, line2Y);
-    ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=0.8; ctx.stroke();
+    ctx.strokeStyle = 'rgba(200,154,168,0.15)'; ctx.lineWidth = 0.8; ctx.stroke();
 
     // ===== アドバイス =====
     var adviceText = '';
@@ -1077,32 +1154,25 @@ function generateShareCard() {
         }
     });
     if (adviceText) {
-        adviceText = adviceText.substring(0, 200) + (adviceText.length > 200 ? '…' : '');
-        ctx.font='700 8px "Cinzel",serif'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.textAlign='left';
-        ctx.fillText('ADVICE', 50, line2Y + 22);
-        ctx.font='400 10.5px "Shippori Mincho",serif'; ctx.fillStyle='rgba(255,255,255,0.55)';
+        adviceText = adviceText.substring(0, 180) + (adviceText.length > 180 ? '…' : '');
+        ctx.font = '700 10px "Cinzel",serif'; ctx.fillStyle = '#C89AA8'; ctx.textAlign = 'left';
+        ctx.fillText('ADVICE', 50, line2Y + 24);
+        ctx.font = '400 12px "Shippori Mincho",serif'; ctx.fillStyle = '#777';
         var advLines = wrapTextCanvas(ctx, adviceText, W - 100);
-        for (var ai = 0; ai < Math.min(advLines.length, 5); ai++) {
-            ctx.fillText(advLines[ai], 50, line2Y + 40 + ai * 18);
+        for (var ai = 0; ai < Math.min(advLines.length, 4); ai++) {
+            ctx.fillText(advLines[ai], 50, line2Y + 46 + ai * 20);
         }
     }
 
-    // ===== サマリー =====
-    var avg = entries.reduce(function(s,e){return s+e[1];},0) / 12;
-    var sumTxt = avg>=4 ? '— 豊かな体験に彩られたキャンバス —' : avg>=2.5 ? '— 鮮やかな色と可能性のキャンバス —' : '— これから描かれる可能性のキャンバス —';
-    var advCount = adviceText ? Math.min(wrapTextCanvas(ctx, adviceText.substring(0,200), W-100).length, 5) : 0;
-    var sumY = line2Y + 40 + advCount * 18 + 16;
-    ctx.font='400 11px "Cormorant Garamond",serif'; ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.textAlign='center';
-    ctx.fillText(sumTxt, W/2, sumY);
-
     // ===== ボトムライン =====
-    var bLine = sumY + 18;
+    var advCount = adviceText ? Math.min(wrapTextCanvas(ctx, adviceText.substring(0,180), W-100).length, 4) : 0;
+    var bLine = line2Y + 46 + advCount * 20 + 16;
     ctx.beginPath(); ctx.moveTo(W*0.15, bLine); ctx.lineTo(W*0.85, bLine);
-    ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=0.8; ctx.stroke();
+    ctx.strokeStyle = 'rgba(200,154,168,0.15)'; ctx.lineWidth = 0.8; ctx.stroke();
 
     // ===== フッター =====
-    ctx.font='300 10px "Cormorant Garamond",serif'; ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.textAlign='center';
-    ctx.fillText('exc-canvas.com', W/2, bLine + 22);
+    ctx.font = '300 11px "Cormorant Garamond",serif'; ctx.fillStyle = '#C89AA8'; ctx.textAlign = 'center';
+    ctx.fillText('exc-canvas.com', W/2, bLine + 24);
 }
 
 function downloadCard(){
