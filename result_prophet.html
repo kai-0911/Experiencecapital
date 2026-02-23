@@ -830,11 +830,17 @@ const characterName = '鐘を鳴らす予言者';
 const characterNameEn = 'The Bell Prophet';
 
 if (!hasParams) {
-    // 診断経由でない場合、スコアセクションを非表示
+    // 診断経由でない場合、スコア関連セクションを非表示
     const cs = document.querySelector('.chart-section');
     const ax = document.querySelector('.axes-section');
+    const rc = document.querySelector('.radar-recap');
+    const rd = document.querySelector('.reading-section');
+    const sc = document.querySelector('.share-card-section');
     if (cs) cs.style.display = 'none';
     if (ax) ax.style.display = 'none';
+    if (rc) rc.style.display = 'none';
+    if (rd) rd.style.display = 'none';
+    if (sc) sc.style.display = 'none';
 }
 
 // ニックネーム表示
