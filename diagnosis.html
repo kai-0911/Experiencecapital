@@ -656,20 +656,7 @@ function render() {
                         <div class="demo-opt" onclick="selectDemo('gender',this)">その他/回答しない</div>
                     </div>
                 </div>
-                <div class="demo-group">
-                    <label>職業<span class="optional">（任意）</span></label>
-                    <div class="demo-options">
-                        <div class="demo-opt" onclick="selectDemo('occupation',this)">学生</div>
-                        <div class="demo-opt" onclick="selectDemo('occupation',this)">会社員</div>
-                        <div class="demo-opt" onclick="selectDemo('occupation',this)">公務員</div>
-                        <div class="demo-opt" onclick="selectDemo('occupation',this)">自営業</div>
-                        <div class="demo-opt" onclick="selectDemo('occupation',this)">フリーランス</div>
-                        <div class="demo-opt" onclick="selectDemo('occupation',this)">専門職</div>
-                        <div class="demo-opt" onclick="selectDemo('occupation',this)">経営者/役員</div>
-                        <div class="demo-opt" onclick="selectDemo('occupation',this)">主婦/主夫</div>
-                        <div class="demo-opt" onclick="selectDemo('occupation',this)">その他</div>
-                    </div>
-                </div>
+
                 <button class="demo-submit" id="demoSubmit" onclick="submitAll()">結果を見る</button>
             </div>`;
         document.getElementById('progressFill').style.width = '96%';
@@ -974,7 +961,7 @@ function sendToGoogleSheets(data) {
     const ua=navigator.userAgent; let device='PC';
     if(/iPhone|iPad|iPod/i.test(ua))device='iOS'; else if(/Android/i.test(ua))device='Android';
     const payload = {characterName:data.typeName,typeKey:data.typeKey,gender:data.gender,ageGroup:data.ageGroup,
-        nickname:demoData.nickname||'',occupation:demoData.occupation||'',
+        nickname:demoData.nickname||'',
         ...Object.fromEntries(Object.entries(scores)),device,elapsedSeconds:Math.round((Date.now()-diagnosisStartTime)/1000)};
     const URL='https://script.google.com/macros/s/AKfycbwNOCM1DMMRMMexb-zHfryomi4wCFSgH8f5eISSTuo6ZwJitX-2C9u8mXbMNzguXSzUfA/exec';
     fetch(URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(e=>console.error('送信エラー:',e));
