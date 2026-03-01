@@ -282,14 +282,21 @@ async function loadStats() {
 }
 
 function processData(rows) {
-    const total = rows.length;
+    // 有効なキャラクター名のリスト
+    const validChars = Object.keys(charImages);
 
-
-    // キャラクター
+    // キャラクター（有効な名前のみカウント）
     const charMap = {};
-    rows.forEach(r => { const n = r[COL.character] || '不明'; charMap[n] = (charMap[n] || 0) + 1; });
+    let validCount = 0;
+    rows.forEach(r => {
+        const n = (r[COL.character] || '').trim();
+        if (n && validChars.includes(n)) {
+            charMap[n] = (charMap[n] || 0) + 1;
+            validCount++;
+        }
+    });
 
-    renderStats({ totalCount: total, characterDistribution: charMap });
+    renderStats({ totalCount: validCount, characterDistribution: charMap });
 }
 
 function renderStats(data) {
