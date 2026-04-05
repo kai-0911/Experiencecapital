@@ -504,6 +504,125 @@
             color: #fff;
         }
 
+
+        /* 仕事で体験資本を活かす方法 セクション */
+        .work-section {
+            background: #fafbfc;
+            padding: 100px 0 60px;
+        }
+        .work-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        .work-main-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 70px;
+            letter-spacing: 0.08em;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--accent);
+        }
+        .work-block {
+            margin-bottom: 60px;
+        }
+        .work-block-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            padding-left: 16px;
+            border-left: 3px solid var(--primary);
+            letter-spacing: 0.05em;
+        }
+        .work-block-text {
+            font-size: 1rem;
+            line-height: 2.1;
+            color: #555;
+        }
+        .work-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .work-list li {
+            font-size: 1rem;
+            line-height: 2.1;
+            color: #555;
+            padding: 10px 0 10px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+        .work-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+            opacity: 0.5;
+        }
+        .work-list li:last-child {
+            border-bottom: none;
+        }
+        .work-subblock {
+            margin-bottom: 30px;
+        }
+        .work-subblock-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .work-compat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .work-compat-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 22px 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-left: 3px solid var(--accent);
+        }
+        .work-compat-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .work-compat-desc {
+            font-size: 0.92rem;
+            line-height: 1.9;
+            color: #666;
+        }
+        .work-compat-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+            background: rgba(166,153,191,0.12);
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .work-inner { padding: 0 20px; }
+            .work-main-title { font-size: 1.2rem; margin-bottom: 50px; }
+            .work-block-title { font-size: 1rem; }
+            .work-block-text, .work-list li { font-size: 0.9rem; }
+            .work-compat-item { padding: 18px; }
+        }
+
         /* フッター */
         .footer {
             padding: 40px;
@@ -746,8 +865,90 @@
 
 
 
+
+    <!-- 仕事で体験資本を活かす方法 -->
+    <div class="work-section">
+        <div class="work-inner">
+            <h2 class="work-main-title fade-in-section">仕事で体験資本を活かす方法</h2>
+
+            <div class="work-block fade-in-section">
+                <h3 class="work-block-title">あなたの体験資本が仕事に出る瞬間</h3>
+                <p class="work-block-text">誰かのために動いたとき、「あなたがいてくれて助かった」という言葉が自分の存在を確かにしてきた。犠牲を払うことで場を守ってきた体験が、仕事での動き方を作っている。最後まで役割を背負う力、誰かが困っているときに気づく力は、そこから育っている。</p>
+            </div>
+
+            <div class="work-block fade-in-section">
+                <h3 class="work-block-title">仕事の癖</h3>
+                <ul class="work-list">
+                    <li>困っている人がいれば、自分の仕事を置いてでも助けに行く。</li>
+                    <li>頼まれると断れない。「大丈夫です」と答えながら、限界を超えて抱え込む。</li>
+                    <li>自分の意見を後回しにする。場の空気を読んで、言いたいことを飲み込む癖がある。</li>
+                    <li>感謝の言葉を燃料にして動く。「ありがとう」の一言が、次の行動のエンジンになる。</li>
+                </ul>
+            </div>
+
+            <div class="work-block fade-in-section">
+                <h3 class="work-block-title">得意なこと・弱点</h3>
+                
+                <div class="work-subblock">
+                    <div class="work-subblock-title">得意なこと</div>
+                    <ul class="work-list">
+                    <li>献身性。チームの潤滑油として機能する。この人がいる場は、心理的安全性が高くなる。</li>
+                    <li>共感力。誰かが困っているときに、最初に気づける。その人が何を必要としているかを、言葉より先に察知できる。</li>
+                    <li>長期の関係維持。誠実さと継続性が信頼に変わるまでの時間を、苦にせず続けられる。</li>
+                    </ul>
+                </div>
+                
+                <div class="work-subblock">
+                    <div class="work-subblock-title">弱点</div>
+                    <ul class="work-list">
+                    <li>自己消去。自分の欲求や意見を後回しにする癖が強く、「自分が何をしたいか」が見えにくくなる。</li>
+                    <li>断れない。オーバーワークになっても止まれない。疲弊が蓄積しても「大丈夫です」と答える。</li>
+                    <li>主体的な発信の少なさ。場の空気を読みすぎて、自分の判断や意見を前に出しにくい。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="work-block fade-in-section">
+                <h3 class="work-block-title">成長の伸び代</h3>
+                <ul class="work-list">
+                    <li>自分だけのために時間を使うこと、頼まれごとをきっぱり断ることを積むと、与えることが義務ではなく選択になる。</li>
+                    <li>自分が主役の仕事を一つ持つことで、誰かのためだけを動機にしていたときには出なかった力が出てくる。</li>
+                </ul>
+            </div>
+
+            <div class="work-block fade-in-section">
+                <h3 class="work-block-title">補完しあえるタイプ</h3>
+                <div class="work-compat-list">
+                    <div class="work-compat-item">
+                        <div class="work-compat-name">黄金の女王</div>
+                        <div class="work-compat-desc">守護者が人を支え、女王が方向を決める。支える力と決断する力が別々の人間にある。</div>
+                        <span class="work-compat-tag">強みの掛け算</span>
+                    </div>
+                    <div class="work-compat-item">
+                        <div class="work-compat-name">異端の錬金術師</div>
+                        <div class="work-compat-desc">錬金術師が前提を壊すとき、守護者が人への影響を見ている。人を傷つけずに変化を起こせるかどうかは、この二人がいるかどうかにかかっている。</div>
+                        <span class="work-compat-tag">強みの掛け算</span>
+                    </div>
+                    <div class="work-compat-item">
+                        <div class="work-compat-name">盲目の英雄</div>
+                        <div class="work-compat-desc">英雄が前に進む間、守護者が後ろで傷ついた人を拾う。</div>
+                        <span class="work-compat-tag">弱点補完</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="work-block fade-in-section">
+                <h3 class="work-block-title">一緒に働く人が意識すべきこと</h3>
+                <ul class="work-list">
+                    <li>「大丈夫？」と聞いても「大丈夫です」と返ってくる。負荷を客観的に確認し、抱えすぎていれば強制的に仕事を減らす配慮が必要。</li>
+                    <li>感謝を言葉にして返す。これがこの人にとって最大の報酬になる。</li>
+                    <li>自分の意見を聞く機会を意図的に作る。「あなたはどうしたい？」と直接聞く場を作らないと、本音が出てこないまま終わる。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <!-- 相性キャラ -->
-    <div class="compat-section fade-in-section" id="compatSection">
         <h2 class="compat-title" id="compatTitle">体験が近い・遠いタイプ</h2>
         <div class="compat-cards" id="compatCards"></div>
     </div>
